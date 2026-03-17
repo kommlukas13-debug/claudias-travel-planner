@@ -631,6 +631,15 @@ try{
         </div>
         <div class="fav-chips" id="fav-chips"></div>
         <div class="tag-filter-wrap" id="fav-tag-chips"></div>
+        <div class="field" style="margin-top:10px;margin-bottom:0;">
+          <label class="field-label" style="font-size:11px;">&#128149; Your Rating</label>
+          <div class="rating-filter-group" id="fav-personal-rating-filter">
+            <button class="rating-filter-btn active" data-pr="0" onclick="setFavPersonalRating(this)">Any</button>
+            <button class="rating-filter-btn" data-pr="3" onclick="setFavPersonalRating(this)">3+ &#9733;</button>
+            <button class="rating-filter-btn" data-pr="4" onclick="setFavPersonalRating(this)">4+ &#9733;</button>
+            <button class="rating-filter-btn" data-pr="5" onclick="setFavPersonalRating(this)">5 &#9733;</button>
+          </div>
+        </div>
         <div class="fav-meta" id="fav-meta"></div>
       </div>
     </div>
@@ -923,7 +932,13 @@ function renderFavs(){
     // Tag filter
     var tok=!activeTagFilter;
     if(!tok){ var ptags=loadTags(getPlaceKey(x)); tok=ptags.indexOf(activeTagFilter)>=0; }
-    return cok&&qok&&tok;
+    // Personal rating filter
+    var prok=activePersonalRatingFilter===0;
+    if(!prok){
+      var pr=loadPersonalRating(getPlaceKey(x));
+      prok = activePersonalRatingFilter===5 ? pr===5 : pr>=activePersonalRatingFilter;
+    }
+    return cok&&qok&&tok&&prok;
   });
   document.getElementById('fav-meta').innerHTML='Showing <strong>'+filtered.length+'</strong> of '+f.length+' saved places';
   // Tag filter chips
@@ -991,6 +1006,12 @@ function renderFavs(){
   });
 }
 function filterFavs(){ var v=document.getElementById('fav-search-input').value; document.getElementById('fav-clear-btn').classList.toggle('show',v.length>0); renderFavs(); }
+function setFavPersonalRating(btn){
+  document.querySelectorAll('#fav-personal-rating-filter .rating-filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  activePersonalRatingFilter = parseFloat(btn.getAttribute('data-pr'));
+  renderFavs();
+}
 function clearFavSearch(){ document.getElementById('fav-search-input').value=''; document.getElementById('fav-clear-btn').classList.remove('show'); renderFavs(); }
 
 // -- ROUTE PLANNER -----------------------------------------
@@ -2578,6 +2599,7 @@ function shareTrip(trip){
 // -- TAGS -------------------------------------------------
 var allTags = [];
 var activeTagFilter = null;
+var activePersonalRatingFilter = 0;
 
 function loadTags(placeKey){ try{return JSON.parse(localStorage.getItem('ctp_tags_'+placeKey)||'[]');}catch(x){return[];} }
 function saveTags(placeKey, tags){ try{localStorage.setItem('ctp_tags_'+placeKey,JSON.stringify(tags));}catch(x){} }
