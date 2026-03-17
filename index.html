@@ -2078,10 +2078,12 @@ function showRouteMap(stops, containerId){
         default:'#4e8060'
       };
 
-      stops.forEach(function(stop, i){
-        // Geocode via Nominatim
+      // Stagger route geocoding to respect Nominatim rate limit
+      function geocodeStop(idx){
+        if(idx >= stops.length) return;
+        var stop = stops[idx];
         var geoUrl = 'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(stop.address||stop.name)+'&format=json&limit=1';
-        (function(s, idx){
+        (function(s, sidx){
           var xhr = new XMLHttpRequest();
           xhr.open('GET', geoUrl, true);
           xhr.setRequestHeader('Accept-Language','en');
@@ -2130,10 +2132,13 @@ function showRouteMap(stops, containerId){
               // Invalidate size after render
               setTimeout(function(){ mapInstance.invalidateSize(); }, 300);
             }catch(x){}
+            setTimeout(function(){ geocodeStop(sidx+1); }, 1100);
           };
+          xhr.onerror = function(){ setTimeout(function(){ geocodeStop(sidx+1); }, 1100); };
           xhr.send();
-        })(stop, i);
-      });
+        })(stop, idx);
+      }
+      geocodeStop(0);
     }, 100); // end setTimeout for L.map init
     }
     if(!open && mapInstance){
@@ -2842,45 +2847,58 @@ function initVisitedMap(){
   setTimeout(function(){if(visitedMapInstance)visitedMapInstance.invalidateSize();},200);
 
   var bounds = [];
-  visited.forEach(function(place, i){
-    var geoUrl='https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(place.name+' '+place.address)+'&format=json&limit=1';
-    (function(p, idx){
-      var xhr=new XMLHttpRequest();
-      xhr.open('GET',geoUrl,true);
-      xhr.setRequestHeader('Accept-Language','en');
-      xhr.onload=function(){
-        try{
-          var res=JSON.parse(xhr.responseText);
-          if(!res||!res[0]) return;
-          var lat=parseFloat(res[0].lat), lon=parseFloat(res[0].lon);
-          bounds.push([lat,lon]);
-          // Heart pin icon
-          var icon=L.divIcon({
+  // Stagger requests to respect Nominatim's 1 req/sec rate limit
+  function geocodeVisited(places, idx){
+    if(idx >= places.length) return;
+    var p = places[idx];
+    // Use address+city for best results, fallback to name+city
+    var query = p.address ? p.address+(p.city?', '+p.city:'') : p.name+(p.city?', '+p.city:'');
+    var geoUrl = 'https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(query)+'&format=json&limit=1';
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', geoUrl, true);
+    xhr.setRequestHeader('Accept-Language','en');
+    xhr.setRequestHeader('User-Agent','CTP/1.0');
+    xhr.onload = function(){
+      try{
+        var res = JSON.parse(xhr.responseText);
+        if(res && res[0]){
+          var lat = parseFloat(res[0].lat), lon = parseFloat(res[0].lon);
+          bounds.push([lat, lon]);
+          var icon = L.divIcon({
             className:'',
             html:'<div style="background:linear-gradient(135deg,#e05c8a,#c03060);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);">&#10084;</div>',
-            iconSize:[32,32],iconAnchor:[16,16]
+            iconSize:[32,32], iconAnchor:[16,16]
           });
-          var q=encodeURIComponent(p.name+' '+p.address);
-          var a=encodeURIComponent(p.address);
-          var pop='<div class="map-stop-popup">'+
+          var q = encodeURIComponent(p.name+' '+p.address);
+          var a = encodeURIComponent(p.address||p.name);
+          var pop = '<div class="map-stop-popup">'+
             '<div class="pop-name">'+p.name+'</div>'+
-            '<div class="pop-addr">'+p.city+'</div>'+
-            '<div style="font-size:11px;color:#7d9080;margin-bottom:8px;">Visited '+p.visitedAt+'</div>'+
+            '<div class="pop-addr">'+(p.city||'')+'</div>'+
+            '<div style="font-size:11px;color:#7d9080;margin-bottom:8px;">Visited '+(p.visitedAt||'')+'</div>'+
             '<div class="pop-links">'+
               '<a href="https://maps.apple.com/?q='+a+'" target="_blank">&#127822; Apple</a>'+
               '<a href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank">&#128506; Google</a>'+
             '</div></div>';
-          L.marker([lat,lon],{icon:icon}).addTo(visitedMapInstance).bindPopup(pop);
-          if(bounds.length>=1){
-            visitedMapInstance.fitBounds(bounds.length===1?L.latLng(bounds[0]).toBounds(500):bounds,{padding:[40,40]});
-            setTimeout(function(){if(visitedMapInstance)visitedMapInstance.invalidateSize();},300);
+          if(visitedMapInstance){
+            L.marker([lat,lon],{icon:icon}).addTo(visitedMapInstance).bindPopup(pop);
+            if(bounds.length === 1){
+              visitedMapInstance.setView([lat,lon], 13);
+            } else {
+              visitedMapInstance.fitBounds(bounds, {padding:[40,40]});
+            }
+            visitedMapInstance.invalidateSize();
           }
-          setTimeout(function(){visitedMapInstance.invalidateSize();},200);
-        }catch(x){}
-      };
-      xhr.send();
-    })(place, i);
-  });
+        }
+      }catch(x){}
+      // Next place after 1.1 seconds (Nominatim rate limit)
+      setTimeout(function(){ geocodeVisited(places, idx+1); }, 1100);
+    };
+    xhr.onerror = function(){
+      setTimeout(function(){ geocodeVisited(places, idx+1); }, 1100);
+    };
+    xhr.send();
+  }
+  geocodeVisited(visited, 0);
   // Final invalidateSize after all geocoding starts
   setTimeout(function(){ if(visitedMapInstance) visitedMapInstance.invalidateSize(); }, 800);
   }, 100); // end setTimeout for DOM paint
