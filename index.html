@@ -428,10 +428,10 @@ var favActiveChip = null;
 var rpStops = [];
 var rpRouteCity = '';
 
-// ── PASSWORD ──────────────────────────────────────────────
+// -- PASSWORD ----------------------------------------------
 // Password handled in separate script block above
 
-// ── PAGES ─────────────────────────────────────────────────
+// -- PAGES -------------------------------------------------
 function switchPage(n){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.page-tab').forEach(function(t){t.classList.remove('active');});
@@ -442,21 +442,21 @@ function switchPage(n){
   if(n==='routes') renderSavedRoutes();
 }
 
-// ── TRANSPORT ─────────────────────────────────────────────
+// -- TRANSPORT ---------------------------------------------
 function toggleTransport(btn){
   var m=btn.getAttribute('data-mode'), i=modes.indexOf(m);
   if(i>=0){ if(modes.length===1) return; modes.splice(i,1); btn.classList.remove('active'); }
   else { modes.push(m); btn.classList.add('active'); }
 }
 
-// ── SLIDER ────────────────────────────────────────────────
+// -- SLIDER ------------------------------------------------
 function updateSlider(){
   var el=document.getElementById('time-slider'), v=parseInt(el.value), p=((v-5)/55)*100;
   el.style.background='linear-gradient(to right,#7aaa8a 0%,#7aaa8a '+p+'%,#e2ede5 '+p+'%)';
   document.getElementById('slider-label').textContent=v+' min';
 }
 
-// ── STARS ─────────────────────────────────────────────────
+// -- STARS -------------------------------------------------
 function stars(r){
   if(!r) return '<span style="color:#a8bfaa;font-size:12px">No rating</span>';
   var h='';
@@ -464,7 +464,7 @@ function stars(r){
   return h+'<span class="rating-num">('+r+')</span>';
 }
 
-// ── MAP LINKS ─────────────────────────────────────────────
+// -- MAP LINKS ---------------------------------------------
 function mapLinks(name, addr, cls){
   cls=cls||'map-link';
   var q=encodeURIComponent(name+' '+addr), a=encodeURIComponent(addr);
@@ -473,7 +473,7 @@ function mapLinks(name, addr, cls){
          '<a class="'+cls+'" href="https://waze.com/ul?q='+a+'&navigate=yes" target="_blank">&#128309; Waze</a>';
 }
 
-// ── DISCOVER CARD ─────────────────────────────────────────
+// -- DISCOVER CARD -----------------------------------------
 function photoUrl(p){
   var q=encodeURIComponent((p.name||'')+' '+(p.city||lastCity||''));
   return 'https://source.unsplash.com/featured/600x300/?'+encodeURIComponent((p.name||'travel place').split(' ').slice(0,3).join(' '));
@@ -515,7 +515,7 @@ function toggleCard(i){
   a.innerHTML=o?'&#9652;':'&#9662;';
 }
 
-// ── PLACES (FAVORITES) ────────────────────────────────────
+// -- PLACES (FAVORITES) ------------------------------------
 function loadFavs(){ try{return JSON.parse(localStorage.getItem('ctp_favs')||'[]');}catch(x){return[];} }
 function saveFavs(a){ try{localStorage.setItem('ctp_favs',JSON.stringify(a));}catch(x){} }
 function isFav(p){ var f=loadFavs(); for(var i=0;i<f.length;i++) if(f[i].name===p.name&&f[i].address===p.address) return true; return false; }
@@ -572,7 +572,7 @@ function renderFavs(){
 function filterFavs(){ var v=document.getElementById('fav-search-input').value; document.getElementById('fav-clear-btn').classList.toggle('show',v.length>0); renderFavs(); }
 function clearFavSearch(){ document.getElementById('fav-search-input').value=''; document.getElementById('fav-clear-btn').classList.remove('show'); renderFavs(); }
 
-// ── ROUTE PLANNER ─────────────────────────────────────────
+// -- ROUTE PLANNER -----------------------------------------
 var rpCategoryCount = {};
 var rpCategories = [
   {id:'breakfast', name:'Breakfast', icon:'&#9749;'},
@@ -836,7 +836,7 @@ function refreshStopsList(){
   initDragDrop();
 }
 
-// ── MOVE STOPS ────────────────────────────────────────────
+// -- MOVE STOPS --------------------------------------------
 function moveStop(i, dir){
   var j=i+dir;
   if(j<0||j>=rpStops.length) return;
@@ -845,7 +845,7 @@ function moveStop(i, dir){
   toast(dir===-1?'Moved up &#9650;':'Moved down &#9660;');
 }
 
-// ── SAVE ROUTE ────────────────────────────────────────────
+// -- SAVE ROUTE --------------------------------------------
 function loadRoutes(){ try{return JSON.parse(localStorage.getItem('ctp_routes')||'[]');}catch(x){return[];} }
 function saveRoutes(a){ try{localStorage.setItem('ctp_routes',JSON.stringify(a));}catch(x){} }
 
@@ -862,7 +862,7 @@ function saveRoute(){
   document.getElementById('route-name-input').value='';
 }
 
-// ── SAVED ROUTES ──────────────────────────────────────────
+// -- SAVED ROUTES ------------------------------------------
 function renderSavedRoutes(){
   var cont=document.getElementById('routes-content');
   var routes=loadRoutes();
@@ -934,7 +934,7 @@ function renderSavedRoutes(){
   });
 }
 
-// ── DISCOVER SEARCH ───────────────────────────────────────
+// -- DISCOVER SEARCH ---------------------------------------
 function doSearch(){
   var city=document.getElementById('input-city').value.trim();
   var interest=document.getElementById('input-interest').value.trim();
@@ -977,7 +977,7 @@ function doSearch(){
   xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1500,messages:[{role:'user',content:prompt}]}));
 }
 
-// ── DARK MODE ─────────────────────────────────────────────
+// -- DARK MODE ---------------------------------------------
 function initTheme(){
   var saved=localStorage.getItem('ctp_theme');
   var sys=window.matchMedia('(prefers-color-scheme:dark)').matches;
@@ -995,7 +995,7 @@ function toggleDark(){
   if(btn) btn.innerHTML=next==='dark'?'&#9728;':'&#9790;';
 }
 
-// ── WEATHER ───────────────────────────────────────────────
+// -- WEATHER -----------------------------------------------
 var weatherCache={};
 function weatherIcon(code){
   if(code<=3) return '&#9728;';
@@ -1084,12 +1084,12 @@ function showWeatherBtn(city, containerId){
   el.appendChild(wrap);
 }
 
-// ── TRIP NOTES ────────────────────────────────────────────
+// -- TRIP NOTES --------------------------------------------
 function loadNotes(){ try{return JSON.parse(localStorage.getItem('ctp_notes')||'{}');}catch(x){return{};} }
 function saveNote(key,val){ var n=loadNotes(); n[key]=val; try{localStorage.setItem('ctp_notes',JSON.stringify(n));}catch(x){} }
 function getNoteKey(p){ return (p.name+'|'+p.address).replace(/\s/g,'_'); }
 
-// ── EDIT PLACE ─────────────────────────────────────────────
+// -- EDIT PLACE ---------------------------------------------
 var editingPlaceKey=null;
 function openEditModal(name,address){
   var favs=loadFavs();
@@ -1125,7 +1125,7 @@ function saveEditModal(){
   toast('Place updated &#10024;');
 }
 
-// ── SHARE ROUTE ───────────────────────────────────────────
+// -- SHARE ROUTE -------------------------------------------
 function shareRoute(){
   if(!rpStops||rpStops.length===0){toast('No route to share!');return;}
   var data={city:rpRouteCity,stops:rpStops};
@@ -1154,13 +1154,13 @@ function loadSharedRoute(){
   }catch(x){}
 }
 
-// ── PLAN AGAIN ────────────────────────────────────────────
+// -- PLAN AGAIN --------------------------------------------
 function planAgain(){
   document.getElementById('route-result').classList.remove('show');
   document.getElementById('rp-main').scrollIntoView({behavior:'smooth'});
 }
 
-// ── RECALCULATE TIMES ─────────────────────────────────────
+// -- RECALCULATE TIMES -------------------------------------
 function recalcTimes(){
   if(!rpStops||rpStops.length===0) return;
   var leaveEl=document.getElementById('rp-leave');
@@ -1194,7 +1194,7 @@ function minsToTime(m){
   return (h<10?'0':'')+h+':'+(mn<10?'0':'')+mn;
 }
 
-// ── SORT/FILTER ROUTES ────────────────────────────────────
+// -- SORT/FILTER ROUTES ------------------------------------
 var routeSortBy='date';
 var routeFilterCity=null;
 function setRouteSort(by){
@@ -1204,7 +1204,7 @@ function setRouteSort(by){
   renderSavedRoutes();
 }
 
-// ── OPENING HOURS WARNING ─────────────────────────────────
+// -- OPENING HOURS WARNING ---------------------------------
 var CLOSED_DAYS={museum:[1],gallery:[1],church:[1]};// Monday=1 typically
 function getHoursWarning(stop){
   var day=new Date().getDay();
@@ -1216,10 +1216,10 @@ function getHoursWarning(stop){
   return null;
 }
 
-// ── TOAST ─────────────────────────────────────────────────
+// -- TOAST -------------------------------------------------
 function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
 
-// ── INIT ──────────────────────────────────────────────────
+// -- INIT --------------------------------------------------
 // Password button wired via inline onclick and separate script block
 initTheme();
 updateSlider();
