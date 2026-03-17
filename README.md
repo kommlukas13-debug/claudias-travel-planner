@@ -1,2 +1,2 @@
 # claudias-travel-planner
-claudias-travel-planner
+only for me
