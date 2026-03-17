@@ -222,7 +222,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .weather-city{font-size:11px;opacity:.7;margin-top:2px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
 .weather-details{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
 .weather-detail{font-size:12px;font-weight:700;opacity:.85;}
-.weather-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:10px;padding:8px 14px;color:#fff;font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;}
+.weather-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:10px;padding:12px 16px;min-height:44px;color:#fff;font-family:"Nunito",sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:background .2s;}
 .weather-btn:hover{background:rgba(255,255,255,.3);}
 .weather-placeholder{background:var(--card);border:2px dashed var(--border);border-radius:18px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .weather-placeholder-text{font-size:13px;color:var(--muted);font-weight:600;}
@@ -581,7 +581,7 @@ function renderRoutePlanner(){
   favs.forEach(function(f){var c=f.city||'Unknown';if(cities.indexOf(c)<0)cities.push(c);}); cities.sort();
 
   if(favs.length===0){
-    cont.innerHTML='<div class="rp-no-favs"><div class="big">&#128507;</div><p>You need saved places first!<br/><button onclick="switchPage(&#39;discover&#39;)" style="background:none;border:none;color:var(--sage-dark);font-weight:800;cursor:pointer;font-size:14px;">Go to Discover</button> and save some places,<br/>then come back here to plan your day.</p></div>';
+    cont.innerHTML='<div class="rp-no-favs"><div class="big">&#128507;</div><p>You need saved places first!<br/><button onclick="switchPage('discover')" style="background:none;border:none;color:var(--sage-dark);font-weight:800;cursor:pointer;font-size:14px;">Go to Discover</button> and save some places,<br/>then come back here to plan your day.</p></div>';
     return;
   }
 
@@ -1038,28 +1038,38 @@ function fetchWeather(city, containerId){
 }
 function renderWeather(data,city,containerId){
   var el=document.getElementById(containerId); if(!el) return;
-  el.innerHTML='<div class="weather-widget">'+
-    '<div class="weather-left">'+
-      '<div class="weather-icon">'+weatherIcon(data.code)+'</div>'+
-      '<div>'+
-        '<div class="weather-temp">'+data.temp+'&#176;C</div>'+
-        '<div class="weather-desc">'+weatherDesc(data.code)+'</div>'+
-        '<div class="weather-city">'+city+' &mdash; Live</div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="weather-details">'+
-      '<div class="weather-detail">&#128167; '+data.humidity+'%</div>'+
-      '<div class="weather-detail">&#127788; '+data.wind+' km/h</div>'+
-      '<button class="weather-btn" onclick="weatherCache={};fetchWeather(''+city+'',''+containerId+'')">&#8635; Refresh</button>'+
-    '</div>'+
-  '</div>';
+  var wrap=document.createElement('div'); wrap.className='weather-widget';
+  var left=document.createElement('div'); left.className='weather-left';
+  left.innerHTML='<div class="weather-icon">'+weatherIcon(data.code)+'</div>'+
+    '<div><div class="weather-temp">'+data.temp+'&#176;C</div>'+
+    '<div class="weather-desc">'+weatherDesc(data.code)+'</div>'+
+    '<div class="weather-city">'+city+' &mdash; Live</div></div>';
+  var right=document.createElement('div'); right.className='weather-details';
+  right.innerHTML='<div class="weather-detail">&#128167; '+data.humidity+'%</div>'+
+    '<div class="weather-detail">&#127788; '+data.wind+' km/h</div>';
+  var refreshBtn=document.createElement('button'); refreshBtn.className='weather-btn';
+  refreshBtn.innerHTML='&#8635; Refresh';
+  refreshBtn.onclick=function(){ delete weatherCache[city]; fetchWeather(city,containerId); };
+  right.appendChild(refreshBtn);
+  wrap.appendChild(left); wrap.appendChild(right);
+  el.innerHTML=''; el.appendChild(wrap);
 }
 function showWeatherBtn(city, containerId){
   var el=document.getElementById(containerId); if(!el||!city) return;
-  el.innerHTML='<div class="weather-placeholder">'+
-    '<div class="weather-placeholder-text">&#127783; Check today's weather in '+city+'</div>'+
-    '<button class="weather-btn" style="background:var(--sage);color:#fff;border:none;" onclick="fetchWeather(''+city+'',''+containerId+'')">&#9728; Check Weather</button>'+
-  '</div>';
+  var btn=document.createElement('button');
+  btn.className='weather-btn';
+  btn.style.cssText='background:var(--sage);color:#fff;border:none;min-height:44px;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:Nunito,sans-serif;';
+  btn.innerHTML='&#9728; Check Weather';
+  btn.onclick=function(){ fetchWeather(city, containerId); };
+  var wrap=document.createElement('div');
+  wrap.className='weather-placeholder';
+  var txt=document.createElement('div');
+  txt.className='weather-placeholder-text';
+  txt.innerHTML='&#127783; Check today&#39;s weather in '+city;
+  wrap.appendChild(txt);
+  wrap.appendChild(btn);
+  el.innerHTML='';
+  el.appendChild(wrap);
 }
 
 // ── TRIP NOTES ────────────────────────────────────────────
