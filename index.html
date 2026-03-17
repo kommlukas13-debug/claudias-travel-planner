@@ -761,7 +761,7 @@ function toggleFav(i){
   for(var j=0;j<f.length;j++) if(f[j].name===p.name&&f[j].address===p.address){found=j;break;}
   var btn=document.querySelector('#card-'+i+' .fav-btn');
   if(found>=0){ f.splice(found,1); saveFavs(f); if(btn){btn.innerHTML='&#129293;';btn.classList.remove('saved');} toast('Removed from places'); }
-  else { p.city=lastCity; f.push(p); saveFavs(f); if(btn){btn.innerHTML='&#10084;&#65039;';btn.classList.add('saved');} toast('Saved to places &#10084;&#65039;'); }
+  else { p.city=normaliseCity(lastCity); f.push(p); saveFavs(f); if(btn){btn.innerHTML='&#10084;&#65039;';btn.classList.add('saved');} toast('Saved to places &#10084;&#65039;'); }
 }
 function renderFavs(){
   var f=loadFavs();
@@ -1165,7 +1165,7 @@ function saveRoute(){
   var leaveTime=document.getElementById('rp-leave').value;
   var backTime=document.getElementById('rp-back').value;
   var routes=loadRoutes();
-  routes.push({ id:Date.now(), name:name, city:city, stops:rpStops, leaveTime:leaveTime, backTime:backTime, savedAt:new Date().toLocaleDateString() });
+  routes.push({ id:Date.now(), name:name, city:normaliseCity(city), stops:rpStops, leaveTime:leaveTime, backTime:backTime, savedAt:new Date().toLocaleDateString() });
   saveRoutes(routes);
   toast('Route saved! &#128204;');
   document.getElementById('route-name-input').value='';
@@ -1267,7 +1267,7 @@ function doSearch(){
   document.getElementById('loading').classList.add('show');
   document.getElementById('results').classList.remove('show');
   document.getElementById('loading-text').textContent='Discovering the best spots in '+city+'...';
-  lastCity=city;
+  lastCity=normaliseCity(city);
   var hotelLine=hotel?'They are staying at: '+hotel+'. This is the starting point.':'No specific base location. Start from the most central point.';
   var prompt='You are a travel assistant and expert route planner. Find places in '+city+'. Looking for: '+interest+'. '+hotelLine+' Transport modes: '+modeList+'. Max travel time between stops: '+maxTime+' minutes. Return a JSON array of exactly 6 places ordered as a logical efficient travel route minimising backtracking. Each object must have: name (string), address (full street address), rating (number 1.0-5.0), travelTime (string: travel time FROM THE PREVIOUS STOP e.g. 8 min walk), fromPrevious (string: short direction hint), priceLevel (number 1-4 or null), openNow (boolean), description (2-3 sentences). Respond ONLY with a valid JSON array. No markdown, no explanation.';
   var xhr=new XMLHttpRequest();
@@ -1569,6 +1569,7 @@ function getHoursWarning(stop){
 // -- NEARBY SEARCH ----------------------------------------
 var nearbyRating = 0;
 var nearbyResults = [];
+var lastNearbyCity = 'Nearby';
 
 function setNearbyRating(btn){
   document.querySelectorAll('#nearby-rating-filter .rating-filter-btn').forEach(function(b){b.classList.remove('active');});
@@ -1594,6 +1595,19 @@ function doNearbySearch(){
     var lon = pos.coords.longitude.toFixed(4);
     btn.textContent = 'Searching...';
     document.getElementById('nearby-tag').textContent = interest + ' near you';
+    // Reverse geocode to get real city name
+    var rgXhr = new XMLHttpRequest();
+    rgXhr.open('GET','https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json',true);
+    rgXhr.setRequestHeader('Accept-Language','en');
+    rgXhr.onload = function(){
+      try{
+        var rg = JSON.parse(rgXhr.responseText);
+        var addr = rg.address||{};
+        lastNearbyCity = normaliseCity(addr.city||addr.town||addr.village||addr.county||'Nearby');
+        lastCity = lastNearbyCity;
+      }catch(x){ lastNearbyCity = 'Nearby'; }
+    };
+    rgXhr.send();
 
     var minRating = nearbyRating > 0 ? 'Only include places with a rating of '+nearbyRating+' or higher. ' : '';
     var prompt = 'You are a local travel expert. Find places near coordinates '+lat+','+lon+' (latitude, longitude). '+
@@ -1618,7 +1632,7 @@ function doNearbySearch(){
         nearbyResults = JSON.parse(text.replace(/```json/g,'').replace(/```/g,'').trim());
         // Apply rating filter
         if(nearbyRating > 0) nearbyResults = nearbyResults.filter(function(p){ return (p.rating||0) >= nearbyRating; });
-        lastCity = 'Nearby';
+        lastCity = 'Nearby'; // will be updated by reverse geocode below
         var html = '';
         for(var j=0;j<nearbyResults.length;j++){ if(j>0) html+=renderConn(nearbyResults[j]); html+=renderNearbyCard(nearbyResults[j],j); }
         document.getElementById('nearby-list').innerHTML = html;
@@ -1669,7 +1683,8 @@ function toggleNearbyCard(i){
 
 function toggleNearbyFav(i){
   var p = nearbyResults[i]; if(!p) return;
-  p.city = 'Nearby';
+  // Use real city from reverse geocode if available, else use lastNearbyCity
+  p.city = normaliseCity(lastNearbyCity || 'Nearby');
   var f=loadFavs(), found=-1;
   for(var j=0;j<f.length;j++) if(f[j].name===p.name&&f[j].address===p.address){found=j;break;}
   var btn=document.querySelector('#ncard-'+i+' .fav-btn');
@@ -2298,6 +2313,24 @@ function shareTrip(trip){
   if(navigator.clipboard){
     navigator.clipboard.writeText(url).then(function(){toast('&#128279; Trip link copied!');}).catch(function(){prompt('Copy this link:',url);});
   } else { prompt('Copy this trip link:',url); }
+}
+
+// -- CITY NORMALISATION ----------------------------------
+function normaliseCity(city){
+  if(!city) return city;
+  var c = city.trim();
+  // Standard capitalization - Title Case
+  c = c.replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+  // Common aliases map
+  var aliases = {
+    'Nyc': 'New York City', 'New York': 'New York City', 'Ny': 'New York City',
+    'La': 'Los Angeles', 'L.A.': 'Los Angeles', 'L.A': 'Los Angeles',
+    'Sf': 'San Francisco', 'S.F.': 'San Francisco',
+    'Dc': 'Washington D.C.', 'Washington': 'Washington D.C.', 'Washington Dc': 'Washington D.C.',
+    'Uk': 'United Kingdom', 'Usa': 'United States',
+    'Nyc, Ny': 'New York City', 'New York, Ny': 'New York City',
+  };
+  return aliases[c] || c;
 }
 
 // -- TOAST -------------------------------------------------
