@@ -1407,6 +1407,7 @@ function toggleDark(){
 
 // -- WEATHER -----------------------------------------------
 var weatherCache={};
+var weatherUnit='C'; // 'C' or 'F'
 function weatherIcon(code){
   if(code<=3) return '&#9728;';
   if(code<=48) return '&#127787;';
@@ -1429,24 +1430,26 @@ function weatherDesc(code){
 function fetchWeather(city, containerId){
   var el=document.getElementById(containerId);
   if(!el) return;
+  // Clear cache when unit changes so we always refetch with correct unit
   if(weatherCache[city]){renderWeather(weatherCache[city],city,containerId);return;}
   el.innerHTML='<div class="weather-placeholder"><span class="weather-placeholder-text">&#127783; Loading weather for '+city+'...</span></div>';
-  // First geocode the city using open-meteo geocoding
   var geoXhr=new XMLHttpRequest();
   geoXhr.open('GET','https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=1&language=en&format=json',true);
   geoXhr.onload=function(){
     try{
       var geo=JSON.parse(geoXhr.responseText);
-      if(!geo.results||!geo.results[0]){el.innerHTML='';return;}
+      if(!geo.results||!geo.results[0]){el.innerHTML='<div class="weather-placeholder"><span class="weather-placeholder-text">&#127783; Could not find weather for '+city+'</span></div>';return;}
       var r=geo.results[0];
       var lat=r.latitude, lon=r.longitude;
+      var unit=weatherUnit==='F'?'fahrenheit':'celsius';
+      var windUnit=weatherUnit==='F'?'mph':'kmh';
       var wxXhr=new XMLHttpRequest();
-      wxXhr.open('GET','https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&wind_speed_unit=kmh&temperature_unit=celsius',true);
+      wxXhr.open('GET','https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&wind_speed_unit='+windUnit+'&temperature_unit='+unit,true);
       wxXhr.onload=function(){
         try{
           var wx=JSON.parse(wxXhr.responseText);
           var c=wx.current;
-          var data={temp:Math.round(c.temperature_2m),humidity:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),code:c.weather_code};
+          var data={temp:Math.round(c.temperature_2m),humidity:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),code:c.weather_code,unit:weatherUnit,windUnit:windUnit==='mph'?'mph':'km/h'};
           weatherCache[city]=data;
           renderWeather(data,city,containerId);
         }catch(x){el.innerHTML='';}
@@ -1458,20 +1461,36 @@ function fetchWeather(city, containerId){
   geoXhr.onerror=function(){el.innerHTML='';};
   geoXhr.send();
 }
+function toggleWeatherUnit(city, containerId){
+  weatherUnit = weatherUnit==='C'?'F':'C';
+  try{ localStorage.setItem('ctp_weather_unit', weatherUnit); }catch(x){}
+  // Clear cache so we refetch with new unit
+  delete weatherCache[city];
+  fetchWeather(city, containerId);
+}
+
 function renderWeather(data,city,containerId){
   var el=document.getElementById(containerId); if(!el) return;
+  var unitLabel = (data.unit||weatherUnit)==='F' ? '&#176;F' : '&#176;C';
   var wrap=document.createElement('div'); wrap.className='weather-widget';
   var left=document.createElement('div'); left.className='weather-left';
   left.innerHTML='<div class="weather-icon">'+weatherIcon(data.code)+'</div>'+
-    '<div><div class="weather-temp">'+data.temp+'&#176;C</div>'+
+    '<div><div class="weather-temp">'+data.temp+unitLabel+'</div>'+
     '<div class="weather-desc">'+weatherDesc(data.code)+'</div>'+
     '<div class="weather-city">'+city+' &mdash; Live</div></div>';
   var right=document.createElement('div'); right.className='weather-details';
   right.innerHTML='<div class="weather-detail">&#128167; '+data.humidity+'%</div>'+
-    '<div class="weather-detail">&#127788; '+data.wind+' km/h</div>';
+    '<div class="weather-detail">&#127788; '+data.wind+' '+(data.windUnit||'km/h')+'</div>';
+  // Unit toggle button
+  var unitBtn=document.createElement('button'); unitBtn.className='weather-btn';
+  unitBtn.style.cssText='background:rgba(255,255,255,.15);margin-bottom:4px;';
+  unitBtn.innerHTML=(data.unit||weatherUnit)==='C'?'Switch to &#176;F':'Switch to &#176;C';
+  unitBtn.onclick=function(){ toggleWeatherUnit(city,containerId); };
+  // Refresh button
   var refreshBtn=document.createElement('button'); refreshBtn.className='weather-btn';
   refreshBtn.innerHTML='&#8635; Refresh';
   refreshBtn.onclick=function(){ delete weatherCache[city]; fetchWeather(city,containerId); };
+  right.appendChild(unitBtn);
   right.appendChild(refreshBtn);
   wrap.appendChild(left); wrap.appendChild(right);
   el.innerHTML=''; el.appendChild(wrap);
@@ -2531,55 +2550,83 @@ var weatherPresets = ['&#9728; Sunny','&#127783; Rainy','&#10052; Snowy','&#1277
 function renderWeatherTags(routeId, container){
   container.innerHTML = '';
   var tags = loadWeatherTags(routeId);
-  // Label
-  var lbl = document.createElement('span'); lbl.className='weather-tag-label'; lbl.innerHTML='&#127781; Weather:';
-  container.appendChild(lbl);
-  // Existing tags
+
+  // Top row: label + existing tags + add button
+  var topRow = document.createElement('div');
+  topRow.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;';
+
+  var lbl = document.createElement('span'); lbl.className='weather-tag-label';
+  lbl.innerHTML='&#127781; Weather:'; topRow.appendChild(lbl);
+
   tags.forEach(function(tag, i){
     var t = document.createElement('span'); t.className='weather-tag';
     t.innerHTML = tag;
     var rm = document.createElement('button'); rm.className='weather-tag-remove'; rm.innerHTML='&#10005;';
-    (function(rid, idx){ rm.onclick = function(){
-      var ts = loadWeatherTags(rid); ts.splice(idx,1); saveWeatherTags(rid,ts);
+    (function(rid, tidx){ rm.onclick = function(e){
+      e.stopPropagation();
+      var ts = loadWeatherTags(rid); ts.splice(tidx,1); saveWeatherTags(rid,ts);
       var wrap = document.getElementById('wt-'+rid); if(wrap) renderWeatherTags(rid,wrap);
     };})(routeId, i);
-    t.appendChild(rm); container.appendChild(t);
+    t.appendChild(rm); topRow.appendChild(t);
   });
-  // Add button that expands
-  var addId = 'wadd-'+routeId;
-  var addBtn = document.createElement('button'); addBtn.className='weather-tag-add-btn'; addBtn.innerHTML='+ Add';
-  var expandDiv = document.createElement('div'); expandDiv.id=addId; expandDiv.style.cssText='display:none;width:100%;margin-top:8px;';
-  // Presets
-  var presetsRow = document.createElement('div'); presetsRow.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;';
+
+  // Add button
+  var addBtn = document.createElement('button'); addBtn.className='weather-tag-add-btn';
+  addBtn.innerHTML='+ Weather'; addBtn.style.cssText='padding:6px 12px;font-size:12px;min-height:36px;';
+  topRow.appendChild(addBtn);
+  container.appendChild(topRow);
+
+  // Expand panel — inside container, hidden by default
+  var expandDiv = document.createElement('div');
+  expandDiv.style.cssText = 'display:none;width:100%;margin-top:10px;padding:12px;background:var(--sage-pale);border-radius:12px;border:1.5px solid var(--border);';
+
+  // Preset buttons
+  var presetsLabel = document.createElement('div');
+  presetsLabel.style.cssText = 'font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;';
+  presetsLabel.textContent = 'Quick pick:';
+  expandDiv.appendChild(presetsLabel);
+
+  var presetsRow = document.createElement('div');
+  presetsRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;';
   weatherPresets.forEach(function(preset){
     var pb = document.createElement('button'); pb.className='weather-preset'; pb.innerHTML=preset;
-    (function(rid, p){ pb.onclick = function(){
+    (function(rid, p){ pb.onclick = function(e){
+      e.stopPropagation();
       var ts = loadWeatherTags(rid); if(ts.indexOf(p)<0) ts.push(p); saveWeatherTags(rid,ts);
-      expandDiv.style.display='none'; addBtn.innerHTML='+ Add';
       var wrap = document.getElementById('wt-'+rid); if(wrap) renderWeatherTags(rid,wrap);
     };})(routeId, preset);
     presetsRow.appendChild(pb);
   });
+  expandDiv.appendChild(presetsRow);
+
   // Custom input
+  var customLabel = document.createElement('div');
+  customLabel.style.cssText = 'font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;';
+  customLabel.textContent = 'Custom:';
+  expandDiv.appendChild(customLabel);
+
   var inputRow = document.createElement('div'); inputRow.className='weather-tag-input-row';
-  var inp = document.createElement('input'); inp.className='weather-tag-input'; inp.placeholder='Custom tag...'; inp.type='text';
+  var inp = document.createElement('input'); inp.className='weather-tag-input';
+  inp.placeholder='e.g. Perfect afternoon...'; inp.type='text'; inp.style.fontSize='16px';
   var addCustomBtn = document.createElement('button'); addCustomBtn.className='weather-tag-add-btn'; addCustomBtn.innerHTML='Add';
-  (function(rid, input){ addCustomBtn.onclick = function(){
+  (function(rid, input){ addCustomBtn.onclick = function(e){
+    e.stopPropagation();
     var v = input.value.trim(); if(!v) return;
     var ts = loadWeatherTags(rid); if(ts.indexOf(v)<0) ts.push(v); saveWeatherTags(rid,ts);
-    input.value=''; expandDiv.style.display='none'; addBtn.innerHTML='+ Add';
+    input.value='';
     var wrap = document.getElementById('wt-'+rid); if(wrap) renderWeatherTags(rid,wrap);
   };})(routeId, inp);
   inputRow.appendChild(inp); inputRow.appendChild(addCustomBtn);
-  expandDiv.appendChild(presetsRow); expandDiv.appendChild(inputRow);
-  addBtn.onclick = function(){
+  expandDiv.appendChild(inputRow);
+  container.appendChild(expandDiv);
+
+  // Wire toggle
+  addBtn.onclick = function(e){
+    e.stopPropagation();
     var open = expandDiv.style.display==='none';
     expandDiv.style.display = open?'block':'none';
-    addBtn.innerHTML = open?'&#10005; Cancel':'+ Add';
+    addBtn.innerHTML = open?'&#10005; Cancel':'+ Weather';
   };
-  container.appendChild(addBtn);
-  container.style.flexWrap = 'wrap';
-  container.after ? container.parentElement.insertBefore(expandDiv, container.nextSibling) : container.parentElement.appendChild(expandDiv);
 }
 
 // Show weather tags in saved route header meta
@@ -2611,6 +2658,8 @@ function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=msg; t.
 
 // -- INIT --------------------------------------------------
 // Password button wired via inline onclick and separate script block
+// Load saved weather unit preference
+try{ var savedUnit=localStorage.getItem('ctp_weather_unit'); if(savedUnit==='F'||savedUnit==='C') weatherUnit=savedUnit; }catch(x){}
 initTheme();
 updateSlider();
 loadSharedRoute();
