@@ -463,8 +463,17 @@ function mapLinks(name, addr, cls){
 
 // -- DISCOVER CARD -----------------------------------------
 function photoUrl(p){
-  var q=encodeURIComponent((p.name||'')+' '+(p.city||lastCity||''));
-  return 'https://source.unsplash.com/featured/600x300/?'+encodeURIComponent((p.name||'travel place').split(' ').slice(0,3).join(' '));
+  // Use loremflickr - free, no API key, returns relevant photos by keyword
+  var keyword = encodeURIComponent(
+    ((p.category||'') + ' ' + (p.name||'') + ' ' + (p.city||lastCity||'travel'))
+    .trim().split(' ').slice(0,3).join(',')
+  );
+  // Add a stable seed based on place name so same place always gets same photo
+  var seed = 0;
+  var nameStr = p.name || 'place';
+  for(var i=0; i<nameStr.length; i++) seed = ((seed<<5)-seed)+nameStr.charCodeAt(i);
+  seed = Math.abs(seed % 1000);
+  return 'https://loremflickr.com/600/300/' + keyword + '?lock=' + seed;
 }
 function renderCard(p,i){
   var icons={walking:'&#128694;',car:'&#128663;',transit:'&#128647;',cycling:'&#128690;'};
@@ -473,7 +482,8 @@ function renderCard(p,i){
   var ob=p.openNow===true?'<span class="badge badge-open">&#10003; Open</span>':p.openNow===false?'<span class="badge badge-closed">&#10007; Closed</span>':'';
   var pb=p.priceLevel?'<span class="badge badge-price">'+'$'.repeat(p.priceLevel)+'</span>':'';
   var tb=p.travelTime?'<span class="badge badge-travel">'+ms+' '+p.travelTime+'</span>':'';
-  var photo='<div class="card-photo-wrap"><img class="card-photo" src="'+photoUrl(p)+'" alt="" loading="lazy" onerror="this.parentElement.style.display=&quot;none&quot;"/><div class="card-photo-label">'+(i+1)+'. '+p.name+'</div></div>';
+  var photoSrc=photoUrl(p);
+  var photo='<div class="card-photo-wrap"><img class="card-photo" src="'+photoSrc+'" alt="'+p.name+'" loading="lazy" onerror="this.src=&quot;https://picsum.photos/seed/'+encodeURIComponent(p.name||'place')+'/600/300&quot;"/><div class="card-photo-label">'+(i+1)+'. '+p.name+'</div></div>';
   return '<div class="place-card" id="card-'+i+'">'+
     photo+
     '<div class="card-top" onclick="toggleCard('+i+')">'+
@@ -540,10 +550,10 @@ function renderFavs(){
       var card=document.createElement('div'); card.className='fav-card';
       var left=document.createElement('div'); left.className='fav-card-left';
       var nm=document.createElement('div'); nm.className='fav-card-name'; nm.textContent=p.name; left.appendChild(nm);
-      var ad=document.createElement('div'); ad.className='fav-card-addr'; ad.textContent='&#128205; '+p.address; left.appendChild(ad);
+      var ad=document.createElement('div'); ad.className='fav-card-addr'; ad.innerHTML='&#128205; '+p.address; left.appendChild(ad);
       if(p.rating){var sr=document.createElement('div');sr.innerHTML='<span style="color:var(--gold);font-size:12px">'+'&#9733;'.repeat(Math.round(p.rating))+'</span> <span style="color:var(--muted);font-size:11px">('+p.rating+')</span>';left.appendChild(sr);}
       var notes=loadNotes(); var nk=(p.name+'|'+p.address).replace(/\s/g,'_');
-      if(notes[nk]){var nd=document.createElement('div');nd.style.cssText='font-size:12px;color:var(--muted);font-style:italic;margin-top:4px;font-weight:600;';nd.textContent='&#128203; '+notes[nk];left.appendChild(nd);}
+      if(notes[nk]){var nd=document.createElement('div');nd.style.cssText='font-size:12px;color:var(--muted);font-style:italic;margin-top:4px;font-weight:600;';nd.innerHTML='&#128203; '+notes[nk];left.appendChild(nd);}
       var ml=document.createElement('div'); ml.className='fav-map-links'; ml.innerHTML=mapLinks(p.name,p.address,'fav-map-link'); left.appendChild(ml);
       card.appendChild(left);
       var actions=document.createElement('div'); actions.style.cssText='display:flex;flex-direction:column;gap:5px;flex-shrink:0;margin-left:8px;';
@@ -719,7 +729,7 @@ function generateRoute(){
   xhr.setRequestHeader('Authorization','Bearer '+APIKEY);
   xhr.onload=function(){
     document.getElementById('rp-loading').classList.remove('show');
-    btn.disabled=false; btn.textContent='&#128345; Plan My Day!';
+    btn.disabled=false; btn.innerHTML='&#128345; Plan My Day!';
     try{
       var data=JSON.parse(xhr.responseText);
       if(data.error){err.textContent='API Error: '+data.error.message;err.classList.add('show');return;}
@@ -733,7 +743,7 @@ function generateRoute(){
       err.classList.add('show');
     }
   };
-  xhr.onerror=function(){document.getElementById('rp-loading').classList.remove('show');btn.disabled=false;btn.textContent='&#128345; Plan My Day!';err.textContent='Network error. Please try again.';err.classList.add('show');};
+  xhr.onerror=function(){document.getElementById('rp-loading').classList.remove('show');btn.disabled=false;btn.innerHTML='&#128345; Plan My Day!';err.textContent='Network error. Please try again.';err.classList.add('show');};
   xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:2000,messages:[{role:'user',content:prompt}]}));
 }
 
@@ -868,7 +878,7 @@ function renderSavedRoutes(){
   var tb=document.createElement('div'); tb.className='routes-toolbar';
   ['date','city','stops'].forEach(function(s){
     var b=document.createElement('button'); b.className='sort-btn'+(routeSortBy===s?' active':'');
-    b.id='sort-'+s; b.textContent=s==='date'?'&#128336; Newest':s==='city'?'&#127757; City':'&#128346; Most Stops';
+    b.id='sort-'+s; b.innerHTML=s==='date'?'&#128336; Newest':s==='city'?'&#127757; City':'&#128346; Most Stops';
     b.onclick=function(){setRouteSort(s);}; tb.appendChild(b);
   });
   cont.appendChild(tb);
