@@ -315,6 +315,32 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .pwa-install-btn{background:var(--peach);color:var(--ink);border:none;border-radius:10px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;min-height:44px;}
 .pwa-dismiss-btn{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:18px;padding:4px;min-width:32px;}
 
+
+/* TRIPS */
+.trip-card{background:var(--card);border:2px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 4px 16px var(--shadow);margin-bottom:16px;}
+.trip-header{background:linear-gradient(135deg,var(--sage-dark),#3a6050);padding:18px 20px;cursor:pointer;position:relative;}
+.trip-header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.trip-name{font-family:'Pacifico',cursive;font-size:20px;color:#fff;margin-bottom:4px;}
+.trip-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.trip-tag{background:rgba(255,255,255,.2);color:#fff;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.trip-actions{display:flex;gap:6px;flex-shrink:0;}
+.trip-action-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 12px;cursor:pointer;color:#fff;font-size:12px;font-weight:800;font-family:'Nunito',sans-serif;min-height:36px;}
+.trip-action-btn:hover{background:rgba(255,255,255,.25);}
+.trip-action-btn.danger{background:rgba(192,56,56,.3);border-color:rgba(255,120,120,.4);}
+.trip-body{display:none;padding:16px 20px;}
+.trip-body.show{display:block;}
+.trip-notes-text{font-size:13px;color:var(--muted);font-weight:600;font-style:italic;margin-bottom:14px;padding:10px 14px;background:var(--sage-pale);border-radius:10px;line-height:1.5;}
+.trip-routes-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--sage-dark);margin-bottom:10px;}
+.trip-route-item{background:var(--sage-pale);border:2px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;transition:all .2s;}
+.trip-route-item:hover{border-color:var(--sage);background:#e0f0e5;}
+.trip-route-left{flex:1;}
+.trip-route-name{font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.trip-route-meta{font-size:12px;color:var(--muted);font-weight:600;}
+.trip-route-remove{background:var(--peach-pale);border:1.5px solid var(--peach-light);border-radius:8px;padding:5px 8px;cursor:pointer;color:#c07070;font-size:12px;font-weight:800;flex-shrink:0;min-height:36px;}
+.trip-add-route-btn{width:100%;padding:12px;background:none;border:2px dashed var(--sage-light);border-radius:14px;color:var(--sage-dark);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:4px;min-height:44px;}
+.trip-add-route-btn:hover{background:var(--sage-pale);}
+.trip-arrow{color:rgba(255,255,255,.7);font-size:18px;margin-left:8px;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -374,6 +400,7 @@ try{
   <button class="page-tab" id="tab-planner" onclick="switchPage('planner')">&#128345; Planner</button>
   <button class="page-tab" id="tab-places" onclick="switchPage('places')">&#10084;&#65039; Places</button>
   <button class="page-tab" id="tab-routes" onclick="switchPage('routes')">&#128204; Routes</button>
+  <button class="page-tab" id="tab-trips" onclick="switchPage('trips')">&#9992; Trips</button>
 </div>
 
 <div class="main">
@@ -507,6 +534,15 @@ try{
     <div id="fav-content"></div>
   </div>
 
+  <!-- ══ TRIPS ══ -->
+  <div class="page" id="page-trips">
+    <div class="doodle-row"><span class="doodle">&#9992;</span><span class="doodle">&#127758;</span><span class="doodle">&#128151;</span></div>
+    <div class="section-title">My Trips</div>
+    <div class="section-sub">Your multi-day adventures, all in one place &#128205;</div>
+    <button class="action-btn" style="margin-bottom:20px;" onclick="openNewTripModal()">&#43; New Trip</button>
+    <div id="trips-content"></div>
+  </div>
+
   <!-- ══ SAVED ROUTES ══ -->
   <div class="page" id="page-routes">
     <div class="doodle-row"><span class="doodle">&#128204;</span><span class="doodle">&#9889;</span><span class="doodle">&#127758;</span></div>
@@ -517,6 +553,56 @@ try{
 
 </div>
 <div id="toast"></div>
+
+<!-- NEW TRIP MODAL -->
+<div class="modal-overlay" id="new-trip-modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-title">&#9992; New Trip</div>
+    <div class="field"><label class="field-label">Trip Name</label><input class="field-input" id="trip-name-input" type="text" placeholder="e.g. Paris Weekend, Tokyo Adventure..."/></div>
+    <div class="field"><label class="field-label">Destination City</label><input class="field-input" id="trip-city-input" type="text" placeholder="e.g. Paris, Tokyo..."/></div>
+    <div class="field" style="display:flex;gap:10px;">
+      <div style="flex:1"><label class="field-label">From</label><input class="field-input" id="trip-date-from" type="date"/></div>
+      <div style="flex:1"><label class="field-label">To</label><input class="field-input" id="trip-date-to" type="date"/></div>
+    </div>
+    <div class="field"><label class="field-label">Notes</label><textarea class="field-input" id="trip-notes-input" rows="2" style="font-size:16px;" placeholder="e.g. Anniversary trip, staying at Hotel..."></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeNewTripModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="saveNewTrip()">Create Trip</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TO TRIP MODAL -->
+<div class="modal-overlay" id="add-to-trip-modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-title">&#9992; Add to Trip</div>
+    <div class="field"><label class="field-label">Choose a trip</label><select class="field-input" id="trip-select"><option value="">Select existing trip...</option></select></div>
+    <div style="text-align:center;margin:8px 0;font-size:12px;color:var(--muted);font-weight:700;">— or —</div>
+    <button class="modal-btn modal-btn-save" style="margin-bottom:12px;" onclick="closeAddToTripModal();openNewTripFromRoute()">&#43; Create New Trip</button>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeAddToTripModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="confirmAddToTrip()">Add to Trip</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TRIP MODAL -->
+<div class="modal-overlay" id="edit-trip-modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-title">&#9998; Edit Trip</div>
+    <div class="field"><label class="field-label">Trip Name</label><input class="field-input" id="edit-trip-name" type="text"/></div>
+    <div class="field"><label class="field-label">Destination City</label><input class="field-input" id="edit-trip-city" type="text"/></div>
+    <div class="field" style="display:flex;gap:10px;">
+      <div style="flex:1"><label class="field-label">From</label><input class="field-input" id="edit-trip-from" type="date"/></div>
+      <div style="flex:1"><label class="field-label">To</label><input class="field-input" id="edit-trip-to" type="date"/></div>
+    </div>
+    <div class="field"><label class="field-label">Notes</label><textarea class="field-input" id="edit-trip-notes" rows="2" style="font-size:16px;"></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeEditTripModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="saveEditTrip()">Save Changes</button>
+    </div>
+  </div>
+</div>
 
 <!-- EDIT PLACE MODAL -->
 <div class="modal-overlay" id="edit-modal" style="display:none">
@@ -556,6 +642,7 @@ function switchPage(n){
   if(n==='routes') renderSavedRoutes();
   if(n==='nearby'){ document.getElementById('nearby-results').classList.remove('show'); }
   if(n==='surprise'){ document.getElementById('surprise-results').classList.remove('show'); }
+  if(n==='trips') renderTrips();
 }
 
 // -- TRANSPORT ---------------------------------------------
@@ -944,7 +1031,8 @@ function renderRouteResult(route, city, hotel, leaveTime, backTime){
   html+='<input class="route-name-input" id="route-name-input" type="text" placeholder="Name this route... (e.g. Sunday in NYC)"/>';
   html+='<div class="route-save-bar-buttons">';
   html+='<button class="save-route-btn" onclick="saveRoute()">&#128204; Save Route</button>';
-  html+='<button class="share-btn" onclick="shareRoute()">&#128279; Share Route</button>';
+  html+='<button class="save-route-btn" style="background:linear-gradient(135deg,#e8a838,#c88020);" onclick="addCurrentRouteToTrip()">&#9992; Add to Trip</button>';
+  html+='<button class="share-btn" onclick="shareRoute()">&#128279; Share</button>';
   html+='</div>';
   html+='</div>';
 
@@ -1054,6 +1142,22 @@ function loadRouteForEditing(route){
 function loadRoutes(){ try{return JSON.parse(localStorage.getItem('ctp_routes')||'[]');}catch(x){return[];} }
 function saveRoutes(a){ try{localStorage.setItem('ctp_routes',JSON.stringify(a));}catch(x){} }
 
+function addCurrentRouteToTrip(){
+  if(!rpStops||rpStops.length===0){ toast('No route to add! Generate a route first.'); return; }
+  // Build a route object same as saveRoute but don't save to routes
+  var name = document.getElementById('route-name-input');
+  var routeObj = {
+    id: Date.now(),
+    name: name&&name.value.trim() ? name.value.trim() : 'Route in '+rpRouteCity,
+    city: rpRouteCity,
+    stops: rpStops,
+    leaveTime: document.getElementById('rp-leave')?document.getElementById('rp-leave').value:'',
+    backTime: document.getElementById('rp-back')?document.getElementById('rp-back').value:'',
+    savedAt: new Date().toLocaleDateString()
+  };
+  openAddToTripModal(routeObj);
+}
+
 function saveRoute(){
   var city=rpRouteCity||'';
   var name=document.getElementById('route-name-input').value.trim();
@@ -1118,12 +1222,14 @@ function renderSavedRoutes(){
       var right=document.createElement('div'); right.className='saved-route-right';
       var editBtn=document.createElement('button'); editBtn.className='route-edit-btn'; editBtn.innerHTML='&#9998; Edit';
       (function(route){ editBtn.onclick=function(e){ e.stopPropagation(); loadRouteForEditing(route); }; })(r);
+      var tripBtn=document.createElement('button'); tripBtn.className='route-edit-btn'; tripBtn.style.cssText='background:linear-gradient(135deg,#e8a838,#c88020);color:#fff;border-color:#c88020;';  tripBtn.innerHTML='&#9992; Trip';
+      (function(route){ tripBtn.onclick=function(e){ e.stopPropagation(); openAddToTripModal(route); }; })(r);
       var shareBtn=document.createElement('button'); shareBtn.className='route-edit-btn'; shareBtn.innerHTML='&#128279; Share';
       (function(route){ shareBtn.onclick=function(e){ e.stopPropagation(); shareSavedRoute(route); }; })(r);
       var del=document.createElement('button'); del.className='route-delete-btn'; del.innerHTML='&#10005; Delete';
       (function(rid){ del.onclick=function(e){ e.stopPropagation(); var rs=loadRoutes().filter(function(x){return x.id!==rid;}); saveRoutes(rs); renderSavedRoutes(); toast('Route deleted'); }; })(r.id);
       var arr=document.createElement('span'); arr.id='ra-'+r.id; arr.innerHTML='&#9662;'; arr.style.cssText='font-size:16px;color:var(--sage-light);';
-      right.appendChild(editBtn); right.appendChild(shareBtn); right.appendChild(del); right.appendChild(arr);
+      right.appendChild(editBtn); right.appendChild(tripBtn); right.appendChild(shareBtn); right.appendChild(del); right.appendChild(arr);
       hdr.appendChild(left); hdr.appendChild(right); card.appendChild(hdr);
       // Body
       var body=document.createElement('div'); body.className='saved-route-body'; body.id='rb-'+r.id;
@@ -1864,6 +1970,303 @@ function dismissPWA(){
     }, 3000);
   }
 })();
+
+
+// -- TRIPS -----------------------------------------------
+function loadTrips(){ try{return JSON.parse(localStorage.getItem('ctp_trips')||'[]');}catch(x){return[];} }
+function saveTrips(a){ try{localStorage.setItem('ctp_trips',JSON.stringify(a));}catch(x){} }
+
+var pendingRouteForTrip = null;
+var editingTripId = null;
+var tripSortBy = 'name';
+var tripFilterCity = null;
+
+// NEW TRIP MODAL
+function openNewTripModal(){
+  document.getElementById('trip-name-input').value='';
+  document.getElementById('trip-city-input').value='';
+  document.getElementById('trip-date-from').value='';
+  document.getElementById('trip-date-to').value='';
+  document.getElementById('trip-notes-input').value='';
+  document.getElementById('new-trip-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeNewTripModal(){
+  document.getElementById('new-trip-modal').style.display='none';
+  document.body.style.overflow='';
+}
+function saveNewTrip(){
+  var name=document.getElementById('trip-name-input').value.trim();
+  if(!name){ toast('Please enter a trip name!'); return; }
+  var trip={
+    id: Date.now(),
+    name: name,
+    city: document.getElementById('trip-city-input').value.trim(),
+    dateFrom: document.getElementById('trip-date-from').value,
+    dateTo: document.getElementById('trip-date-to').value,
+    notes: document.getElementById('trip-notes-input').value.trim(),
+    routes: [],
+    createdAt: new Date().toLocaleDateString()
+  };
+  if(pendingRouteForTrip){
+    trip.routes.push(pendingRouteForTrip);
+    pendingRouteForTrip = null;
+  }
+  var trips = loadTrips();
+  trips.push(trip);
+  saveTrips(trips);
+  closeNewTripModal();
+  toast('&#9992; Trip created!');
+  switchPage('trips');
+}
+
+// ADD TO TRIP MODAL
+function openAddToTripModal(route){
+  pendingRouteForTrip = route;
+  var trips = loadTrips();
+  var sel = document.getElementById('trip-select');
+  sel.innerHTML = '<option value="">Select existing trip...</option>';
+  trips.forEach(function(t){
+    var opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.name + (t.city?' - '+t.city:'');
+    sel.appendChild(opt);
+  });
+  document.getElementById('add-to-trip-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeAddToTripModal(){
+  document.getElementById('add-to-trip-modal').style.display='none';
+  document.body.style.overflow='';
+}
+function confirmAddToTrip(){
+  var tripId = parseInt(document.getElementById('trip-select').value);
+  if(!tripId){ toast('Please select a trip!'); return; }
+  var trips = loadTrips();
+  for(var i=0;i<trips.length;i++){
+    if(trips[i].id===tripId){
+      trips[i].routes = trips[i].routes||[];
+      // Check not already added
+      var exists = trips[i].routes.some(function(r){return r.id===pendingRouteForTrip.id;});
+      if(exists){ toast('Route already in this trip!'); closeAddToTripModal(); return; }
+      trips[i].routes.push(pendingRouteForTrip);
+      break;
+    }
+  }
+  saveTrips(trips);
+  pendingRouteForTrip = null;
+  closeAddToTripModal();
+  toast('&#9992; Added to trip!');
+}
+function openNewTripFromRoute(){
+  // pendingRouteForTrip already set - open new trip modal
+  document.getElementById('trip-name-input').value='';
+  document.getElementById('trip-city-input').value=(pendingRouteForTrip&&pendingRouteForTrip.city)||'';
+  document.getElementById('trip-date-from').value='';
+  document.getElementById('trip-date-to').value='';
+  document.getElementById('trip-notes-input').value='';
+  document.getElementById('new-trip-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+
+// EDIT TRIP MODAL
+function openEditTripModal(tripId){
+  var trips = loadTrips();
+  var trip = null;
+  for(var i=0;i<trips.length;i++) if(trips[i].id===tripId){trip=trips[i];break;}
+  if(!trip) return;
+  editingTripId = tripId;
+  document.getElementById('edit-trip-name').value = trip.name||'';
+  document.getElementById('edit-trip-city').value = trip.city||'';
+  document.getElementById('edit-trip-from').value = trip.dateFrom||'';
+  document.getElementById('edit-trip-to').value = trip.dateTo||'';
+  document.getElementById('edit-trip-notes').value = trip.notes||'';
+  document.getElementById('edit-trip-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeEditTripModal(){
+  document.getElementById('edit-trip-modal').style.display='none';
+  document.body.style.overflow='';
+  editingTripId = null;
+}
+function saveEditTrip(){
+  if(!editingTripId) return;
+  var trips = loadTrips();
+  for(var i=0;i<trips.length;i++){
+    if(trips[i].id===editingTripId){
+      trips[i].name = document.getElementById('edit-trip-name').value.trim()||trips[i].name;
+      trips[i].city = document.getElementById('edit-trip-city').value.trim();
+      trips[i].dateFrom = document.getElementById('edit-trip-from').value;
+      trips[i].dateTo = document.getElementById('edit-trip-to').value;
+      trips[i].notes = document.getElementById('edit-trip-notes').value.trim();
+      break;
+    }
+  }
+  saveTrips(trips);
+  closeEditTripModal();
+  renderTrips();
+  toast('Trip updated &#10024;');
+}
+
+// RENDER TRIPS
+function setTripSort(by){
+  tripSortBy = by;
+  document.querySelectorAll('.trip-sort-btn').forEach(function(b){b.classList.remove('active');});
+  var btn = document.getElementById('tsort-'+by);
+  if(btn) btn.classList.add('active');
+  renderTrips();
+}
+
+function renderTrips(){
+  var cont = document.getElementById('trips-content');
+  var trips = loadTrips();
+  if(trips.length===0){
+    cont.innerHTML='<div class="empty-state"><div class="big">&#9992;</div><p>No trips yet!<br/>Create a trip and add your planned routes to it.</p></div>';
+    return;
+  }
+  // Sort
+  var sorted = trips.slice();
+  if(tripSortBy==='name') sorted.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+  else if(tripSortBy==='date') sorted.sort(function(a,b){
+    var da=a.dateFrom||'9999', db=b.dateFrom||'9999';
+    return da.localeCompare(db);
+  });
+  else if(tripSortBy==='city') sorted.sort(function(a,b){return (a.city||'').localeCompare(b.city||'');});
+  // Build city chips
+  var cities = [];
+  sorted.forEach(function(t){ var c=t.city||''; if(c&&cities.indexOf(c)<0) cities.push(c); });
+  cities.sort();
+  // Apply city filter
+  if(tripFilterCity) sorted = sorted.filter(function(t){return (t.city||'')===tripFilterCity;});
+  cont.innerHTML='';
+  // Toolbar
+  var tb = document.createElement('div'); tb.className='routes-toolbar';
+  [['name','&#128270; Name'],['date','&#128336; Date'],['city','&#127757; City']].forEach(function(pair){
+    var b=document.createElement('button'); b.className='sort-btn trip-sort-btn'+(tripSortBy===pair[0]?' active':'');
+    b.id='tsort-'+pair[0]; b.innerHTML=pair[1]; b.onclick=function(){setTripSort(pair[0]);};
+    tb.appendChild(b);
+  });
+  cont.appendChild(tb);
+  // City filter chips
+  if(cities.length>1){
+    var cf=document.createElement('div'); cf.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;';
+    cities.forEach(function(c){
+      var b=document.createElement('button'); b.className='fav-chip'+(tripFilterCity===c?' active':'');
+      b.textContent=c; b.onclick=function(){tripFilterCity=(tripFilterCity===c)?null:c;renderTrips();};
+      cf.appendChild(b);
+    });
+    cont.appendChild(cf);
+  }
+  if(sorted.length===0){
+    var empty=document.createElement('div'); empty.className='empty-state';
+    empty.innerHTML='<div class="big">&#128269;</div><p>No trips match the filter.</p>';
+    cont.appendChild(empty); return;
+  }
+  // cards appended below via forEach
+  trips.forEach(function(trip){
+    var card = document.createElement('div'); card.className='trip-card';
+    // Header
+    var hdr = document.createElement('div'); hdr.className='trip-header';
+    var hdrTop = document.createElement('div'); hdrTop.className='trip-header-top';
+    // Left info
+    var info = document.createElement('div'); info.style.flex='1';
+    var nameEl = document.createElement('div'); nameEl.className='trip-name'; nameEl.textContent=trip.name;
+    var metaEl = document.createElement('div'); metaEl.className='trip-meta';
+    if(trip.city){ var ct=document.createElement('span');ct.className='trip-tag';ct.innerHTML='&#127757; '+trip.city;metaEl.appendChild(ct); }
+    if(trip.dateFrom){ var dt=document.createElement('span');dt.className='trip-tag';dt.innerHTML='&#128336; '+(trip.dateFrom+(trip.dateTo?' - '+trip.dateTo:''));metaEl.appendChild(dt); }
+    var rc=document.createElement('span');rc.className='trip-tag';rc.innerHTML='&#128204; '+(trip.routes||[]).length+' route'+(((trip.routes||[]).length)!==1?'s':'');metaEl.appendChild(rc);
+    info.appendChild(nameEl); info.appendChild(metaEl);
+    // Actions
+    var acts = document.createElement('div'); acts.className='trip-actions';
+    var editBtn=document.createElement('button');editBtn.className='trip-action-btn';editBtn.innerHTML='&#9998;';
+    (function(tid){editBtn.onclick=function(e){e.stopPropagation();openEditTripModal(tid);};})(trip.id);
+    var delBtn=document.createElement('button');delBtn.className='trip-action-btn danger';delBtn.innerHTML='&#10005;';
+    (function(tid){delBtn.onclick=function(e){e.stopPropagation();if(confirm('Delete this trip?')){saveTrips(loadTrips().filter(function(t){return t.id!==tid;}));renderTrips();toast('Trip deleted');}};})(trip.id);
+    var arr=document.createElement('span');arr.className='trip-arrow';arr.id='tarr-'+trip.id;arr.innerHTML='&#9662;';
+    acts.appendChild(editBtn); acts.appendChild(delBtn);
+    hdrTop.appendChild(info); hdrTop.appendChild(acts);
+    hdr.appendChild(hdrTop); hdr.appendChild(arr);
+    // Body
+    var body = document.createElement('div'); body.className='trip-body'; body.id='tbody-'+trip.id;
+    // Toggle
+    (function(tid,b,a){
+      hdr.onclick=function(e){
+        if(e.target===editBtn||e.target===delBtn) return;
+        var open=!b.classList.contains('show');
+        b.classList.toggle('show',open);
+        a.innerHTML=open?'&#9652;':'&#9662;';
+      };
+    })(trip.id, body, arr);
+    // Notes
+    if(trip.notes){
+      var notesEl=document.createElement('div');notesEl.className='trip-notes-text';notesEl.textContent=trip.notes;body.appendChild(notesEl);
+    }
+    // Routes
+    var rtTitle=document.createElement('div');rtTitle.className='trip-routes-title';rtTitle.textContent=(trip.routes||[]).length+' Routes';body.appendChild(rtTitle);
+    (trip.routes||[]).forEach(function(r,ri){
+      var item=document.createElement('div');item.className='trip-route-item';
+      var left=document.createElement('div');left.className='trip-route-left';
+      var rname=document.createElement('div');rname.className='trip-route-name';rname.textContent=r.name||'Unnamed Route';
+      var rmeta=document.createElement('div');rmeta.className='trip-route-meta';
+      rmeta.textContent=(r.stops||[]).length+' stops'+(r.leaveTime?' | '+r.leaveTime+' - '+r.backTime:'');
+      left.appendChild(rname);left.appendChild(rmeta);
+      var removeBtn=document.createElement('button');removeBtn.className='trip-route-remove';removeBtn.innerHTML='&#10005;';
+      (function(tid,ridx){removeBtn.onclick=function(e){
+        e.stopPropagation();
+        var ts=loadTrips();
+        for(var i=0;i<ts.length;i++) if(ts[i].id===tid){ts[i].routes.splice(ridx,1);break;}
+        saveTrips(ts);renderTrips();toast('Route removed from trip');
+      };})(trip.id,ri);
+      // Click route to open it in planner
+      (function(route){item.onclick=function(){loadRouteForEditing(route);toast('Route loaded in Planner');};})(r);
+      item.appendChild(left);item.appendChild(removeBtn);body.appendChild(item);
+    });
+    // Add route button
+    var addRouteBtn=document.createElement('button');addRouteBtn.className='trip-add-route-btn';
+    addRouteBtn.innerHTML='&#43; Add a route from Saved Routes';
+    (function(tid){addRouteBtn.onclick=function(){openAddRouteToTrip(tid);};})(trip.id);
+    body.appendChild(addRouteBtn);
+    card.appendChild(hdr);card.appendChild(body);cont.appendChild(card);
+  });
+}
+
+// Pick a saved route to add to a trip
+function openAddRouteToTrip(tripId){
+  var routes = loadRoutes();
+  if(routes.length===0){ toast('No saved routes yet. Plan and save a route first!'); return; }
+  // Show a simple picker - reuse add-to-trip modal
+  var sel = document.getElementById('trip-select');
+  sel.innerHTML = '<option value="">Select a saved route...</option>';
+  routes.forEach(function(r){
+    var opt=document.createElement('option'); opt.value=r.id; opt.textContent=r.name+(r.city?' - '+r.city:'');
+    sel.appendChild(opt);
+  });
+  // Temporarily repurpose modal for route picking
+  document.querySelector('#add-to-trip-modal .modal-title').innerHTML='&#128204; Add Route to Trip';
+  // Override confirm button
+  document.querySelector('#add-to-trip-modal .modal-btn-save:last-child').onclick = function(){
+    var routeId = parseInt(sel.value);
+    if(!routeId){ toast('Please select a route!'); return; }
+    var routes2=loadRoutes(); var route=null;
+    for(var i=0;i<routes2.length;i++) if(routes2[i].id===routeId){route=routes2[i];break;}
+    if(!route) return;
+    var trips=loadTrips();
+    for(var i=0;i<trips.length;i++) if(trips[i].id===tripId){
+      trips[i].routes=trips[i].routes||[];
+      var exists=trips[i].routes.some(function(r){return r.id===route.id;});
+      if(exists){toast('Route already in this trip!');closeAddToTripModal();return;}
+      trips[i].routes.push(route);break;
+    }
+    saveTrips(trips);
+    closeAddToTripModal();
+    // Reset modal title
+    document.querySelector('#add-to-trip-modal .modal-title').innerHTML='&#9992; Add to Trip';
+    document.querySelector('#add-to-trip-modal .modal-btn-save:last-child').onclick = confirmAddToTrip;
+    renderTrips(); toast('Route added to trip! &#9992;');
+  };
+  document.getElementById('add-to-trip-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
 
 // -- TOAST -------------------------------------------------
 function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
