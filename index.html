@@ -408,6 +408,18 @@ try{
 </div>
 
 <script>
+// Global error handler - shows any JS crash visibly on screen
+window.onerror = function(msg, src, line, col, err) {
+  var div = document.getElementById('js-error-banner');
+  if (!div) {
+    div = document.createElement('div');
+    div.id = 'js-error-banner';
+    div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c0392b;color:white;padding:12px 16px;font-size:13px;font-weight:700;z-index:9999;word-break:break-all;';
+    document.body.appendChild(div);
+  }
+  div.innerHTML = '&#9888; JS Error L' + line + ': ' + msg;
+  return false;
+};
 var APIKEY = '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';
 var modes = ['walking'];
 var lastCity = '';
