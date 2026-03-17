@@ -407,6 +407,31 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .trip-route-item{flex-wrap:nowrap;}
 .results-header{flex-wrap:wrap;gap:8px;}
 
+
+/* WE WERE HERE */
+.visited-toggle-row{display:flex;gap:8px;margin-bottom:18px;}
+.visited-toggle-btn{flex:1;padding:12px;border:2px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;background:var(--card);color:var(--muted);min-height:44px;transition:all .2s;}
+.visited-toggle-btn.active{background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;border-color:var(--sage-dark);}
+.visited-city-group{margin-bottom:24px;}
+.visited-city-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:2px dashed var(--border);}
+.visited-city-name{font-family:'Pacifico',cursive;font-size:19px;color:var(--sage-dark);}
+.visited-count{background:linear-gradient(135deg,var(--peach),var(--peach-mid));color:var(--ink);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800;}
+.visited-place-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:2px solid var(--border);border-radius:14px;margin-bottom:8px;box-shadow:0 2px 8px var(--shadow);}
+.visited-place-item.visited{border-color:var(--sage-light);background:linear-gradient(135deg,var(--sage-pale),#e8f5ec);}
+.visited-checkbox-wrap{flex-shrink:0;}
+.visited-checkbox{width:26px;height:26px;border-radius:8px;border:2.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;flex-shrink:0;}
+.visited-checkbox.checked{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
+.visited-place-info{flex:1;min-width:0;}
+.visited-place-name{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.visited-place-addr{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.visited-place-name.visited-name{color:var(--sage-dark);}
+.visited-stats{background:linear-gradient(135deg,var(--sage-dark),#3a6050);border-radius:18px;padding:16px 20px;margin-bottom:18px;color:#fff;display:flex;gap:16px;justify-content:space-around;text-align:center;}
+.visited-stat-num{font-family:'Pacifico',cursive;font-size:24px;margin-bottom:2px;}
+.visited-stat-label{font-size:11px;opacity:.8;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+/* Visited checkbox on fav cards */
+.fav-visited-btn{background:none;border:2px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.fav-visited-btn.visited{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -475,6 +500,7 @@ try{
       <button class="burger-item" id="tab-places" onclick="switchPage('places')"><span class="burger-icon">&#10084;&#65039;</span>My Places</button>
       <button class="burger-item" id="tab-routes" onclick="switchPage('routes')"><span class="burger-icon">&#128204;</span>Saved Routes</button>
       <button class="burger-item" id="tab-trips" onclick="switchPage('trips')"><span class="burger-icon">&#9992;</span>My Trips</button>
+      <button class="burger-item" id="tab-visited" onclick="switchPage('visited')"><span class="burger-icon">&#127758;</span>We Were Here</button>
     </nav>
   </div>
 </div>
@@ -620,6 +646,21 @@ try{
     <div id="trips-content"></div>
   </div>
 
+  <!-- ══ WE WERE HERE ══ -->
+  <div class="page" id="page-visited">
+    <div class="doodle-row"><span class="doodle">&#127758;</span><span class="doodle">&#128205;</span><span class="doodle">&#10024;</span></div>
+    <div class="section-title">We Were Here</div>
+    <div class="section-sub">Every place you&#39;ve visited, on one beautiful map &#128151;</div>
+    <div class="visited-toggle-row">
+      <button class="visited-toggle-btn active" id="vtog-list" onclick="setVisitedView('list')">&#9776; List</button>
+      <button class="visited-toggle-btn" id="vtog-map" onclick="setVisitedView('map')">&#127758; Map</button>
+    </div>
+    <div id="visited-list-view"></div>
+    <div id="visited-map-view" style="display:none">
+      <div id="visited-leaflet-map" style="width:100%;height:calc(100vh - 220px);min-height:400px;border-radius:18px;overflow:hidden;border:2px solid var(--border);box-shadow:0 4px 16px var(--shadow);"></div>
+    </div>
+  </div>
+
   <!-- ══ SAVED ROUTES ══ -->
   <div class="page" id="page-routes">
     <div class="doodle-row"><span class="doodle">&#128204;</span><span class="doodle">&#9889;</span><span class="doodle">&#127758;</span></div>
@@ -744,6 +785,7 @@ function switchPage(n){
   if(n==='planner') renderRoutePlanner();
   if(n==='routes') renderSavedRoutes();
   if(n==='trips') renderTrips();
+  if(n==='visited') renderVisited();
   window.scrollTo(0,0);
 }
 
@@ -929,11 +971,20 @@ function renderFavs(){
       var ml=document.createElement('div'); ml.className='fav-map-links'; ml.innerHTML=mapLinks(p.name,p.address,'fav-map-link'); left.appendChild(ml);
       card.appendChild(left);
       var actions=document.createElement('div'); actions.style.cssText='display:flex;flex-direction:column;gap:5px;flex-shrink:0;margin-left:8px;';
+      // Visited checkbox
+      var vis=isVisited(p);
+      var vcb=document.createElement('button'); vcb.className='fav-visited-btn'+(vis?' visited':''); vcb.title='Mark as visited'; vcb.innerHTML=vis?'&#10003;':'&#128205;';
+      (function(place, btn){vcb.onclick=function(){
+        var nowVis=toggleVisited(place);
+        btn.className='fav-visited-btn'+(nowVis?' visited':'');
+        btn.innerHTML=nowVis?'&#10003;':'&#128205;';
+        toast(nowVis?'Marked as visited! &#10084;':'Removed from visited');
+      };})(p, vcb);
       var eb=document.createElement('button'); eb.className='fav-remove'; eb.style.cssText='background:var(--sage-pale);border-color:var(--sage-light);color:var(--sage-dark);'; eb.innerHTML='&#9998;';
       (function(place){eb.onclick=function(){openEditModal(place.name,place.address);};})(p);
       var rb=document.createElement('button'); rb.className='fav-remove'; rb.innerHTML='&#10005;';
       (function(place){rb.onclick=function(){saveFavs(loadFavs().filter(function(x){return!(x.name===place.name&&x.address===place.address);}));renderFavs();toast('Removed from places');};})(p);
-      actions.appendChild(eb); actions.appendChild(rb);
+      actions.appendChild(vcb); actions.appendChild(eb); actions.appendChild(rb);
       card.appendChild(actions); g.appendChild(card);
     });
     cont.appendChild(g);
@@ -2691,7 +2742,8 @@ var pageLabels = {
   planner: {icon:'&#128345;', name:'Route Planner'},
   places: {icon:'&#10084;&#65039;', name:'My Places'},
   routes: {icon:'&#128204;', name:'Saved Routes'},
-  trips: {icon:'&#9992;', name:'My Trips'}
+  trips: {icon:'&#9992;', name:'My Trips'},
+  visited: {icon:'&#127758;', name:'We Were Here'}
 };
 var currentPage = 'discover';
 
@@ -2728,6 +2780,168 @@ function normaliseCity(city){
     'Nyc, Ny': 'New York City', 'New York, Ny': 'New York City',
   };
   return aliases[c] || c;
+}
+
+
+// -- WE WERE HERE -----------------------------------------
+function loadVisited(){ try{return JSON.parse(localStorage.getItem('ctp_visited')||'[]');}catch(x){return[];} }
+function saveVisited(a){ try{localStorage.setItem('ctp_visited',JSON.stringify(a));}catch(x){} }
+function isVisited(p){ var v=loadVisited(); return v.some(function(x){return x.name===p.name&&x.address===p.address;}); }
+
+function toggleVisited(p){
+  var v=loadVisited();
+  var idx=-1;
+  for(var i=0;i<v.length;i++) if(v[i].name===p.name&&v[i].address===p.address){idx=i;break;}
+  if(idx>=0){ v.splice(idx,1); saveVisited(v); return false; }
+  else { v.push({name:p.name,address:p.address,city:p.city||'',rating:p.rating||null,visitedAt:new Date().toLocaleDateString()}); saveVisited(v); return true; }
+}
+
+var visitedView = 'list';
+var visitedMapInstance = null;
+
+function setVisitedView(view){
+  visitedView = view;
+  document.getElementById('vtog-list').classList.toggle('active', view==='list');
+  document.getElementById('vtog-map').classList.toggle('active', view==='map');
+  document.getElementById('visited-list-view').style.display = view==='list'?'block':'none';
+  document.getElementById('visited-map-view').style.display = view==='map'?'block':'none';
+  if(view==='map') initVisitedMap();
+}
+
+function initVisitedMap(){
+  var visited = loadVisited();
+  if(visited.length===0){
+    document.getElementById('visited-map-view').innerHTML='<div class="empty-state"><div class="big">&#127758;</div><p>No visited places yet!<br/>Check places off in your list first.</p></div>';
+    return;
+  }
+  if(visitedMapInstance){ visitedMapInstance.remove(); visitedMapInstance=null; }
+  // Rebuild map container
+  document.getElementById('visited-map-view').innerHTML='<div id="visited-leaflet-map" style="width:100%;height:calc(100vh - 220px);min-height:400px;border-radius:18px;overflow:hidden;border:2px solid var(--border);box-shadow:0 4px 16px var(--shadow);"></div>';
+
+  visitedMapInstance = L.map('visited-leaflet-map');
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; OpenStreetMap',maxZoom:19
+  }).addTo(visitedMapInstance);
+
+  var bounds = [];
+  visited.forEach(function(place, i){
+    var geoUrl='https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(place.name+' '+place.address)+'&format=json&limit=1';
+    (function(p, idx){
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET',geoUrl,true);
+      xhr.setRequestHeader('Accept-Language','en');
+      xhr.onload=function(){
+        try{
+          var res=JSON.parse(xhr.responseText);
+          if(!res||!res[0]) return;
+          var lat=parseFloat(res[0].lat), lon=parseFloat(res[0].lon);
+          bounds.push([lat,lon]);
+          // Heart pin icon
+          var icon=L.divIcon({
+            className:'',
+            html:'<div style="background:linear-gradient(135deg,#e05c8a,#c03060);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);">&#10084;</div>',
+            iconSize:[32,32],iconAnchor:[16,16]
+          });
+          var q=encodeURIComponent(p.name+' '+p.address);
+          var a=encodeURIComponent(p.address);
+          var pop='<div class="map-stop-popup">'+
+            '<div class="pop-name">'+p.name+'</div>'+
+            '<div class="pop-addr">'+p.city+'</div>'+
+            '<div style="font-size:11px;color:#7d9080;margin-bottom:8px;">Visited '+p.visitedAt+'</div>'+
+            '<div class="pop-links">'+
+              '<a href="https://maps.apple.com/?q='+a+'" target="_blank">&#127822; Apple</a>'+
+              '<a href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank">&#128506; Google</a>'+
+            '</div></div>';
+          L.marker([lat,lon],{icon:icon}).addTo(visitedMapInstance).bindPopup(pop);
+          if(bounds.length>=Math.min(visited.length,2)) visitedMapInstance.fitBounds(bounds,{padding:[40,40]});
+          setTimeout(function(){visitedMapInstance.invalidateSize();},200);
+        }catch(x){}
+      };
+      xhr.send();
+    })(place, i);
+  });
+}
+
+function renderVisited(){
+  var cont=document.getElementById('visited-list-view');
+  var allFavs=loadFavs();
+  var visited=loadVisited();
+
+  // Stats bar
+  var cities=[];
+  visited.forEach(function(v){if(v.city&&cities.indexOf(v.city)<0)cities.push(v.city);});
+  cont.innerHTML='';
+
+  if(allFavs.length===0){
+    cont.innerHTML='<div class="empty-state"><div class="big">&#127758;</div><p>Save some places first, then check them off as visited!</p></div>';
+    return;
+  }
+
+  // Stats
+  var statsDiv=document.createElement('div'); statsDiv.className='visited-stats';
+  statsDiv.innerHTML='<div><div class="visited-stat-num">'+visited.length+'</div><div class="visited-stat-label">Visited</div></div>'+
+    '<div><div class="visited-stat-num">'+cities.length+'</div><div class="visited-stat-label">Cities</div></div>'+
+    '<div><div class="visited-stat-num">'+allFavs.length+'</div><div class="visited-stat-label">Saved</div></div>';
+  cont.appendChild(statsDiv);
+
+  // Group favs by city
+  var grouped={};
+  allFavs.forEach(function(p){
+    var c=p.city||'Unknown';
+    if(!grouped[c]) grouped[c]=[];
+    grouped[c].push(p);
+  });
+
+  Object.keys(grouped).sort().forEach(function(city){
+    var places=grouped[city];
+    var visitedInCity=places.filter(function(p){return isVisited(p);}).length;
+
+    var grp=document.createElement('div'); grp.className='visited-city-group';
+    var hdr=document.createElement('div'); hdr.className='visited-city-header';
+    hdr.innerHTML='<div class="visited-city-name">&#127757; '+city+'</div>'+
+      '<div class="visited-count">'+visitedInCity+'/'+places.length+' visited</div>';
+    grp.appendChild(hdr);
+
+    places.forEach(function(p){
+      var vis=isVisited(p);
+      var item=document.createElement('div'); item.className='visited-place-item'+(vis?' visited':'');
+
+      // Checkbox
+      var cb=document.createElement('div'); cb.className='visited-checkbox'+(vis?' checked':'');
+      cb.innerHTML=vis?'&#10003;':'';
+      (function(place, itemEl, cbEl){
+        cb.onclick=function(){
+          var nowVis=toggleVisited(place);
+          cbEl.className='visited-checkbox'+(nowVis?' checked':'');
+          cbEl.innerHTML=nowVis?'&#10003;':'';
+          itemEl.className='visited-place-item'+(nowVis?' visited':'');
+          var nm=itemEl.querySelector('.visited-place-name');
+          if(nm) nm.className='visited-place-name'+(nowVis?' visited-name':'');
+          // Update stats
+          renderVisited();
+        };
+      })(p, item, cb);
+
+      var info=document.createElement('div'); info.className='visited-place-info';
+      var nm=document.createElement('div'); nm.className='visited-place-name'+(vis?' visited-name':'');
+      nm.textContent=p.name;
+      var addr=document.createElement('div'); addr.className='visited-place-addr';
+      addr.textContent=p.address;
+      info.appendChild(nm); info.appendChild(addr);
+
+      // If visited, show date
+      if(vis){
+        var vdata=loadVisited().find(function(x){return x.name===p.name&&x.address===p.address;});
+        if(vdata&&vdata.visitedAt){
+          var dt=document.createElement('div'); dt.style.cssText='font-size:11px;color:var(--sage-dark);font-weight:700;margin-top:2px;';
+          dt.innerHTML='&#10003; Visited '+vdata.visitedAt; info.appendChild(dt);
+        }
+      }
+
+      item.appendChild(cb); item.appendChild(info); grp.appendChild(item);
+    });
+    cont.appendChild(grp);
+  });
 }
 
 // -- TOAST -------------------------------------------------
