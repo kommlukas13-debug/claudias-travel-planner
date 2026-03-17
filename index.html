@@ -375,6 +375,38 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .weather-preset:hover{border-color:var(--sage);background:#d4eedd;}
 .srt-weather{background:#e8f4ff;color:#2a6a9f;border:1.5px solid #b8d8f8;}
 
+
+/* BURGER MENU */
+#burger-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;backdrop-filter:blur(2px);}
+#burger-panel{position:fixed;top:0;right:0;bottom:0;width:280px;background:var(--card);z-index:101;box-shadow:-8px 0 32px rgba(0,0,0,.2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s ease;}
+#burger-menu.open #burger-panel{transform:translateX(0);}
+#burger-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 16px;border-bottom:2px solid var(--border);}
+#burger-close{background:var(--sage-pale);border:1.5px solid var(--border);border-radius:10px;width:36px;height:36px;cursor:pointer;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;}
+#burger-nav{display:flex;flex-direction:column;padding:12px 12px;gap:4px;overflow-y:auto;flex:1;}
+.burger-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border:none;background:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:var(--muted);cursor:pointer;text-align:left;width:100%;transition:all .15s;}
+.burger-item:hover{background:var(--sage-pale);color:var(--ink);}
+.burger-item.active{background:linear-gradient(135deg,var(--sage-pale),#d4edda);color:var(--sage-dark);font-weight:900;}
+.burger-icon{font-size:22px;width:30px;text-align:center;flex-shrink:0;}
+.current-page-pill{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--sage-dark),#3a6050);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:800;box-shadow:0 4px 20px rgba(60,100,70,.4);display:flex;align-items:center;gap:8px;cursor:pointer;z-index:10;white-space:nowrap;}
+.current-page-pill-icon{font-size:16px;}
+
+/* OVERFLOW FIXES */
+.saved-route-right{display:flex;gap:5px;align-items:center;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:160px;}
+.route-delete-btn{padding:5px 8px;font-size:11px;}
+.route-edit-btn{padding:5px 8px;font-size:11px;}
+.saved-route-header{flex-wrap:wrap;}
+.trip-actions{flex-wrap:wrap;justify-content:flex-end;max-width:120px;}
+.trip-action-btn{padding:5px 9px;font-size:12px;}
+.route-save-bar-buttons{flex-wrap:wrap;}
+.stop-actions{gap:4px;}
+.weather-widget{flex-wrap:wrap;}
+.modal-actions{flex-wrap:wrap;}
+.time-row{flex-wrap:wrap;}
+.surprise-options{flex-wrap:wrap;}
+.pwa-banner{flex-wrap:wrap;}
+.trip-route-item{flex-wrap:nowrap;}
+.results-header{flex-wrap:wrap;gap:8px;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -424,17 +456,27 @@ try{
   </div>
   <div class="nav-actions">
     <button class="nav-icon-btn" id="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">&#9790;</button>
+    <button class="nav-icon-btn" id="burger-btn" onclick="openBurger()" title="Menu" style="font-size:20px;">&#9776;</button>
   </div>
 </nav>
 
-<div class="page-tabs">
-  <button class="page-tab active" id="tab-discover" onclick="switchPage('discover')">&#127757; Discover</button>
-  <button class="page-tab" id="tab-nearby" onclick="switchPage('nearby')">&#128269; Nearby</button>
-  <button class="page-tab" id="tab-surprise" onclick="switchPage('surprise')">&#127881; Surprise</button>
-  <button class="page-tab" id="tab-planner" onclick="switchPage('planner')">&#128345; Planner</button>
-  <button class="page-tab" id="tab-places" onclick="switchPage('places')">&#10084;&#65039; Places</button>
-  <button class="page-tab" id="tab-routes" onclick="switchPage('routes')">&#128204; Routes</button>
-  <button class="page-tab" id="tab-trips" onclick="switchPage('trips')">&#9992; Trips</button>
+<div id="burger-menu" style="display:none">
+  <div id="burger-overlay" onclick="closeBurger()"></div>
+  <div id="burger-panel">
+    <div id="burger-header">
+      <span style="font-family:'Pacifico',cursive;font-size:18px;color:var(--sage-dark);">Menu</span>
+      <button id="burger-close" onclick="closeBurger()">&#10005;</button>
+    </div>
+    <nav id="burger-nav">
+      <button class="burger-item active" id="tab-discover" onclick="switchPage('discover')"><span class="burger-icon">&#127757;</span>Discover</button>
+      <button class="burger-item" id="tab-nearby" onclick="switchPage('nearby')"><span class="burger-icon">&#128269;</span>Nearby</button>
+      <button class="burger-item" id="tab-surprise" onclick="switchPage('surprise')"><span class="burger-icon">&#127881;</span>Surprise Me</button>
+      <button class="burger-item" id="tab-planner" onclick="switchPage('planner')"><span class="burger-icon">&#128345;</span>Route Planner</button>
+      <button class="burger-item" id="tab-places" onclick="switchPage('places')"><span class="burger-icon">&#10084;&#65039;</span>My Places</button>
+      <button class="burger-item" id="tab-routes" onclick="switchPage('routes')"><span class="burger-icon">&#128204;</span>Saved Routes</button>
+      <button class="burger-item" id="tab-trips" onclick="switchPage('trips')"><span class="burger-icon">&#9992;</span>My Trips</button>
+    </nav>
+  </div>
 </div>
 
 <div class="main">
@@ -587,6 +629,9 @@ try{
   </div>
 
 </div>
+<div id="page-pill" class="current-page-pill" onclick="openBurger()">
+  <span class="current-page-pill-icon">&#127757;</span>Discover <span style="opacity:.6;font-size:11px;">&#9776;</span>
+</div>
 <div id="toast"></div>
 
 <!-- NEW TRIP MODAL -->
@@ -689,15 +734,17 @@ var rpRouteCity = '';
 // -- PAGES -------------------------------------------------
 function switchPage(n){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.page-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.burger-item').forEach(function(t){t.classList.remove('active');});
   document.getElementById('page-'+n).classList.add('active');
-  document.getElementById('tab-'+n).classList.add('active');
+  var tab = document.getElementById('tab-'+n); if(tab) tab.classList.add('active');
+  currentPage = n;
+  updatePagePill(n);
+  closeBurger();
   if(n==='places') renderFavs();
   if(n==='planner') renderRoutePlanner();
   if(n==='routes') renderSavedRoutes();
-  if(n==='nearby'){ document.getElementById('nearby-results').classList.remove('show'); }
-  if(n==='surprise'){ document.getElementById('surprise-results').classList.remove('show'); }
   if(n==='trips') renderTrips();
+  window.scrollTo(0,0);
 }
 
 // -- TRANSPORT ---------------------------------------------
@@ -2633,6 +2680,36 @@ function renderWeatherTags(routeId, container){
 function getWeatherTagsHtml(routeId){
   var tags = loadWeatherTags(routeId);
   return tags.map(function(t){ return '<span class="saved-route-tag srt-weather">'+t+'</span>'; }).join('');
+}
+
+
+// -- BURGER MENU ------------------------------------------
+var pageLabels = {
+  discover: {icon:'&#127757;', name:'Discover'},
+  nearby: {icon:'&#128269;', name:'Nearby'},
+  surprise: {icon:'&#127881;', name:'Surprise'},
+  planner: {icon:'&#128345;', name:'Route Planner'},
+  places: {icon:'&#10084;&#65039;', name:'My Places'},
+  routes: {icon:'&#128204;', name:'Saved Routes'},
+  trips: {icon:'&#9992;', name:'My Trips'}
+};
+var currentPage = 'discover';
+
+function openBurger(){
+  document.getElementById('burger-menu').style.display='block';
+  setTimeout(function(){ document.getElementById('burger-menu').classList.add('open'); },10);
+  document.body.style.overflow='hidden';
+}
+function closeBurger(){
+  document.getElementById('burger-menu').classList.remove('open');
+  setTimeout(function(){ document.getElementById('burger-menu').style.display='none'; },300);
+  document.body.style.overflow='';
+}
+function updatePagePill(n){
+  var pill = document.getElementById('page-pill');
+  if(!pill) return;
+  var info = pageLabels[n]||{icon:'&#128205;',name:n};
+  pill.innerHTML = '<span class="current-page-pill-icon">'+info.icon+'</span>'+info.name+' <span style="opacity:.6;font-size:11px;">&#9776;</span>';
 }
 
 // -- CITY NORMALISATION ----------------------------------
