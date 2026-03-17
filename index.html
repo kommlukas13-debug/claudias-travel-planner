@@ -2063,11 +2063,13 @@ function showRouteMap(stops, containerId){
       // Init Leaflet map
       // setTimeout to ensure div is visible before Leaflet measures it
     setTimeout(function(){
-    mapInstance = L.map(mapId,{zoomControl:true});
+    mapInstance = L.map(mapId,{zoomControl:true,center:[20,0],zoom:2});
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
         attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
+        maxZoom: 19,
+        crossOrigin: true
       }).addTo(mapInstance);
+      setTimeout(function(){if(mapInstance)mapInstance.invalidateSize();},200);
 
       var bounds = [];
       var catColors = {
@@ -2832,10 +2834,12 @@ function initVisitedMap(){
 
   // Use setTimeout so DOM paints before Leaflet measures the div
   setTimeout(function(){
-  visitedMapInstance = L.map('visited-leaflet-map',{zoomControl:true});
+  visitedMapInstance = L.map('visited-leaflet-map',{zoomControl:true,center:[20,0],zoom:2});
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'&copy; OpenStreetMap',maxZoom:19
+    attribution:'&copy; OpenStreetMap',maxZoom:19,
+    crossOrigin:true
   }).addTo(visitedMapInstance);
+  setTimeout(function(){if(visitedMapInstance)visitedMapInstance.invalidateSize();},200);
 
   var bounds = [];
   visited.forEach(function(place, i){
@@ -2867,7 +2871,10 @@ function initVisitedMap(){
               '<a href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank">&#128506; Google</a>'+
             '</div></div>';
           L.marker([lat,lon],{icon:icon}).addTo(visitedMapInstance).bindPopup(pop);
-          if(bounds.length>=Math.min(visited.length,2)) visitedMapInstance.fitBounds(bounds,{padding:[40,40]});
+          if(bounds.length>=1){
+            visitedMapInstance.fitBounds(bounds.length===1?L.latLng(bounds[0]).toBounds(500):bounds,{padding:[40,40]});
+            setTimeout(function(){if(visitedMapInstance)visitedMapInstance.invalidateSize();},300);
+          }
           setTimeout(function(){visitedMapInstance.invalidateSize();},200);
         }catch(x){}
       };
