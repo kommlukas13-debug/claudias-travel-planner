@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>Claudia's Travel Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet"/>
+<style>
+:root{--peach:#ffb997;--peach-light:#ffd4bc;--peach-pale:#fff1ea;--peach-mid:#ffc9a8;--sage:#7aaa8a;--sage-light:#a8c9b0;--sage-pale:#eaf4ec;--sage-dark:#4e8060;--cream:#fffaf7;--white:#ffffff;--ink:#2d3a2e;--muted:#7d9080;--border:#e2ede5;--shadow:rgba(80,120,90,0.10);--gold:#e8a838;--card:#ffffff;}
+[data-theme="dark"]{--cream:#1a1f1b;--white:#222927;--ink:#e8f0e9;--muted:#8aab94;--border:#2e3d32;--shadow:rgba(0,0,0,0.3);--sage-pale:#1e2e23;--peach-pale:#2e2018;--card:#222927;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#1a1f1b;--white:#222927;--ink:#e8f0e9;--muted:#8aab94;--border:#2e3d32;--shadow:rgba(0,0,0,0.3);--sage-pale:#1e2e23;--peach-pale:#2e2018;--card:#222927;}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+*{-webkit-tap-highlight-color:transparent;}
+body{min-height:100vh;background:var(--cream);background-image:radial-gradient(circle at 10% 20%,rgba(168,201,176,.18) 0%,transparent 50%),radial-gradient(circle at 90% 80%,rgba(255,185,151,.18) 0%,transparent 50%);font-family:'Nunito',-apple-system,sans-serif;color:var(--ink);}
+#pw-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(160deg,#eaf4ec 0%,#fff1ea 50%,#eaf4ec 100%);display:flex;align-items:center;justify-content:center;}
+.pw-box{background:var(--card);border-radius:28px;padding:44px 36px 36px;width:100%;max-width:360px;margin:20px;box-shadow:0 16px 60px rgba(80,120,90,.15);border:2px solid var(--border);text-align:center;}
+.pw-emoji{font-size:52px;display:block;margin-bottom:14px;}
+.pw-title{font-family:'Pacifico',cursive;font-size:26px;color:var(--sage-dark);margin-bottom:6px;}
+.pw-sub{color:var(--muted);font-size:14px;font-weight:600;margin-bottom:28px;line-height:1.5;}
+.pw-input{width:100%;padding:14px 18px;border:2px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;background:var(--sage-pale);color:var(--ink);outline:none;text-align:center;letter-spacing:2px;margin-bottom:14px;}
+.pw-input:focus{border-color:var(--sage);background:#fff;}
+.pw-input::placeholder{letter-spacing:0;color:#a8bfaa;font-weight:400;}
+.pw-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;border:none;border-radius:14px;font-family:'Pacifico',cursive;font-size:18px;cursor:pointer;box-shadow:0 6px 20px rgba(78,128,96,.35);}
+.pw-error{color:#c0392b;font-size:13px;font-weight:700;margin-top:12px;min-height:20px;}
+.pw-hint{font-size:11px;color:#a8bfaa;margin-top:16px;font-weight:600;}
+.topnav{background:linear-gradient(135deg,var(--sage-dark),#3d7055);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 3px 16px rgba(60,100,70,.25);border-bottom:3px solid var(--peach-light);}
+.nav-actions{display:flex;gap:6px;align-items:center;}
+.nav-icon-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);border-radius:10px;width:44px;height:44px;cursor:pointer;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.nav-icon-btn:hover{background:rgba(255,255,255,.25);}
+.topnav-brand{font-family:'Pacifico',cursive;font-size:20px;color:#fff;display:flex;align-items:center;gap:8px;}
+@keyframes heartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.25)}30%{transform:scale(1)}45%{transform:scale(1.15)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.topnav-heart{color:var(--peach-light);animation:heartbeat 2s ease-in-out infinite;display:inline-block;}
+.page-tabs{display:flex;background:var(--card);border-bottom:2px solid var(--border);box-shadow:0 2px 8px rgba(80,120,90,.06);overflow-x:auto;}
+.page-tabs::-webkit-scrollbar{display:none;}
+.page-tabs{-webkit-overflow-scrolling:touch;}
+.page-tab{flex:1;min-width:80px;padding:12px 8px;background:none;border:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;}
+.page-tab.active{color:var(--sage-dark);border-bottom-color:var(--sage);}
+.main{max-width:680px;margin:0 auto;padding:28px 16px calc(80px + env(safe-area-inset-bottom));}
+.page{display:none;}.page.active{display:block;}
+.doodle-row{display:flex;gap:6px;margin-bottom:14px;}
+.doodle{font-size:20px;display:inline-block;}
+.doodle:nth-child(1){animation:floaty 3s ease-in-out 0s infinite;}
+.doodle:nth-child(2){animation:floaty 3s ease-in-out 0.4s infinite;}
+.doodle:nth-child(3){animation:floaty 3s ease-in-out 0.8s infinite;}
+.doodle:nth-child(4){animation:floaty 3s ease-in-out 1.2s infinite;}
+.section-title{font-family:'Pacifico',cursive;font-size:26px;color:var(--sage-dark);margin-bottom:4px;}
+.section-sub{color:var(--muted);font-size:14px;font-weight:600;margin-bottom:20px;}
+.form-card{background:var(--card);border-radius:24px;padding:24px;box-shadow:0 6px 30px var(--shadow);border:2px solid var(--border);margin-bottom:20px;position:relative;overflow:hidden;}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--sage-light),var(--peach-light),var(--sage-light));}
+.field{margin-bottom:16px;}
+.field-label{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--sage-dark);margin-bottom:7px;}
+.field-input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;background:var(--sage-pale);color:var(--ink);outline:none;transition:border-color .2s,background .2s;}
+.field-input:focus{border-color:var(--sage);background:#fff;}
+.field-input::placeholder{color:#a8bfaa;font-weight:400;}
+select.field-input{cursor:pointer;}
+.transport-group{display:flex;gap:8px;flex-wrap:wrap;}
+.transport-btn{flex:1;min-width:70px;padding:10px 6px;border-radius:14px;border:2px solid var(--border);background:var(--sage-pale);cursor:pointer;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;}
+.transport-btn .t-icon{font-size:20px;}
+.transport-btn.active{border-color:var(--sage);background:linear-gradient(135deg,#eaf6ee,#d4edda);color:var(--sage-dark);box-shadow:0 3px 10px rgba(122,170,138,.25);transform:translateY(-2px);}
+.slider-row{display:flex;align-items:center;gap:14px;}
+.slider-val{background:linear-gradient(135deg,var(--peach),var(--peach-mid));color:var(--ink);padding:5px 12px;border-radius:20px;font-size:13px;font-weight:800;min-width:68px;text-align:center;}
+input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:6px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--sage);cursor:pointer;box-shadow:0 2px 8px rgba(122,170,138,.4);}
+.action-btn{width:100%;padding:15px;min-height:54px;background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;border:none;border-radius:16px;font-family:'Pacifico',cursive;font-size:17px;cursor:pointer;box-shadow:0 6px 20px rgba(78,128,96,.4);transition:all .2s;}
+.action-btn:disabled{background:linear-gradient(135deg,#b8d4be,#9bbfa5);box-shadow:none;cursor:not-allowed;}
+.action-btn.peach{background:linear-gradient(135deg,var(--peach),#e8905a);box-shadow:0 6px 20px rgba(255,185,151,.5);}
+.error-msg{background:#fff0f5;color:#c0392b;border:1.5px solid #ffc5d5;font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;margin-bottom:14px;display:none;}
+.error-msg.show{display:block;}
+.loading{text-align:center;padding:40px;display:none;}
+.loading.show{display:block;}
+.loading-ring{width:50px;height:50px;border-radius:50%;border:4px solid var(--border);border-top-color:var(--sage);animation:spin .9s linear infinite;margin:0 auto 16px;}
+.loading p{font-size:15px;font-weight:700;color:var(--muted);}
+.results{display:none;}.results.show{display:block;}
+.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.results-title{font-family:'Pacifico',cursive;font-size:20px;color:var(--sage-dark);}
+.results-tag{background:linear-gradient(135deg,var(--peach),var(--peach-mid));color:var(--ink);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;}
+.places-list{display:flex;flex-direction:column;gap:12px;}
+.place-card{background:var(--card);border:2px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 4px 16px var(--shadow);}
+.card-top{padding:16px 16px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.card-left{flex:1;}
+.card-num-name{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.card-num{background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;min-width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;}
+.card-name{font-size:16px;font-weight:900;color:var(--ink);}
+.card-addr{font-size:12px;color:var(--muted);font-weight:600;margin:0 0 6px 36px;}
+.card-stars{display:flex;align-items:center;gap:2px;margin:0 0 5px 36px;}
+.star{font-size:12px;color:#dde8df;}.star.on{color:var(--gold);}
+.rating-num{font-size:11px;color:var(--muted);margin-left:3px;font-weight:700;}
+.card-badges{display:flex;gap:5px;flex-wrap:wrap;margin-left:36px;}
+.badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:800;}
+.badge-travel{background:var(--sage-pale);color:var(--sage-dark);border:1.5px solid var(--sage-light);}
+.badge-price{background:#fff8e7;color:#9a6c10;border:1.5px solid #f5dfa0;}
+.badge-open{background:#f0fff5;color:#1a7a3c;border:1.5px solid #a8e6be;}
+.badge-closed{background:#fff0f0;color:#c0392b;border:1.5px solid #f5c0c0;}
+.badge-time{background:var(--peach-pale);color:#c07040;border:1.5px solid var(--peach-light);}
+.card-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0;}
+.fav-btn{background:var(--peach-pale);border:2px solid var(--peach-light);border-radius:10px;width:44px;height:44px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+.fav-btn.saved{background:var(--peach-light);border-color:var(--peach);}
+.card-arrow{font-size:16px;color:var(--sage-light);}
+.card-maps{display:none;padding:0 16px 12px;gap:7px;flex-wrap:wrap;}
+.card-maps.show{display:flex;}
+.map-link{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;border:2px solid var(--border);color:var(--ink);background:var(--sage-pale);}
+.card-details{display:none;padding:12px 16px 16px;border-top:2px dashed var(--border);}
+.card-details.show{display:block;}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.7;font-weight:600;}
+.route-connector{display:flex;align-items:stretch;margin:0 0 0 18px;}
+.route-line{display:flex;flex-direction:column;align-items:center;width:22px;flex-shrink:0;}
+.route-dot{width:11px;height:11px;border-radius:50%;background:var(--peach);border:2px solid #fff;box-shadow:0 0 0 2px var(--peach);margin-top:4px;flex-shrink:0;}
+.route-vert{width:2px;flex:1;min-height:12px;background:repeating-linear-gradient(to bottom,var(--peach) 0px,var(--peach) 5px,transparent 5px,transparent 10px);}
+.route-text{flex:1;padding:6px 8px 6px 6px;font-size:12px;color:var(--muted);font-style:italic;line-height:1.4;font-weight:600;}
+
+.card-photo{width:100%;height:180px;object-fit:cover;border-radius:0;display:block;background:var(--sage-pale);}
+.card-photo-wrap{overflow:hidden;border-radius:16px 16px 0 0;position:relative;}
+.card-photo-label{position:absolute;bottom:8px;left:10px;background:rgba(0,0,0,.45);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;}
+
+/* ROUTE PLANNER */
+.rp-no-favs{background:#fff;border:2px dashed var(--border);border-radius:20px;padding:40px 20px;text-align:center;color:var(--muted);}
+.rp-no-favs .big{font-size:40px;margin-bottom:12px;}
+.rp-no-favs p{font-size:14px;font-weight:600;line-height:1.6;}
+.rp-no-favs a{color:var(--sage-dark);cursor:pointer;font-weight:800;}
+.time-row{display:flex;gap:12px;}
+.time-row .field{flex:1;}
+.cat-grid{display:flex;flex-direction:column;gap:8px;}
+.cat-row{display:flex;align-items:center;justify-content:space-between;background:var(--sage-pale);border:2px solid var(--border);border-radius:14px;padding:12px 16px;}
+.cat-info{flex:1;}
+.cat-name{font-size:14px;font-weight:800;color:var(--ink);}
+.cat-sample{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
+.cat-counter{display:flex;align-items:center;gap:10px;}
+.counter-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--sage);background:#fff;color:var(--sage-dark);font-size:20px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;}
+.counter-btn:active{background:var(--sage-pale);}
+.counter-val{font-size:16px;font-weight:900;color:var(--ink);min-width:20px;text-align:center;}
+
+/* ROUTE RESULT */
+.route-result{display:none;}.route-result.show{display:block;}
+.route-summary{background:linear-gradient(135deg,var(--sage-pale),var(--peach-pale));border:2px solid var(--border);border-radius:18px;padding:16px 20px;margin-bottom:18px;display:flex;gap:16px;flex-wrap:wrap;}
+.route-summary-item{flex:1;min-width:100px;text-align:center;}
+.route-summary-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px;}
+.route-summary-val{font-size:18px;font-weight:900;color:var(--sage-dark);}
+.route-stop{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:16px;margin-bottom:10px;box-shadow:0 3px 12px var(--shadow);position:relative;}
+.stop-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.stop-num{background:linear-gradient(135deg,var(--peach),var(--peach-mid));color:var(--ink);min-width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;}
+.stop-info{flex:1;}
+.stop-name{font-size:15px;font-weight:900;color:var(--ink);margin-bottom:2px;}
+.stop-category{font-size:11px;font-weight:700;color:var(--sage-dark);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.stop-addr{font-size:12px;color:var(--muted);font-weight:600;}
+.stop-actions{display:flex;gap:6px;flex-shrink:0;}
+.stop-up,.stop-down{background:var(--sage-pale);border:1.5px solid var(--border);border-radius:8px;min-width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--sage-dark);font-size:16px;font-weight:900;transition:all .15s;padding:0 8px;}
+.stop-up:hover,.stop-down:hover{background:var(--sage);color:#fff;border-color:var(--sage);}
+.stop-up:disabled,.stop-down:disabled{opacity:.25;cursor:not-allowed;pointer-events:none;}
+.stop-remove{background:var(--peach-pale);border:1.5px solid var(--peach-light);border-radius:8px;min-width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#c07070;font-size:16px;font-weight:800;}
+.stop-details{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+.stop-time-badge{background:var(--sage-pale);color:var(--sage-dark);border:1.5px solid var(--sage-light);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;}
+.stop-transit{font-size:12px;color:var(--muted);font-style:italic;font-weight:600;}
+.stop-maps{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.stop-map-link{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;border:2px solid var(--border);color:var(--ink);background:var(--sage-pale);}
+.route-save-bar{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:16px 20px;margin-top:16px;display:flex;gap:12px;align-items:center;}
+.route-name-input{flex:1;padding:11px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;background:var(--sage-pale);color:var(--ink);outline:none;}
+.route-name-input:focus{border-color:var(--sage);background:#fff;}
+.save-route-btn{padding:11px 20px;background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+
+/* PLACES (old favorites) */
+.fav-search-box{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:16px 18px;margin-bottom:20px;box-shadow:0 4px 16px var(--shadow);}
+.fav-input-row{display:flex;align-items:center;gap:10px;background:var(--sage-pale);border:2px solid var(--border);border-radius:14px;padding:0 14px;}
+.fav-input-row:focus-within{border-color:var(--sage);background:#fff;}
+.fav-search-input{flex:1;border:none;background:transparent;padding:11px 0;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;color:var(--ink);outline:none;}
+.fav-search-input::placeholder{color:#a8bfaa;font-weight:400;}
+.fav-clear-btn{background:none;border:none;cursor:pointer;color:#a8bfaa;font-size:14px;font-weight:800;display:none;}
+.fav-clear-btn.show{display:block;}
+.fav-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.fav-chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;border:2px solid var(--border);background:var(--sage-pale);color:var(--muted);}
+.fav-chip.active{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
+.fav-meta{font-size:12px;color:var(--muted);font-weight:700;margin-top:8px;}
+.fav-meta strong{color:var(--sage-dark);}
+.city-group{margin-bottom:28px;}
+.city-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:2px dashed var(--border);}
+.city-name{font-family:'Pacifico',cursive;font-size:19px;color:var(--sage-dark);}
+.city-count{background:var(--peach-pale);color:#c07040;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800;border:1.5px solid var(--peach-light);}
+.fav-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:flex-start;box-shadow:0 3px 12px var(--shadow);}
+.fav-card-left{flex:1;}
+.fav-card-name{font-size:15px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.fav-card-addr{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.fav-map-links{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.fav-map-link{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;border:2px solid var(--border);color:var(--ink);background:var(--sage-pale);}
+.fav-remove{background:var(--peach-pale);border:1.5px solid var(--peach-light);cursor:pointer;color:#c07070;font-size:13px;padding:4px 8px;border-radius:8px;font-weight:800;margin-left:10px;flex-shrink:0;}
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-state .big{font-size:44px;margin-bottom:12px;}
+.empty-state p{font-size:14px;font-weight:600;line-height:1.6;}
+
+/* SAVED ROUTES */
+.saved-route-card{background:var(--card);border:2px solid var(--border);border-radius:18px;margin-bottom:14px;box-shadow:0 4px 16px var(--shadow);overflow:hidden;}
+.saved-route-header{padding:16px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.saved-route-left{flex:1;}
+.saved-route-name{font-size:16px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.saved-route-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.saved-route-tag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;}
+.srt-city{background:var(--sage-pale);color:var(--sage-dark);border:1.5px solid var(--sage-light);}
+.srt-stops{background:var(--peach-pale);color:#c07040;border:1.5px solid var(--peach-light);}
+.srt-date{background:#f5f5f5;color:var(--muted);border:1.5px solid #e0e0e0;}
+.saved-route-right{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.route-delete-btn{background:var(--peach-pale);border:1.5px solid var(--peach-light);border-radius:8px;padding:5px 10px;cursor:pointer;color:#c07070;font-size:12px;font-weight:800;}
+.saved-route-body{display:none;padding:0 18px 16px;}
+.saved-route-body.show{display:block;}
+.saved-stop-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--border);}
+.saved-stop-item:last-child{border-bottom:none;}
+.saved-stop-num{background:linear-gradient(135deg,var(--peach),var(--peach-mid));color:var(--ink);min-width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;margin-top:2px;}
+.saved-stop-info{flex:1;}
+.saved-stop-name{font-size:14px;font-weight:800;color:var(--ink);}
+.saved-stop-detail{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;}
+.saved-stop-maps{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+
+
+/* WEATHER WIDGET */
+.weather-widget{background:linear-gradient(135deg,var(--sage-dark),#3d7055);border-radius:18px;padding:16px 20px;margin-bottom:18px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.weather-left{display:flex;align-items:center;gap:12px;}
+.weather-icon{font-size:36px;line-height:1;}
+.weather-temp{font-size:28px;font-weight:900;}
+.weather-desc{font-size:13px;font-weight:600;opacity:.85;margin-top:1px;}
+.weather-city{font-size:11px;opacity:.7;margin-top:2px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.weather-details{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
+.weather-detail{font-size:12px;font-weight:700;opacity:.85;}
+.weather-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:10px;padding:8px 14px;color:#fff;font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:background .2s;}
+.weather-btn:hover{background:rgba(255,255,255,.3);}
+.weather-placeholder{background:var(--card);border:2px dashed var(--border);border-radius:18px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.weather-placeholder-text{font-size:13px;color:var(--muted);font-weight:600;}
+
+/* TRIP NOTES */
+.place-note{padding:8px 16px 12px;border-top:1px dashed var(--border);}
+.place-note textarea{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:"Nunito",sans-serif;font-size:16px;font-weight:600;background:var(--sage-pale);color:var(--ink);outline:none;resize:none;min-height:60px;}
+.place-note textarea:focus{border-color:var(--sage);}
+.note-save-btn{margin-top:6px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:8px;font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+
+/* EDIT PLACE MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-box{background:var(--card);border-radius:22px;padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-title{font-family:"Pacifico",cursive;font-size:20px;color:var(--sage-dark);margin-bottom:18px;}
+.modal-actions{display:flex;gap:10px;margin-top:16px;}
+.modal-btn{flex:1;padding:14px;min-height:50px;border:none;border-radius:12px;font-family:"Nunito",sans-serif;font-size:16px;font-weight:800;cursor:pointer;}
+.modal-btn-save{background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;}
+.modal-btn-cancel{background:var(--sage-pale);color:var(--sage-dark);border:2px solid var(--border);}
+
+/* OPENING HOURS WARNING */
+.hours-warning{background:#fff8e7;border:1.5px solid #f5dfa0;border-radius:10px;padding:8px 12px;margin-top:8px;font-size:12px;font-weight:700;color:#9a6c10;}
+
+/* STOP DURATION EDIT */
+.stop-duration-edit{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.duration-input{width:70px;padding:5px 8px;border:1.5px solid var(--border);border-radius:8px;font-family:"Nunito",sans-serif;font-size:16px;font-weight:700;background:var(--sage-pale);color:var(--ink);outline:none;text-align:center;}
+.duration-input:focus{border-color:var(--sage);}
+.recalc-btn{padding:5px 12px;background:var(--sage);color:#fff;border:none;border-radius:8px;font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;}
+
+/* PLAN AGAIN BUTTON */
+.plan-again-btn{width:100%;padding:12px;background:var(--sage-pale);color:var(--sage-dark);border:2px solid var(--sage-light);border-radius:14px;font-family:"Nunito",sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:14px;transition:all .2s;}
+.plan-again-btn:hover{background:var(--sage);color:#fff;}
+
+/* SHARE ROUTE */
+.share-btn{padding:13px 16px;min-height:50px;background:linear-gradient(135deg,var(--peach),#e8905a);color:#fff;border:none;border-radius:12px;font-family:"Nunito",sans-serif;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;}
+
+/* SORT/FILTER ROUTES */
+.routes-toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.sort-btn{padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);color:var(--muted);font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.sort-btn.active{background:var(--sage);border-color:var(--sage);color:#fff;}
+
+/* TOAST */
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div id="pw-screen">
+  <div class="pw-box">
+    <span class="pw-emoji">&#127807;</span>
+    <div class="pw-title">Claudia&#39;s Travel Planner</div>
+    <div class="pw-sub">Made with love, just for you &#9829;<br/>Enter the password to get started!</div>
+    <input class="pw-input" id="pw-input" type="password" placeholder="Enter password" autocomplete="off"/>
+    <button class="pw-btn" id="pw-btn">&#10024; Let the travels begin!</button>
+    <div class="pw-error" id="pw-error"></div>
+    <div class="pw-hint">Made with love &#128151;</div>
+  </div>
+</div>
+
+<nav class="topnav">
+  <div class="topnav-brand">
+    <span class="topnav-heart">&#9829;</span>
+    Claudia&#39;s Travel Planner
+  </div>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" id="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">&#9790;</button>
+  </div>
+</nav>
+
+<div class="page-tabs">
+  <button class="page-tab active" id="tab-discover" onclick="switchPage('discover')">&#127757; Discover</button>
+  <button class="page-tab" id="tab-planner" onclick="switchPage('planner')">&#128345; Route Planner</button>
+  <button class="page-tab" id="tab-places" onclick="switchPage('places')">&#10084;&#65039; Places</button>
+  <button class="page-tab" id="tab-routes" onclick="switchPage('routes')">&#128204; Saved Routes</button>
+</div>
+
+<div class="main">
+
+  <!-- ══ DISCOVER ══ -->
+  <div class="page active" id="page-discover">
+    <div class="doodle-row"><span class="doodle">&#127759;</span><span class="doodle">&#9992;</span><span class="doodle">&#127800;</span><span class="doodle">&#129523;</span></div>
+    <div class="section-title">Find your next adventure!</div>
+    <div class="section-sub">Search for places, pick how you travel, and save your faves &#128151;</div>
+    <div class="form-card">
+      <div class="field"><label class="field-label">&#127757; City</label><input class="field-input" id="input-city" type="text" placeholder="e.g. Paris, Tokyo, New York..." autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"/></div>
+      <div class="field"><label class="field-label">&#128269; What are you looking for?</label><input class="field-input" id="input-interest" type="text" placeholder="e.g. coffee shops, museums, rooftop bars..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+      <div class="field"><label class="field-label">&#127976; Where are you staying? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional)</span></label><input class="field-input" id="input-hotel" type="text" placeholder="e.g. Hotel Le Marais, Park Hyatt..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+      <div class="field">
+        <label class="field-label">&#128640; Getting around <span style="text-transform:none;font-weight:400;color:#a8bfaa">(pick all that apply)</span></label>
+        <div class="transport-group">
+          <button class="transport-btn active" data-mode="walking" id="btn-walking" onclick="toggleTransport(this)"><span class="t-icon">&#128694;</span>Walking</button>
+          <button class="transport-btn" data-mode="car" id="btn-car" onclick="toggleTransport(this)"><span class="t-icon">&#128663;</span>Car</button>
+          <button class="transport-btn" data-mode="transit" id="btn-transit" onclick="toggleTransport(this)"><span class="t-icon">&#128647;</span>Transit</button>
+          <button class="transport-btn" data-mode="cycling" id="btn-cycling" onclick="toggleTransport(this)"><span class="t-icon">&#128690;</span>Cycling</button>
+        </div>
+      </div>
+      <div class="field"><label class="field-label">&#9201; Max travel time</label><div class="slider-row"><input type="range" id="time-slider" min="5" max="60" step="5" value="30" oninput="updateSlider()"/><div class="slider-val" id="slider-label">30 min</div></div></div>
+      <div class="error-msg" id="error-msg"></div>
+      <button class="action-btn" id="search-btn" onclick="doSearch()">&#10024; Let&#39;s Explore! &#9992;</button>
+    </div>
+    <div class="loading" id="loading"><div class="loading-ring"></div><p id="loading-text">Discovering the best spots...</p></div>
+    <div class="results" id="results">
+      <div class="results-header"><div class="results-title">Your travel route</div><div class="results-tag" id="results-tag"></div></div>
+      <div class="places-list" id="places-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ ROUTE PLANNER ══ -->
+  <div class="page" id="page-planner">
+    <div class="doodle-row"><span class="doodle">&#128345;</span><span class="doodle">&#128205;</span><span class="doodle">&#9728;</span><span class="doodle">&#127829;</span></div>
+    <div class="section-title">Route Planner</div>
+    <div class="section-sub">Plan your perfect day using your saved places &#10024;</div>
+    <div id="weather-rp"></div>
+    <div id="rp-main"></div>
+  </div>
+
+  <!-- ══ PLACES ══ -->
+  <div class="page" id="page-places">
+    <div class="doodle-row"><span class="doodle">&#128151;</span><span class="doodle">&#128205;</span><span class="doodle">&#10024;</span></div>
+    <div class="section-title">My Places</div>
+    <div class="section-sub">Your saved spots, organized by city &#127807;</div>
+    <div id="places-search-wrap" style="display:none">
+      <div class="fav-search-box">
+        <div class="fav-input-row">
+          <span style="font-size:15px">&#128269;</span>
+          <input class="fav-search-input" id="fav-search-input" type="text" placeholder="Search by name, city or type of place..." oninput="filterFavs()"/>
+          <button class="fav-clear-btn" id="fav-clear-btn" onclick="clearFavSearch()">&#10005;</button>
+        </div>
+        <div class="fav-chips" id="fav-chips"></div>
+        <div class="fav-meta" id="fav-meta"></div>
+      </div>
+    </div>
+    <div id="fav-content"></div>
+  </div>
+
+  <!-- ══ SAVED ROUTES ══ -->
+  <div class="page" id="page-routes">
+    <div class="doodle-row"><span class="doodle">&#128204;</span><span class="doodle">&#9889;</span><span class="doodle">&#127758;</span></div>
+    <div class="section-title">Saved Routes</div>
+    <div class="section-sub">Your planned days out, organized by city &#128345;</div>
+    <div id="routes-content"></div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<!-- EDIT PLACE MODAL -->
+<div class="modal-overlay" id="edit-modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-title">&#9998; Edit Place</div>
+    <div class="field"><label class="field-label">Name</label><input class="field-input" id="edit-name" type="text"/></div>
+    <div class="field"><label class="field-label">Address</label><input class="field-input" id="edit-address" type="text"/></div>
+    <div class="field"><label class="field-label">Rating (1-5)</label><input class="field-input" id="edit-rating" type="number" min="1" max="5" step="0.1"/></div>
+    <div class="field"><label class="field-label">Your Note</label><textarea class="field-input" id="edit-note" rows="3" style="font-size:16px;min-height:80px;" placeholder="e.g. Try the croissants! Book in advance..."></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="saveEditModal()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var APIKEY = 'YOUR_GROQ_API_KEY_HERE';
+var PW = 'KeepClaudiaTravelling0209';
+var modes = ['walking'];
+var lastCity = '';
+var lastResults = [];
+var favActiveChip = null;
+var rpStops = [];
+var rpRouteCity = '';
+
+// ── PASSWORD ──────────────────────────────────────────────
+document.getElementById('pw-btn').onclick = checkPW;
+document.getElementById('pw-input').onkeydown = function(e){ if(e.keyCode===13) checkPW(); };
+function checkPW(){
+  var v=document.getElementById('pw-input').value.trim();
+  var e=document.getElementById('pw-error');
+  if(v.toLowerCase()===PW.toLowerCase()){
+    document.getElementById('pw-screen').style.display='none';
+    try{localStorage.setItem('ctp_ok','1');}catch(x){}
+    e.textContent='';
+  } else { e.textContent='Wrong password - please try again!'; document.getElementById('pw-input').value=''; document.getElementById('pw-input').focus(); }
+}
+try{ if(localStorage.getItem('ctp_ok')==='1') document.getElementById('pw-screen').style.display='none'; }catch(x){}
+
+// ── PAGES ─────────────────────────────────────────────────
+function switchPage(n){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.page-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('page-'+n).classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active');
+  if(n==='places') renderFavs();
+  if(n==='planner') renderRoutePlanner();
+  if(n==='routes') renderSavedRoutes();
+}
+
+// ── TRANSPORT ─────────────────────────────────────────────
+function toggleTransport(btn){
+  var m=btn.getAttribute('data-mode'), i=modes.indexOf(m);
+  if(i>=0){ if(modes.length===1) return; modes.splice(i,1); btn.classList.remove('active'); }
+  else { modes.push(m); btn.classList.add('active'); }
+}
+
+// ── SLIDER ────────────────────────────────────────────────
+function updateSlider(){
+  var el=document.getElementById('time-slider'), v=parseInt(el.value), p=((v-5)/55)*100;
+  el.style.background='linear-gradient(to right,#7aaa8a 0%,#7aaa8a '+p+'%,#e2ede5 '+p+'%)';
+  document.getElementById('slider-label').textContent=v+' min';
+}
+
+// ── STARS ─────────────────────────────────────────────────
+function stars(r){
+  if(!r) return '<span style="color:#a8bfaa;font-size:12px">No rating</span>';
+  var h='';
+  for(var i=1;i<=5;i++) h+='<span class="star'+(i<=Math.round(r)?' on':'')+'">&#9733;</span>';
+  return h+'<span class="rating-num">('+r+')</span>';
+}
+
+// ── MAP LINKS ─────────────────────────────────────────────
+function mapLinks(name, addr, cls){
+  cls=cls||'map-link';
+  var q=encodeURIComponent(name+' '+addr), a=encodeURIComponent(addr);
+  return '<a class="'+cls+'" href="https://maps.apple.com/?q='+a+'" target="_blank">&#127822; Apple</a> '+
+         '<a class="'+cls+'" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank">&#128506; Google</a> '+
+         '<a class="'+cls+'" href="https://waze.com/ul?q='+a+'&navigate=yes" target="_blank">&#128309; Waze</a>';
+}
+
+// ── DISCOVER CARD ─────────────────────────────────────────
+function photoUrl(p){
+  var q=encodeURIComponent((p.name||'')+' '+(p.city||lastCity||''));
+  return 'https://source.unsplash.com/featured/600x300/?'+encodeURIComponent((p.name||'travel place').split(' ').slice(0,3).join(' '));
+}
+function renderCard(p,i){
+  var icons={walking:'&#128694;',car:'&#128663;',transit:'&#128647;',cycling:'&#128690;'};
+  var ms=modes.map(function(m){return icons[m]||'';}).join(' ');
+  var fav=isFav(p);
+  var ob=p.openNow===true?'<span class="badge badge-open">&#10003; Open</span>':p.openNow===false?'<span class="badge badge-closed">&#10007; Closed</span>':'';
+  var pb=p.priceLevel?'<span class="badge badge-price">'+'$'.repeat(p.priceLevel)+'</span>':'';
+  var tb=p.travelTime?'<span class="badge badge-travel">'+ms+' '+p.travelTime+'</span>':'';
+  var photo='<div class="card-photo-wrap"><img class="card-photo" src="'+photoUrl(p)+'" alt="'+p.name+'" loading="lazy" onerror="this.parentElement.style.display='none'"/><div class="card-photo-label">'+(i+1)+'. '+p.name+'</div></div>';
+  return '<div class="place-card" id="card-'+i+'">'+
+    photo+
+    '<div class="card-top" onclick="toggleCard('+i+')">'+
+      '<div class="card-left">'+
+        '<div class="card-num-name"><div class="card-num">'+(i+1)+'</div><div class="card-name">'+p.name+'</div></div>'+
+        '<div class="card-addr">&#128205; '+p.address+'</div>'+
+        '<div class="card-stars">'+stars(p.rating)+'</div>'+
+        '<div class="card-badges">'+tb+pb+ob+'</div>'+
+      '</div>'+
+      '<div class="card-right">'+
+        '<button class="fav-btn'+(fav?' saved':'') +'" onclick="event.stopPropagation();toggleFav('+i+')">'+(fav?'&#10084;&#65039;':'&#129293;')+'</button>'+
+        '<span class="card-arrow" id="arrow-'+i+'">&#9662;</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="card-maps" id="maps-'+i+'">'+mapLinks(p.name,p.address,'map-link')+'</div>'+
+    '<div class="card-details" id="det-'+i+'"><p class="card-desc">'+(p.description||'')+'</p></div>'+
+  '</div>';
+}
+function renderConn(p){
+  if(!p.fromPrevious) return '';
+  return '<div class="route-connector"><div class="route-line"><div class="route-dot"></div><div class="route-vert"></div></div><div class="route-text">&#8594; '+p.fromPrevious+'</div></div>';
+}
+function toggleCard(i){
+  var m=document.getElementById('maps-'+i), d=document.getElementById('det-'+i), a=document.getElementById('arrow-'+i);
+  var o=!m.classList.contains('show');
+  m.classList.toggle('show',o); d.classList.toggle('show',o);
+  a.innerHTML=o?'&#9652;':'&#9662;';
+}
+
+// ── PLACES (FAVORITES) ────────────────────────────────────
+function loadFavs(){ try{return JSON.parse(localStorage.getItem('ctp_favs')||'[]');}catch(x){return[];} }
+function saveFavs(a){ try{localStorage.setItem('ctp_favs',JSON.stringify(a));}catch(x){} }
+function isFav(p){ var f=loadFavs(); for(var i=0;i<f.length;i++) if(f[i].name===p.name&&f[i].address===p.address) return true; return false; }
+function toggleFav(i){
+  var p=lastResults[i]; if(!p) return;
+  var f=loadFavs(), found=-1;
+  for(var j=0;j<f.length;j++) if(f[j].name===p.name&&f[j].address===p.address){found=j;break;}
+  var btn=document.querySelector('#card-'+i+' .fav-btn');
+  if(found>=0){ f.splice(found,1); saveFavs(f); if(btn){btn.innerHTML='&#129293;';btn.classList.remove('saved');} toast('Removed from places'); }
+  else { p.city=lastCity; f.push(p); saveFavs(f); if(btn){btn.innerHTML='&#10084;&#65039;';btn.classList.add('saved');} toast('Saved to places &#10084;&#65039;'); }
+}
+function renderFavs(){
+  var f=loadFavs();
+  var wrap=document.getElementById('places-search-wrap'), cont=document.getElementById('fav-content');
+  if(f.length===0){ wrap.style.display='none'; cont.innerHTML='<div class="empty-state"><div class="big">&#128507;</div><p>No places saved yet.<br/>Discover places and tap &#10084;&#65039; to save them!</p></div>'; return; }
+  wrap.style.display='block';
+  var cities=[];
+  f.forEach(function(x){var c=x.city||'Unknown';if(cities.indexOf(c)<0)cities.push(c);}); cities.sort();
+  var chips=document.getElementById('fav-chips'); chips.innerHTML='';
+  cities.forEach(function(c){ var b=document.createElement('button'); b.className='fav-chip'+(favActiveChip===c?' active':''); b.textContent=c; b.onclick=function(){favActiveChip=(favActiveChip===c)?null:c;renderFavs();}; chips.appendChild(b); });
+  var q=(document.getElementById('fav-search-input').value||'').trim().toLowerCase();
+  var filtered=f.filter(function(x){ var cok=!favActiveChip||(x.city||'Unknown')===favActiveChip; var qok=!q||(x.name||'').toLowerCase().indexOf(q)>=0||(x.city||'').toLowerCase().indexOf(q)>=0||(x.address||'').toLowerCase().indexOf(q)>=0||(x.description||'').toLowerCase().indexOf(q)>=0; return cok&&qok; });
+  document.getElementById('fav-meta').innerHTML='Showing <strong>'+filtered.length+'</strong> of '+f.length+' saved places';
+  if(filtered.length===0){ cont.innerHTML='<div class="empty-state"><div class="big">&#128269;</div><p>No places match your search.</p></div>'; return; }
+  var grouped={};
+  filtered.forEach(function(x){var c=x.city||'Unknown';if(!grouped[c])grouped[c]=[];grouped[c].push(x);});
+  cont.innerHTML='';
+  Object.keys(grouped).forEach(function(city){
+    var g=document.createElement('div'); g.className='city-group';
+    var h=document.createElement('div'); h.className='city-header';
+    h.innerHTML='<div class="city-name">&#128205; '+city+'</div><div class="city-count">'+grouped[city].length+' place'+(grouped[city].length>1?'s':'')+'</div>';
+    g.appendChild(h);
+    grouped[city].forEach(function(p){
+      var card=document.createElement('div'); card.className='fav-card';
+      var left=document.createElement('div'); left.className='fav-card-left';
+      var nm=document.createElement('div'); nm.className='fav-card-name'; nm.textContent=p.name; left.appendChild(nm);
+      var ad=document.createElement('div'); ad.className='fav-card-addr'; ad.textContent='&#128205; '+p.address; left.appendChild(ad);
+      if(p.rating){var sr=document.createElement('div');sr.innerHTML='<span style="color:var(--gold);font-size:12px">'+'&#9733;'.repeat(Math.round(p.rating))+'</span> <span style="color:var(--muted);font-size:11px">('+p.rating+')</span>';left.appendChild(sr);}
+      var notes=loadNotes(); var nk=(p.name+'|'+p.address).replace(/\s/g,'_');
+      if(notes[nk]){var nd=document.createElement('div');nd.style.cssText='font-size:12px;color:var(--muted);font-style:italic;margin-top:4px;font-weight:600;';nd.textContent='&#128203; '+notes[nk];left.appendChild(nd);}
+      var ml=document.createElement('div'); ml.className='fav-map-links'; ml.innerHTML=mapLinks(p.name,p.address,'fav-map-link'); left.appendChild(ml);
+      card.appendChild(left);
+      var actions=document.createElement('div'); actions.style.cssText='display:flex;flex-direction:column;gap:5px;flex-shrink:0;margin-left:8px;';
+      var eb=document.createElement('button'); eb.className='fav-remove'; eb.style.cssText='background:var(--sage-pale);border-color:var(--sage-light);color:var(--sage-dark);'; eb.innerHTML='&#9998;';
+      (function(place){eb.onclick=function(){openEditModal(place.name,place.address);};})(p);
+      var rb=document.createElement('button'); rb.className='fav-remove'; rb.innerHTML='&#10005;';
+      (function(place){rb.onclick=function(){saveFavs(loadFavs().filter(function(x){return!(x.name===place.name&&x.address===place.address);}));renderFavs();toast('Removed from places');};})(p);
+      actions.appendChild(eb); actions.appendChild(rb);
+      card.appendChild(actions); g.appendChild(card);
+    });
+    cont.appendChild(g);
+  });
+}
+function filterFavs(){ var v=document.getElementById('fav-search-input').value; document.getElementById('fav-clear-btn').classList.toggle('show',v.length>0); renderFavs(); }
+function clearFavSearch(){ document.getElementById('fav-search-input').value=''; document.getElementById('fav-clear-btn').classList.remove('show'); renderFavs(); }
+
+// ── ROUTE PLANNER ─────────────────────────────────────────
+var rpCategoryCount = {};
+var rpCategories = [
+  {id:'breakfast', name:'Breakfast', icon:'&#9749;'},
+  {id:'cafe', name:'Cafe', icon:'&#9749;'},
+  {id:'restaurant', name:'Restaurant', icon:'&#127829;'},
+  {id:'bar', name:'Bar / Drinks', icon:'&#127867;'},
+  {id:'museum', name:'Museum', icon:'&#127963;'},
+  {id:'park', name:'Park / Nature', icon:'&#127795;'},
+  {id:'shopping', name:'Shopping', icon:'&#128717;'},
+  {id:'attraction', name:'Attraction', icon:'&#127965;'},
+  {id:'other', name:'Other', icon:'&#128204;'}
+];
+
+function renderRoutePlanner(){
+  var cont=document.getElementById('rp-main');
+  var favs=loadFavs();
+  var cities=[];
+  favs.forEach(function(f){var c=f.city||'Unknown';if(cities.indexOf(c)<0)cities.push(c);}); cities.sort();
+
+  if(favs.length===0){
+    cont.innerHTML='<div class="rp-no-favs"><div class="big">&#128507;</div><p>You need saved places first!<br/><button onclick="switchPage(&#39;discover&#39;)" style="background:none;border:none;color:var(--sage-dark);font-weight:800;cursor:pointer;font-size:14px;">Go to Discover</button> and save some places,<br/>then come back here to plan your day.</p></div>';
+    return;
+  }
+
+  var html='<div class="form-card">';
+  // City selector
+  html+='<div class="field"><label class="field-label">&#127757; City</label><select class="field-input" id="rp-city" onchange="rpCityChanged()"><option value="">Select a city...</option>';
+  cities.forEach(function(c){ html+='<option value="'+c+'">'+c+'</option>'; });
+  html+='</select></div>';
+  // Home address
+  html+='<div class="field"><label class="field-label">&#127968; Your address / hotel</label><input class="field-input" id="rp-hotel" type="text" placeholder="e.g. 123 Main St, New York" autocomplete="off" autocorrect="off" spellcheck="false"/></div>';
+  // Transport
+  html+='<div class="field"><label class="field-label">&#128640; How are you getting around?</label><div class="transport-group">';
+  html+='<button class="transport-btn active" data-rp="walking" onclick="toggleRpTransport(this)"><span class="t-icon">&#128694;</span>Walking</button>';
+  html+='<button class="transport-btn" data-rp="car" onclick="toggleRpTransport(this)"><span class="t-icon">&#128663;</span>Car</button>';
+  html+='<button class="transport-btn" data-rp="transit" onclick="toggleRpTransport(this)"><span class="t-icon">&#128647;</span>Transit</button>';
+  html+='<button class="transport-btn" data-rp="cycling" onclick="toggleRpTransport(this)"><span class="t-icon">&#128690;</span>Cycling</button>';
+  html+='</div></div>';
+  // Times
+  html+='<div class="time-row">';
+  html+='<div class="field"><label class="field-label">&#128336; Leave at</label><input class="field-input" id="rp-leave" type="time" value="09:00"/></div>';
+  html+='<div class="field"><label class="field-label">&#128347; Back by</label><input class="field-input" id="rp-back" type="time" value="21:00"/></div>';
+  html+='</div>';
+  // Categories from favorites
+  html+='<div class="field"><label class="field-label">&#127829; What do you want to do? <span id="rp-city-hint" style="text-transform:none;font-weight:600;color:var(--peach);font-size:11px">Select a city first</span></label><div class="cat-grid" id="rp-cat-grid"><div style="color:var(--muted);font-size:13px;font-weight:600;padding:10px 0;">Select a city above to see available categories from your saved places.</div></div></div>';
+  html+='<div class="error-msg" id="rp-error"></div>';
+  html+='<button class="action-btn peach" id="rp-btn" onclick="generateRoute()">&#128345; Plan My Day!</button>';
+  html+='</div>';
+
+  // Route result area
+  html+='<div class="loading" id="rp-loading"><div class="loading-ring"></div><p>Planning your perfect day...</p></div>';
+  html+='<div class="route-result" id="route-result"></div>';
+
+  cont.innerHTML=html;
+  rpCategoryCount={};
+  rpTransport='walking';
+}
+
+var rpTransport='walking';
+function toggleRpTransport(btn){
+  document.querySelectorAll('[data-rp]').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  rpTransport=btn.getAttribute('data-rp');
+}
+
+function rpCityChanged(){
+  var city=document.getElementById('rp-city').value;
+  var hint=document.getElementById('rp-city-hint');
+  var grid=document.getElementById('rp-cat-grid');
+  rpCategoryCount={};
+  if(!city){ hint.textContent='Select a city first'; grid.innerHTML='<div style="color:var(--muted);font-size:13px;font-weight:600;padding:10px 0;">Select a city above to see available categories.</div>'; return; }
+  // Get places for this city
+  var favs=loadFavs().filter(function(f){return(f.city||'Unknown')===city;});
+  // Detect categories from descriptions/names
+  var detectedCats=[];
+  rpCategories.forEach(function(cat){
+    var found=favs.filter(function(f){
+      var text=((f.name||'')+(f.description||'')).toLowerCase();
+      if(cat.id==='breakfast') return text.indexOf('breakfast')>=0||text.indexOf('brunch')>=0;
+      if(cat.id==='cafe') return text.indexOf('cafe')>=0||text.indexOf('coffee')>=0||text.indexOf('tea')>=0;
+      if(cat.id==='restaurant') return text.indexOf('restaurant')>=0||text.indexOf('dining')>=0||text.indexOf('food')>=0||text.indexOf('cuisine')>=0||text.indexOf('eatery')>=0;
+      if(cat.id==='bar') return text.indexOf('bar')>=0||text.indexOf('pub')>=0||text.indexOf('cocktail')>=0||text.indexOf('wine')>=0||text.indexOf('beer')>=0||text.indexOf('rooftop')>=0;
+      if(cat.id==='museum') return text.indexOf('museum')>=0||text.indexOf('gallery')>=0||text.indexOf('exhibit')>=0||text.indexOf('art')>=0||text.indexOf('history')>=0;
+      if(cat.id==='park') return text.indexOf('park')>=0||text.indexOf('garden')>=0||text.indexOf('nature')>=0||text.indexOf('trail')>=0;
+      if(cat.id==='shopping') return text.indexOf('shop')>=0||text.indexOf('market')>=0||text.indexOf('store')>=0||text.indexOf('boutique')>=0;
+      if(cat.id==='attraction') return text.indexOf('attraction')>=0||text.indexOf('landmark')>=0||text.indexOf('tower')>=0||text.indexOf('palace')>=0||text.indexOf('cathedral')>=0||text.indexOf('bridge')>=0||text.indexOf('view')>=0;
+      return true; // other always available
+    });
+    if(found.length>0||cat.id==='other') detectedCats.push({cat:cat, places:found, count:found.length});
+  });
+  hint.textContent=favs.length+' places saved in '+city;
+  // Show weather button
+  showWeatherBtn(city,'weather-rp');
+  grid.innerHTML='';
+  detectedCats.forEach(function(dc){
+    var row=document.createElement('div'); row.className='cat-row';
+    var info=document.createElement('div'); info.className='cat-info';
+    var nm=document.createElement('div'); nm.className='cat-name'; nm.innerHTML=dc.cat.icon+' '+dc.cat.name; info.appendChild(nm);
+    if(dc.places.length>0){
+      var sp=document.createElement('div'); sp.className='cat-sample';
+      var names=dc.places.slice(0,2).map(function(p){return p.name;}); sp.textContent=names.join(', ')+(dc.places.length>2?' +'+( dc.places.length-2)+' more':'');
+      info.appendChild(sp);
+    }
+    row.appendChild(info);
+    var ctr=document.createElement('div'); ctr.className='cat-counter';
+    var minus=document.createElement('button'); minus.className='counter-btn'; minus.textContent='-'; minus.setAttribute('data-catid',dc.cat.id);
+    var val=document.createElement('div'); val.className='counter-val'; val.id='cat-val-'+dc.cat.id; val.textContent='0';
+    var plus=document.createElement('button'); plus.className='counter-btn'; plus.textContent='+'; plus.setAttribute('data-catid',dc.cat.id);
+    minus.onclick=function(){ var id=this.getAttribute('data-catid'); rpCategoryCount[id]=(rpCategoryCount[id]||0); if(rpCategoryCount[id]>0){rpCategoryCount[id]--;document.getElementById('cat-val-'+id).textContent=rpCategoryCount[id];} };
+    plus.onclick=function(){ var id=this.getAttribute('data-catid'); rpCategoryCount[id]=(rpCategoryCount[id]||0)+1; document.getElementById('cat-val-'+id).textContent=rpCategoryCount[id]; };
+    ctr.appendChild(minus); ctr.appendChild(val); ctr.appendChild(plus);
+    row.appendChild(ctr); grid.appendChild(row);
+  });
+}
+
+function generateRoute(){
+  var city=document.getElementById('rp-city').value;
+  var hotel=document.getElementById('rp-hotel').value.trim();
+  var leaveTime=document.getElementById('rp-leave').value;
+  var backTime=document.getElementById('rp-back').value;
+  var err=document.getElementById('rp-error');
+  err.classList.remove('show');
+
+  if(!city){err.textContent='Please select a city.';err.classList.add('show');return;}
+  if(!hotel){err.textContent='Please enter your address or hotel.';err.classList.add('show');return;}
+
+  // Build stop requests
+  var stopRequests=[];
+  rpCategories.forEach(function(cat){ var n=rpCategoryCount[cat.id]||0; if(n>0) for(var i=0;i<n;i++) stopRequests.push(cat.name); });
+  if(stopRequests.length===0){err.textContent='Please add at least one stop using the + buttons.';err.classList.add('show');return;}
+
+  // Get saved places for this city
+  var cityFavs=loadFavs().filter(function(f){return(f.city||'Unknown')===city;});
+  var favsText=cityFavs.map(function(p){return p.name+' ('+p.address+')'+(p.rating?' rating:'+p.rating:'');}).join('; ');
+
+  var transportLabels={walking:'Walking',car:'Driving',transit:'Public Transit',cycling:'Cycling'};
+  var tLabel=transportLabels[rpTransport]||rpTransport;
+
+  document.getElementById('rp-loading').classList.add('show');
+  document.getElementById('route-result').classList.remove('show');
+  var btn=document.getElementById('rp-btn'); btn.disabled=true; btn.textContent='Planning...';
+
+  var prompt='You are an expert travel route planner. Plan a day trip in '+city+' for someone staying at: '+hotel+'. '+
+    'They leave at '+leaveTime+' and must be back by '+backTime+'. Transport mode: '+tLabel+'. '+
+    'Stops requested: '+stopRequests.join(', ')+'. '+
+    'IMPORTANT: Order stops logically for a real day out. Typical smart order: breakfast/brunch early morning -> sightseeing/museums mid-morning -> lunch around noon -> cafes/shopping afternoon -> dinner/bars evening. Respect opening hours (most museums open 10am, breakfast places close by 11am, dinner starts 6pm+). '+
+    'Prioritise using places from this saved list where they match the category: '+favsText+'. For any gaps, suggest real places in '+city+'. '+
+    'Return a JSON object with: '+
+    'summary (totalStops, estimatedDistance e.g. "4.2 km", totalTransitTime e.g. "45 min"), '+
+    'stops (array, each: name, category, address, arrivalTime e.g. "09:30", departureTime, timeToSpend e.g. "45 min", transitToNext e.g. "Walk north on 5th Ave 8 min", parkingOrTransit (parking tip if driving OR transit stop/line if transit), rating or null, notes 1 sentence tip). '+
+    'Make timing realistic and ensure you finish before '+backTime+'. Respond ONLY with valid JSON. No markdown.';
+
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST','https://api.groq.com/openai/v1/chat/completions',true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.setRequestHeader('Authorization','Bearer '+APIKEY);
+  xhr.onload=function(){
+    document.getElementById('rp-loading').classList.remove('show');
+    btn.disabled=false; btn.textContent='&#128345; Plan My Day!';
+    try{
+      var data=JSON.parse(xhr.responseText);
+      if(data.error){err.textContent='API Error: '+data.error.message;err.classList.add('show');return;}
+      var text=data.choices[0].message.content||'';
+      var clean=text.replace(/```json/g,'').replace(/```/g,'').trim();
+      var route=JSON.parse(clean);
+      rpStops=route.stops||[];
+      renderRouteResult(route, city, hotel, leaveTime, backTime);
+    }catch(e){
+      err.textContent='Error: '+e.message+' | '+xhr.responseText.substring(0,150);
+      err.classList.add('show');
+    }
+  };
+  xhr.onerror=function(){document.getElementById('rp-loading').classList.remove('show');btn.disabled=false;btn.textContent='&#128345; Plan My Day!';err.textContent='Network error. Please try again.';err.classList.add('show');};
+  xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:2000,messages:[{role:'user',content:prompt}]}));
+}
+
+function renderRouteResult(route, city, hotel, leaveTime, backTime){
+  var cont=document.getElementById('route-result');
+  var s=route.summary||{};
+  var stops=route.stops||[];
+
+  var html='<div class="results-header"><div class="results-title">Your Day in '+city+'</div><div class="results-tag">'+leaveTime+' - '+backTime+'</div></div>';
+
+  // Summary bar
+  html+='<div class="route-summary">';
+  html+='<div class="route-summary-item"><div class="route-summary-label">Stops</div><div class="route-summary-val">'+(s.totalStops||stops.length)+'</div></div>';
+  html+='<div class="route-summary-item"><div class="route-summary-label">Distance</div><div class="route-summary-val">'+(s.estimatedDistance||'-')+'</div></div>';
+  html+='<div class="route-summary-item"><div class="route-summary-label">Transit</div><div class="route-summary-val">'+(s.totalTransitTime||'-')+'</div></div>';
+  html+='</div>';
+
+  // Stops
+  html+='<div id="rp-stops-list">';
+  stops.forEach(function(stop, i){
+    html+=renderRouteStop(stop, i, stops.length);
+  });
+  html+='</div>';
+
+  // Plan again + share
+  html+='<button class="plan-again-btn" onclick="planAgain()">&#8634; Adjust &amp; Plan Again</button>';
+  // Save bar
+  html+='<div class="route-save-bar">';
+  html+='<input class="route-name-input" id="route-name-input" type="text" placeholder="Name this route... (e.g. Sunday in NYC)"/>';
+  html+='<button class="save-route-btn" onclick="saveRoute()">&#128204; Save</button>';
+  html+='<button class="share-btn" onclick="shareRoute()">&#128279; Share</button>';
+  html+='</div>';
+
+  rpRouteCity=city;
+  cont.innerHTML=html;
+  cont.classList.add('show');
+  initDragDrop();
+}
+
+function renderRouteStop(stop, i, total){
+  var modeIcons={walking:'&#128694;',car:'&#128663;',transit:'&#128647;',cycling:'&#128690;'};
+  var modeIcon=modeIcons[rpTransport]||'&#128694;';
+  var q=encodeURIComponent(stop.name+' '+stop.address), a=encodeURIComponent(stop.address);
+  var ml='<a class="stop-map-link" href="https://maps.apple.com/?q='+a+'" target="_blank">&#127822; Apple</a> '+
+         '<a class="stop-map-link" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank">&#128506; Google</a> '+
+         '<a class="stop-map-link" href="https://waze.com/ul?q='+a+'&navigate=yes" target="_blank">&#128309; Waze</a>';
+  var upDis=i===0?'disabled':'', downDis=i===total-1?'disabled':'';
+  var warn=getHoursWarning(stop);
+  var h='<div class="route-stop" id="stop-'+i+'">';
+  h+='<div class="stop-header">';
+  h+='<div class="stop-num">'+(i+1)+'</div>';
+  h+='<div class="stop-info"><div class="stop-category">'+stop.category+'</div><div class="stop-name">'+stop.name+'</div><div class="stop-addr">&#128205; '+stop.address+'</div></div>';
+  h+='<div class="stop-actions">';
+  h+='<button class="stop-up" '+upDis+' onclick="moveStop('+i+',-1)" title="Move up">&#9650;</button>';
+  h+='<button class="stop-down" '+downDis+' onclick="moveStop('+i+',1)" title="Move down">&#9660;</button>';
+  h+='<button class="stop-remove" onclick="removeStop('+i+')" title="Remove">&#10005;</button>';
+  h+='</div></div>';
+  if(warn) h+='<div class="hours-warning">'+warn+'</div>';
+  h+='<div class="stop-details">';
+  h+='<span class="stop-time-badge">&#128336; '+stop.arrivalTime+' - '+stop.departureTime+'</span>';
+  h+='<span class="stop-time-badge">&#9200; '+stop.timeToSpend+'</span>';
+  if(stop.parkingOrTransit) h+='<span class="stop-time-badge">'+modeIcon+' '+stop.parkingOrTransit+'</span>';
+  if(stop.rating) h+='<span class="stop-time-badge">&#9733; '+stop.rating+'</span>';
+  h+='</div>';
+  h+='<div class="stop-duration-edit">';
+  h+='<span style="font-size:12px;font-weight:700;color:var(--muted);">Duration:</span>';
+  h+='<input class="duration-input" id="dur-'+i+'" value="'+stop.timeToSpend+'" onchange="rpStops['+i+'].timeToSpend=this.value"/>';
+  h+='<button class="recalc-btn" onclick="recalcTimes()">&#9201; Recalculate</button>';
+  h+='</div>';
+  if(stop.notes) h+='<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:6px;font-weight:600;">&#128161; '+stop.notes+'</div>';
+  h+='<div class="stop-maps">'+ml+'</div>';
+  if(stop.transitToNext && i<total-1) h+='<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);font-size:12px;color:var(--muted);font-style:italic;font-weight:600;">&#8594; '+stop.transitToNext+'</div>';
+  h+='</div>';
+  return h;
+}
+
+function removeStop(i){
+  rpStops.splice(i,1);
+  refreshStopsList();
+  toast('Stop removed');
+}
+
+function refreshStopsList(){
+  var list=document.getElementById('rp-stops-list'); if(!list) return;
+  var html='';
+  rpStops.forEach(function(stop,i){ html+=renderRouteStop(stop,i,rpStops.length); });
+  list.innerHTML=html;
+  initDragDrop();
+}
+
+// ── MOVE STOPS ────────────────────────────────────────────
+function moveStop(i, dir){
+  var j=i+dir;
+  if(j<0||j>=rpStops.length) return;
+  var tmp=rpStops[i]; rpStops[i]=rpStops[j]; rpStops[j]=tmp;
+  refreshStopsList();
+  toast(dir===-1?'Moved up &#9650;':'Moved down &#9660;');
+}
+
+// ── SAVE ROUTE ────────────────────────────────────────────
+function loadRoutes(){ try{return JSON.parse(localStorage.getItem('ctp_routes')||'[]');}catch(x){return[];} }
+function saveRoutes(a){ try{localStorage.setItem('ctp_routes',JSON.stringify(a));}catch(x){} }
+
+function saveRoute(){
+  var city=rpRouteCity||'';
+  var name=document.getElementById('route-name-input').value.trim();
+  if(!name){ toast('Please enter a name for this route!'); return; }
+  var leaveTime=document.getElementById('rp-leave').value;
+  var backTime=document.getElementById('rp-back').value;
+  var routes=loadRoutes();
+  routes.push({ id:Date.now(), name:name, city:city, stops:rpStops, leaveTime:leaveTime, backTime:backTime, savedAt:new Date().toLocaleDateString() });
+  saveRoutes(routes);
+  toast('Route saved! &#128204;');
+  document.getElementById('route-name-input').value='';
+}
+
+// ── SAVED ROUTES ──────────────────────────────────────────
+function renderSavedRoutes(){
+  var cont=document.getElementById('routes-content');
+  var routes=loadRoutes();
+  if(routes.length===0){ cont.innerHTML='<div class="empty-state"><div class="big">&#128204;</div><p>No saved routes yet.<br/>Plan a day in the Route Planner<br/>and save it here!</p></div>'; return; }
+  // Sort
+  var sorted=routes.slice();
+  if(routeSortBy==='date') sorted.sort(function(a,b){return b.id-a.id;});
+  else if(routeSortBy==='city') sorted.sort(function(a,b){return(a.city||'').localeCompare(b.city||'');});
+  else if(routeSortBy==='stops') sorted.sort(function(a,b){return(b.stops||[]).length-(a.stops||[]).length;});
+  // Filter by city
+  var cities=[]; sorted.forEach(function(r){var c=r.city||'Unknown';if(cities.indexOf(c)<0)cities.push(c);});
+  cities.sort();
+  // Build toolbar
+  cont.innerHTML='';
+  var tb=document.createElement('div'); tb.className='routes-toolbar';
+  ['date','city','stops'].forEach(function(s){
+    var b=document.createElement('button'); b.className='sort-btn'+(routeSortBy===s?' active':'');
+    b.id='sort-'+s; b.textContent=s==='date'?'&#128336; Newest':s==='city'?'&#127757; City':'&#128346; Most Stops';
+    b.onclick=function(){setRouteSort(s);}; tb.appendChild(b);
+  });
+  cont.appendChild(tb);
+  // City filter chips
+  if(cities.length>1){
+    var cf=document.createElement('div'); cf.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;';
+    cities.forEach(function(c){
+      var b=document.createElement('button'); b.className='fav-chip'+(routeFilterCity===c?' active':'');
+      b.textContent=c; b.onclick=function(){routeFilterCity=(routeFilterCity===c)?null:c;renderSavedRoutes();};
+      cf.appendChild(b);
+    });
+    cont.appendChild(cf);
+  }
+  if(routeFilterCity) sorted=sorted.filter(function(r){return(r.city||'Unknown')===routeFilterCity;});
+  // Group by city
+  var grouped={};
+  sorted.forEach(function(r){var c=r.city||'Unknown';if(!grouped[c])grouped[c]=[];grouped[c].push(r);});
+  Object.keys(grouped).sort().forEach(function(city){
+    var g=document.createElement('div'); g.className='city-group';
+    var h=document.createElement('div'); h.className='city-header';
+    h.innerHTML='<div class="city-name">&#128205; '+city+'</div><div class="city-count">'+grouped[city].length+' route'+(grouped[city].length>1?'s':'')+'</div>';
+    g.appendChild(h);
+    grouped[city].forEach(function(r){
+      var card=document.createElement('div'); card.className='saved-route-card';
+      // Header
+      var hdr=document.createElement('div'); hdr.className='saved-route-header';
+      hdr.onclick=function(){ var body=document.getElementById('rb-'+r.id); var arr=document.getElementById('ra-'+r.id); var open=!body.classList.contains('show'); body.classList.toggle('show',open); arr.innerHTML=open?'&#9652;':'&#9662;'; };
+      var left=document.createElement('div'); left.className='saved-route-left';
+      left.innerHTML='<div class="saved-route-name">'+r.name+'</div><div class="saved-route-meta"><span class="saved-route-tag srt-city">'+city+'</span><span class="saved-route-tag srt-stops">'+(r.stops||[]).length+' stops</span><span class="saved-route-tag srt-date">'+r.savedAt+'</span></div>';
+      var right=document.createElement('div'); right.className='saved-route-right';
+      var del=document.createElement('button'); del.className='route-delete-btn'; del.innerHTML='&#10005; Delete';
+      (function(rid){ del.onclick=function(e){ e.stopPropagation(); var rs=loadRoutes().filter(function(x){return x.id!==rid;}); saveRoutes(rs); renderSavedRoutes(); toast('Route deleted'); }; })(r.id);
+      var arr=document.createElement('span'); arr.id='ra-'+r.id; arr.innerHTML='&#9662;'; arr.style.cssText='font-size:16px;color:var(--sage-light);';
+      right.appendChild(del); right.appendChild(arr);
+      hdr.appendChild(left); hdr.appendChild(right); card.appendChild(hdr);
+      // Body
+      var body=document.createElement('div'); body.className='saved-route-body'; body.id='rb-'+r.id;
+      // Time summary
+      if(r.leaveTime||r.backTime){ var ts=document.createElement('div'); ts.style.cssText='font-size:12px;color:var(--muted);font-weight:700;margin-bottom:12px;'; ts.innerHTML='&#128336; '+r.leaveTime+' &mdash; '+r.backTime; body.appendChild(ts); }
+      (r.stops||[]).forEach(function(stop,si){
+        var item=document.createElement('div'); item.className='saved-stop-item';
+        var num=document.createElement('div'); num.className='saved-stop-num'; num.textContent=si+1; item.appendChild(num);
+        var info=document.createElement('div'); info.className='saved-stop-info';
+        info.innerHTML='<div class="saved-stop-name">'+stop.name+'</div><div class="saved-stop-detail">&#128205; '+stop.address+'</div><div class="saved-stop-detail">&#128336; '+stop.arrivalTime+' - '+stop.departureTime+' &nbsp; &#9200; '+stop.timeToSpend+'</div>';
+        var sml=document.createElement('div'); sml.className='saved-stop-maps'; sml.innerHTML=mapLinks(stop.name,stop.address,'stop-map-link'); info.appendChild(sml);
+        item.appendChild(info); body.appendChild(item);
+      });
+      card.appendChild(body); g.appendChild(card);
+    });
+    cont.appendChild(g);
+  });
+}
+
+// ── DISCOVER SEARCH ───────────────────────────────────────
+function doSearch(){
+  var city=document.getElementById('input-city').value.trim();
+  var interest=document.getElementById('input-interest').value.trim();
+  var hotel=document.getElementById('input-hotel').value.trim();
+  var maxTime=document.getElementById('time-slider').value;
+  var err=document.getElementById('error-msg');
+  err.classList.remove('show');
+  if(!city||!interest){err.textContent='Please enter a city and what you are looking for.';err.classList.add('show');return;}
+  var labels={walking:'Walking',car:'Car',transit:'Public Transit',cycling:'Cycling'};
+  var modeList=modes.map(function(m){return labels[m];}).join(', ');
+  var btn=document.getElementById('search-btn'); btn.disabled=true; btn.textContent='Searching...';
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('loading-text').textContent='Discovering the best spots in '+city+'...';
+  lastCity=city;
+  var hotelLine=hotel?'They are staying at: '+hotel+'. This is the starting point.':'No specific base location. Start from the most central point.';
+  var prompt='You are a travel assistant and expert route planner. Find places in '+city+'. Looking for: '+interest+'. '+hotelLine+' Transport modes: '+modeList+'. Max travel time between stops: '+maxTime+' minutes. Return a JSON array of exactly 6 places ordered as a logical efficient travel route minimising backtracking. Each object must have: name (string), address (full street address), rating (number 1.0-5.0), travelTime (string: travel time FROM THE PREVIOUS STOP e.g. 8 min walk), fromPrevious (string: short direction hint), priceLevel (number 1-4 or null), openNow (boolean), description (2-3 sentences). Respond ONLY with a valid JSON array. No markdown, no explanation.';
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST','https://api.groq.com/openai/v1/chat/completions',true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.setRequestHeader('Authorization','Bearer '+APIKEY);
+  xhr.onload=function(){
+    document.getElementById('loading').classList.remove('show');
+    btn.disabled=false; btn.innerHTML='&#10024; Let&#39;s Explore! &#9992;';
+    try{
+      var data=JSON.parse(xhr.responseText);
+      if(data.error){err.textContent='API Error: '+data.error.message;err.classList.add('show');return;}
+      if(!data.choices||data.choices.length===0){err.textContent='No response. Status: '+xhr.status;err.classList.add('show');return;}
+      var text=data.choices[0].message.content||'';
+      var clean=text.replace(/```json/g,'').replace(/```/g,'').trim();
+      lastResults=JSON.parse(clean);
+      document.getElementById('results-tag').textContent=city;
+      var html='';
+      for(var j=0;j<lastResults.length;j++){ if(j>0) html+=renderConn(lastResults[j]); html+=renderCard(lastResults[j],j); }
+      document.getElementById('places-list').innerHTML=html;
+      document.getElementById('results').classList.add('show');
+    }catch(e){ err.textContent='Error ('+xhr.status+'): '+e.message+' | '+xhr.responseText.substring(0,150); err.classList.add('show'); }
+  };
+  xhr.onerror=function(){ document.getElementById('loading').classList.remove('show'); btn.disabled=false; btn.innerHTML='&#10024; Let&#39;s Explore! &#9992;'; err.textContent='Network error. Please check your connection.'; err.classList.add('show'); };
+  xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1500,messages:[{role:'user',content:prompt}]}));
+}
+
+// ── DARK MODE ─────────────────────────────────────────────
+function initTheme(){
+  var saved=localStorage.getItem('ctp_theme');
+  var sys=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  var dark=saved?saved==='dark':sys;
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  var btn=document.getElementById('dark-toggle');
+  if(btn) btn.innerHTML=dark?'&#9728;':'&#9790;';
+}
+function toggleDark(){
+  var cur=document.documentElement.getAttribute('data-theme');
+  var next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('ctp_theme',next);
+  var btn=document.getElementById('dark-toggle');
+  if(btn) btn.innerHTML=next==='dark'?'&#9728;':'&#9790;';
+}
+
+// ── WEATHER ───────────────────────────────────────────────
+var weatherCache={};
+function weatherIcon(code){
+  if(code<=3) return '&#9728;';
+  if(code<=48) return '&#127787;';
+  if(code<=67) return '&#127783;';
+  if(code<=77) return '&#10052;';
+  if(code<=82) return '&#127783;';
+  return '&#26925;';
+}
+function weatherDesc(code){
+  if(code===0) return 'Clear sky';
+  if(code<=2) return 'Partly cloudy';
+  if(code<=3) return 'Overcast';
+  if(code<=48) return 'Foggy';
+  if(code<=55) return 'Drizzle';
+  if(code<=65) return 'Rain';
+  if(code<=77) return 'Snow';
+  if(code<=82) return 'Showers';
+  return 'Thunderstorm';
+}
+function fetchWeather(city, containerId){
+  var el=document.getElementById(containerId);
+  if(!el) return;
+  if(weatherCache[city]){renderWeather(weatherCache[city],city,containerId);return;}
+  el.innerHTML='<div class="weather-placeholder"><span class="weather-placeholder-text">&#127783; Loading weather for '+city+'...</span></div>';
+  // First geocode the city using open-meteo geocoding
+  var geoXhr=new XMLHttpRequest();
+  geoXhr.open('GET','https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=1&language=en&format=json',true);
+  geoXhr.onload=function(){
+    try{
+      var geo=JSON.parse(geoXhr.responseText);
+      if(!geo.results||!geo.results[0]){el.innerHTML='';return;}
+      var r=geo.results[0];
+      var lat=r.latitude, lon=r.longitude;
+      var wxXhr=new XMLHttpRequest();
+      wxXhr.open('GET','https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&wind_speed_unit=kmh&temperature_unit=celsius',true);
+      wxXhr.onload=function(){
+        try{
+          var wx=JSON.parse(wxXhr.responseText);
+          var c=wx.current;
+          var data={temp:Math.round(c.temperature_2m),humidity:c.relative_humidity_2m,wind:Math.round(c.wind_speed_10m),code:c.weather_code};
+          weatherCache[city]=data;
+          renderWeather(data,city,containerId);
+        }catch(x){el.innerHTML='';}
+      };
+      wxXhr.onerror=function(){el.innerHTML='';};
+      wxXhr.send();
+    }catch(x){el.innerHTML='';}
+  };
+  geoXhr.onerror=function(){el.innerHTML='';};
+  geoXhr.send();
+}
+function renderWeather(data,city,containerId){
+  var el=document.getElementById(containerId); if(!el) return;
+  el.innerHTML='<div class="weather-widget">'+
+    '<div class="weather-left">'+
+      '<div class="weather-icon">'+weatherIcon(data.code)+'</div>'+
+      '<div>'+
+        '<div class="weather-temp">'+data.temp+'&#176;C</div>'+
+        '<div class="weather-desc">'+weatherDesc(data.code)+'</div>'+
+        '<div class="weather-city">'+city+' &mdash; Live</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="weather-details">'+
+      '<div class="weather-detail">&#128167; '+data.humidity+'%</div>'+
+      '<div class="weather-detail">&#127788; '+data.wind+' km/h</div>'+
+      '<button class="weather-btn" onclick="weatherCache={};fetchWeather(''+city+'',''+containerId+'')">&#8635; Refresh</button>'+
+    '</div>'+
+  '</div>';
+}
+function showWeatherBtn(city, containerId){
+  var el=document.getElementById(containerId); if(!el||!city) return;
+  el.innerHTML='<div class="weather-placeholder">'+
+    '<div class="weather-placeholder-text">&#127783; Check today's weather in '+city+'</div>'+
+    '<button class="weather-btn" style="background:var(--sage);color:#fff;border:none;" onclick="fetchWeather(''+city+'',''+containerId+'')">&#9728; Check Weather</button>'+
+  '</div>';
+}
+
+// ── TRIP NOTES ────────────────────────────────────────────
+function loadNotes(){ try{return JSON.parse(localStorage.getItem('ctp_notes')||'{}');}catch(x){return{};} }
+function saveNote(key,val){ var n=loadNotes(); n[key]=val; try{localStorage.setItem('ctp_notes',JSON.stringify(n));}catch(x){} }
+function getNoteKey(p){ return (p.name+'|'+p.address).replace(/\s/g,'_'); }
+
+// ── EDIT PLACE ─────────────────────────────────────────────
+var editingPlaceKey=null;
+function openEditModal(name,address){
+  var favs=loadFavs();
+  var p=null;
+  for(var i=0;i<favs.length;i++) if(favs[i].name===name&&favs[i].address===address){p=favs[i];break;}
+  if(!p) return;
+  editingPlaceKey={name:name,address:address};
+  document.getElementById('edit-name').value=p.name||'';
+  document.getElementById('edit-address').value=p.address||'';
+  document.getElementById('edit-rating').value=p.rating||'';
+  var notes=loadNotes();
+  document.getElementById('edit-note').value=notes[getNoteKey(p)]||'';
+  document.getElementById('edit-modal').style.display='flex'; document.body.style.overflow='hidden';
+}
+function closeEditModal(){ document.getElementById('edit-modal').style.display='none'; editingPlaceKey=null; document.body.style.overflow=''; }
+function saveEditModal(){
+  if(!editingPlaceKey) return;
+  var favs=loadFavs();
+  for(var i=0;i<favs.length;i++){
+    if(favs[i].name===editingPlaceKey.name&&favs[i].address===editingPlaceKey.address){
+      var note=document.getElementById('edit-note').value.trim();
+      if(note) saveNote(getNoteKey(favs[i]),note);
+      favs[i].name=document.getElementById('edit-name').value.trim()||favs[i].name;
+      favs[i].address=document.getElementById('edit-address').value.trim()||favs[i].address;
+      var r=parseFloat(document.getElementById('edit-rating').value);
+      if(r>=1&&r<=5) favs[i].rating=r;
+      break;
+    }
+  }
+  saveFavs(favs);
+  closeEditModal();
+  renderFavs();
+  toast('Place updated &#10024;');
+}
+
+// ── SHARE ROUTE ───────────────────────────────────────────
+function shareRoute(){
+  if(!rpStops||rpStops.length===0){toast('No route to share!');return;}
+  var data={city:rpRouteCity,stops:rpStops};
+  var encoded=btoa(encodeURIComponent(JSON.stringify(data)));
+  var url=window.location.href.split('#')[0]+'#route='+encoded;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){toast('&#128279; Link copied to clipboard!');}).catch(function(){prompt('Copy this link:',url);});
+  } else {
+    prompt('Copy this link:',url);
+  }
+}
+function loadSharedRoute(){
+  var hash=window.location.hash;
+  if(!hash||hash.indexOf('#route=')<0) return;
+  try{
+    var encoded=hash.replace('#route=','');
+    var data=JSON.parse(decodeURIComponent(atob(encoded)));
+    if(data.stops&&data.stops.length>0){
+      rpStops=data.stops; rpRouteCity=data.city||'Shared Route';
+      switchPage('planner');
+      setTimeout(function(){
+        renderRouteResult({summary:{totalStops:rpStops.length},stops:rpStops},rpRouteCity,'','');
+      },300);
+      toast('&#128279; Shared route loaded!');
+    }
+  }catch(x){}
+}
+
+// ── PLAN AGAIN ────────────────────────────────────────────
+function planAgain(){
+  document.getElementById('route-result').classList.remove('show');
+  document.getElementById('rp-main').scrollIntoView({behavior:'smooth'});
+}
+
+// ── RECALCULATE TIMES ─────────────────────────────────────
+function recalcTimes(){
+  if(!rpStops||rpStops.length===0) return;
+  var leaveEl=document.getElementById('rp-leave');
+  if(!leaveEl) return;
+  var startTime=leaveEl.value||'09:00';
+  var parts=startTime.split(':');
+  var cur=parseInt(parts[0])*60+parseInt(parts[1]);
+  var transitMins=15; // default transit between stops
+  rpStops.forEach(function(stop,i){
+    stop.arrivalTime=minsToTime(cur);
+    // parse duration from timeToSpend e.g. "45 min" or "1 hour 30 min"
+    var dur=parseDuration(stop.timeToSpend)||60;
+    cur+=dur;
+    stop.departureTime=minsToTime(cur);
+    if(i<rpStops.length-1) cur+=transitMins;
+  });
+  refreshStopsList();
+  toast('&#9201; Times recalculated!');
+}
+function parseDuration(str){
+  if(!str) return 60;
+  var h=0,m=0;
+  var hm=str.match(/(\d+)\s*h/i); if(hm) h=parseInt(hm[1]);
+  var mm=str.match(/(\d+)\s*min/i); if(mm) m=parseInt(mm[1]);
+  if(h===0&&m===0){var n=str.match(/(\d+)/);if(n)m=parseInt(n[1]);}
+  return h*60+m||60;
+}
+function minsToTime(m){
+  m=((m%1440)+1440)%1440;
+  var h=Math.floor(m/60), mn=m%60;
+  return (h<10?'0':'')+h+':'+(mn<10?'0':'')+mn;
+}
+
+// ── SORT/FILTER ROUTES ────────────────────────────────────
+var routeSortBy='date';
+var routeFilterCity=null;
+function setRouteSort(by){
+  routeSortBy=by;
+  document.querySelectorAll('.sort-btn').forEach(function(b){b.classList.remove('active');});
+  var sb=document.getElementById('sort-'+by); if(sb) sb.classList.add('active');
+  renderSavedRoutes();
+}
+
+// ── OPENING HOURS WARNING ─────────────────────────────────
+var CLOSED_DAYS={museum:[1],gallery:[1],church:[1]};// Monday=1 typically
+function getHoursWarning(stop){
+  var day=new Date().getDay();
+  var cat=(stop.category||'').toLowerCase();
+  if((cat.indexOf('museum')>=0||cat.indexOf('gallery')>=0)&&day===1)
+    return '&#9888; Many museums close on Mondays!';
+  if((cat.indexOf('breakfast')>=0||cat.indexOf('brunch')>=0)&&(parseInt(stop.arrivalTime)>11))
+    return '&#9888; Breakfast spots may stop serving after 11am';
+  return null;
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
+
+// ── INIT ──────────────────────────────────────────────────
+initTheme();
+updateSlider();
+loadSharedRoute();
+</script>
+</body>
+</html>
