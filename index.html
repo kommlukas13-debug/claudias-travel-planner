@@ -754,7 +754,7 @@ function renderRoutePlanner(){
   // Home address
   html+='<div class="field"><label class="field-label">&#127968; Your address / hotel</label><input class="field-input" id="rp-hotel" type="text" placeholder="e.g. 123 Main St, New York" autocomplete="off" autocorrect="off" spellcheck="false"/></div>';
   // Transport
-  html+='<div class="field"><label class="field-label">&#128640; How are you getting around?</label><div class="transport-group">';
+  html+='<div class="field"><label class="field-label">&#128640; Getting around <span style="text-transform:none;font-weight:400;color:#a8bfaa">(pick all that apply)</span></label><div class="transport-group">';
   html+='<button class="transport-btn active" data-rp="walking" onclick="toggleRpTransport(this)"><span class="t-icon">&#128694;</span>Walking</button>';
   html+='<button class="transport-btn" data-rp="car" onclick="toggleRpTransport(this)"><span class="t-icon">&#128663;</span>Car</button>';
   html+='<button class="transport-btn" data-rp="transit" onclick="toggleRpTransport(this)"><span class="t-icon">&#128647;</span>Transit</button>';
@@ -783,16 +783,23 @@ function renderRoutePlanner(){
 
   cont.innerHTML=html;
   rpCategoryCount={};
-  rpTransport='walking';
+  rpTransport=['walking'];
   // Render any existing custom categories
   setTimeout(function(){ renderCustomCats('custom-cat-list'); }, 50);
 }
 
-var rpTransport='walking';
+var rpTransport=['walking'];
 function toggleRpTransport(btn){
-  document.querySelectorAll('[data-rp]').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  rpTransport=btn.getAttribute('data-rp');
+  var mode = btn.getAttribute('data-rp');
+  var idx = rpTransport.indexOf(mode);
+  if(idx >= 0){
+    if(rpTransport.length === 1) return; // keep at least one
+    rpTransport.splice(idx, 1);
+    btn.classList.remove('active');
+  } else {
+    rpTransport.push(mode);
+    btn.classList.add('active');
+  }
 }
 
 function rpCityChanged(){
@@ -868,7 +875,7 @@ function generateRoute(){
   var favsText=cityFavs.map(function(p){return p.name+' ('+p.address+')'+(p.rating?' rating:'+p.rating:'');}).join('; ');
 
   var transportLabels={walking:'Walking',car:'Driving',transit:'Public Transit',cycling:'Cycling'};
-  var tLabel=transportLabels[rpTransport]||rpTransport;
+  var tLabel=rpTransport.map(function(m){return transportLabels[m]||m;}).join(', ');
 
   document.getElementById('rp-loading').classList.add('show');
   document.getElementById('route-result').classList.remove('show');
@@ -951,7 +958,7 @@ function renderRouteResult(route, city, hotel, leaveTime, backTime){
 
 function renderRouteStop(stop, i, total){
   var modeIcons={walking:'&#128694;',car:'&#128663;',transit:'&#128647;',cycling:'&#128690;'};
-  var modeIcon=modeIcons[rpTransport]||'&#128694;';
+  var modeIcon=rpTransport.map(function(m){return modeIcons[m]||'&#128694;';}).join(' ');
   var q=encodeURIComponent(stop.name+' '+stop.address), a=encodeURIComponent(stop.address);
   var ml='<a class="stop-map-link" href="https://maps.apple.com/?q='+a+'" target="_blank">&#127822; Apple</a> '+
          '<a class="stop-map-link" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank">&#128506; Google</a> '+
