@@ -341,6 +341,37 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .trip-add-route-btn:hover{background:var(--sage-pale);}
 .trip-arrow{color:rgba(255,255,255,.7);font-size:18px;margin-left:8px;}
 
+
+/* TAGS */
+.place-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.place-tag{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--peach-pale),#ffe8d8);border:1.5px solid var(--peach-light);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;color:#c07040;cursor:default;}
+.place-tag-remove{background:none;border:none;cursor:pointer;color:#c07040;font-size:11px;padding:0;line-height:1;margin-left:2px;}
+.tag-input-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+.tag-suggestion{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--sage-pale);color:var(--sage-dark);font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+.tag-suggestion:hover{background:var(--sage);color:#fff;}
+.tag-filter-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.tag-filter-chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;border:2px solid var(--border);background:linear-gradient(135deg,var(--peach-pale),#ffe8d8);color:#c07040;}
+.tag-filter-chip.active{background:linear-gradient(135deg,var(--peach),#e8905a);border-color:var(--peach);color:#fff;}
+
+/* PERSONAL RATING */
+.personal-rating-wrap{display:flex;align-items:center;gap:6px;margin-top:6px;}
+.personal-rating-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.personal-star{font-size:20px;cursor:pointer;color:#dde8df;transition:color .15s;background:none;border:none;padding:2px;line-height:1;}
+.personal-star.on{color:var(--gold);}
+
+/* WEATHER TAGS ON ROUTES */
+.weather-tag-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+.weather-tag-label{font-size:12px;font-weight:800;color:var(--muted);}
+.weather-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:800;border:2px solid var(--border);background:var(--sage-pale);color:var(--ink);cursor:default;}
+.weather-tag-remove{background:none;border:none;cursor:pointer;font-size:12px;color:var(--muted);padding:0;}
+.weather-tag-input-row{display:flex;gap:8px;margin-top:6px;}
+.weather-tag-input{flex:1;padding:8px 12px;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;background:var(--sage-pale);color:var(--ink);outline:none;}
+.weather-tag-input:focus{border-color:var(--sage);}
+.weather-tag-add-btn{padding:8px 14px;background:var(--sage);color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;min-height:44px;}
+.weather-preset{padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--sage-pale);font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--ink);min-height:36px;}
+.weather-preset:hover{border-color:var(--sage);background:#d4eedd;}
+.srt-weather{background:#e8f4ff;color:#2a6a9f;border:1.5px solid #b8d8f8;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -528,6 +559,7 @@ try{
           <button class="fav-clear-btn" id="fav-clear-btn" onclick="clearFavSearch()">&#10005;</button>
         </div>
         <div class="fav-chips" id="fav-chips"></div>
+        <div class="tag-filter-wrap" id="fav-tag-chips"></div>
         <div class="fav-meta" id="fav-meta"></div>
       </div>
     </div>
@@ -610,8 +642,28 @@ try{
     <div class="modal-title">&#9998; Edit Place</div>
     <div class="field"><label class="field-label">Name</label><input class="field-input" id="edit-name" type="text"/></div>
     <div class="field"><label class="field-label">Address</label><input class="field-input" id="edit-address" type="text"/></div>
-    <div class="field"><label class="field-label">Rating (1-5)</label><input class="field-input" id="edit-rating" type="number" min="1" max="5" step="0.1"/></div>
-    <div class="field"><label class="field-label">Your Note</label><textarea class="field-input" id="edit-note" rows="3" style="font-size:16px;min-height:80px;" placeholder="e.g. Try the croissants! Book in advance..."></textarea></div>
+    <div class="field"><label class="field-label">&#11088; AI Rating (1-5)</label><input class="field-input" id="edit-rating" type="number" min="1" max="5" step="0.1"/></div>
+    <div class="field">
+      <label class="field-label">&#128149; Your Rating</label>
+      <div class="personal-rating-wrap" id="edit-personal-rating-wrap">
+        <button class="personal-star" data-star="1" onclick="setPersonalRating(1)">&#9733;</button>
+        <button class="personal-star" data-star="2" onclick="setPersonalRating(2)">&#9733;</button>
+        <button class="personal-star" data-star="3" onclick="setPersonalRating(3)">&#9733;</button>
+        <button class="personal-star" data-star="4" onclick="setPersonalRating(4)">&#9733;</button>
+        <button class="personal-star" data-star="5" onclick="setPersonalRating(5)">&#9733;</button>
+        <span id="edit-personal-rating-val" style="font-size:12px;color:var(--muted);font-weight:700;margin-left:4px;"></span>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">&#127991; Tags</label>
+      <div class="tag-input-row">
+        <input class="custom-cat-input" id="edit-tag-input" type="text" placeholder="Add a tag..." autocomplete="off" style="font-size:16px;"/>
+        <button class="custom-cat-add-btn" onclick="addEditTag()">+ Add</button>
+      </div>
+      <div id="edit-tag-suggestions" class="tag-input-row"></div>
+      <div id="edit-tag-list" class="place-tags"></div>
+    </div>
+    <div class="field"><label class="field-label">&#128203; Your Note</label><textarea class="field-input" id="edit-note" rows="3" style="font-size:16px;min-height:80px;" placeholder="e.g. Try the croissants! Book in advance..."></textarea></div>
     <div class="modal-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" onclick="saveEditModal()">Save Changes</button>
@@ -773,8 +825,26 @@ function renderFavs(){
   var chips=document.getElementById('fav-chips'); chips.innerHTML='';
   cities.forEach(function(c){ var b=document.createElement('button'); b.className='fav-chip'+(favActiveChip===c?' active':''); b.textContent=c; b.onclick=function(){favActiveChip=(favActiveChip===c)?null:c;renderFavs();}; chips.appendChild(b); });
   var q=(document.getElementById('fav-search-input').value||'').trim().toLowerCase();
-  var filtered=f.filter(function(x){ var cok=!favActiveChip||(x.city||'Unknown')===favActiveChip; var qok=!q||(x.name||'').toLowerCase().indexOf(q)>=0||(x.city||'').toLowerCase().indexOf(q)>=0||(x.address||'').toLowerCase().indexOf(q)>=0||(x.description||'').toLowerCase().indexOf(q)>=0; return cok&&qok; });
+  var filtered=f.filter(function(x){
+    var cok=!favActiveChip||(x.city||'Unknown')===favActiveChip;
+    var qok=!q||(x.name||'').toLowerCase().indexOf(q)>=0||(x.city||'').toLowerCase().indexOf(q)>=0||(x.address||'').toLowerCase().indexOf(q)>=0||(x.description||'').toLowerCase().indexOf(q)>=0;
+    // Tag filter
+    var tok=!activeTagFilter;
+    if(!tok){ var ptags=loadTags(getPlaceKey(x)); tok=ptags.indexOf(activeTagFilter)>=0; }
+    return cok&&qok&&tok;
+  });
   document.getElementById('fav-meta').innerHTML='Showing <strong>'+filtered.length+'</strong> of '+f.length+' saved places';
+  // Tag filter chips
+  var allUsedTags = getAllUsedTags();
+  var tagChipsWrap = document.getElementById('fav-tag-chips');
+  if(tagChipsWrap){
+    tagChipsWrap.innerHTML='';
+    allUsedTags.forEach(function(tag){
+      var b=document.createElement('button'); b.className='tag-filter-chip'+(activeTagFilter===tag?' active':'');
+      b.textContent=tag; b.onclick=function(){activeTagFilter=(activeTagFilter===tag)?null:tag;renderFavs();};
+      tagChipsWrap.appendChild(b);
+    });
+  }
   if(filtered.length===0){ cont.innerHTML='<div class="empty-state"><div class="big">&#128269;</div><p>No places match your search.</p></div>'; return; }
   var grouped={};
   filtered.forEach(function(x){var c=x.city||'Unknown';if(!grouped[c])grouped[c]=[];grouped[c].push(x);});
@@ -792,6 +862,20 @@ function renderFavs(){
       if(p.rating){var sr=document.createElement('div');sr.innerHTML='<span style="color:var(--gold);font-size:12px">'+'&#9733;'.repeat(Math.round(p.rating))+'</span> <span style="color:var(--muted);font-size:11px">('+p.rating+')</span>';left.appendChild(sr);}
       var notes=loadNotes(); var nk=(p.name+'|'+p.address).replace(/\s/g,'_');
       if(notes[nk]){var nd=document.createElement('div');nd.style.cssText='font-size:12px;color:var(--muted);font-style:italic;margin-top:4px;font-weight:600;';nd.innerHTML='&#128203; '+notes[nk];left.appendChild(nd);}
+      // Tags
+      var pkey2=getPlaceKey(p); var ptags=loadTags(pkey2);
+      if(ptags.length>0){
+        var tagWrap=document.createElement('div'); tagWrap.className='place-tags';
+        ptags.forEach(function(tag){ var sp=document.createElement('span'); sp.className='place-tag'; sp.textContent=tag; tagWrap.appendChild(sp); });
+        left.appendChild(tagWrap);
+      }
+      // Personal rating
+      var prating=loadPersonalRating(pkey2);
+      if(prating>0){
+        var prDiv=document.createElement('div'); prDiv.style.cssText='font-size:12px;font-weight:700;color:var(--gold);margin-top:3px;';
+        prDiv.innerHTML='&#128149; '+'&#9733;'.repeat(prating)+'<span style="color:var(--muted);"> (yours)</span>';
+        left.appendChild(prDiv);
+      }
       var ml=document.createElement('div'); ml.className='fav-map-links'; ml.innerHTML=mapLinks(p.name,p.address,'fav-map-link'); left.appendChild(ml);
       card.appendChild(left);
       var actions=document.createElement('div'); actions.style.cssText='display:flex;flex-direction:column;gap:5px;flex-shrink:0;margin-left:8px;';
@@ -1218,7 +1302,8 @@ function renderSavedRoutes(){
       var hdr=document.createElement('div'); hdr.className='saved-route-header';
       hdr.onclick=function(){ var body=document.getElementById('rb-'+r.id); var arr=document.getElementById('ra-'+r.id); var open=!body.classList.contains('show'); body.classList.toggle('show',open); arr.innerHTML=open?'&#9652;':'&#9662;'; };
       var left=document.createElement('div'); left.className='saved-route-left';
-      left.innerHTML='<div class="saved-route-name">'+r.name+'</div><div class="saved-route-meta"><span class="saved-route-tag srt-city">'+city+'</span><span class="saved-route-tag srt-stops">'+(r.stops||[]).length+' stops</span><span class="saved-route-tag srt-date">'+r.savedAt+'</span></div>';
+      var wtHtml=getWeatherTagsHtml(r.id);
+      left.innerHTML='<div class="saved-route-name">'+r.name+'</div><div class="saved-route-meta"><span class="saved-route-tag srt-city">'+city+'</span><span class="saved-route-tag srt-stops">'+(r.stops||[]).length+' stops</span><span class="saved-route-tag srt-date">'+r.savedAt+'</span>'+wtHtml+'</div>';
       var right=document.createElement('div'); right.className='saved-route-right';
       var editBtn=document.createElement('button'); editBtn.className='route-edit-btn'; editBtn.innerHTML='&#9998; Edit';
       (function(route){ editBtn.onclick=function(e){ e.stopPropagation(); loadRouteForEditing(route); }; })(r);
@@ -1235,6 +1320,10 @@ function renderSavedRoutes(){
       var body=document.createElement('div'); body.className='saved-route-body'; body.id='rb-'+r.id;
       // Time summary
       if(r.leaveTime||r.backTime){ var ts=document.createElement('div'); ts.style.cssText='font-size:12px;color:var(--muted);font-weight:700;margin-bottom:12px;'; ts.innerHTML='&#128336; '+r.leaveTime+' &mdash; '+r.backTime; body.appendChild(ts); }
+      // Weather tags
+      var wtWrap=document.createElement('div'); wtWrap.className='weather-tag-wrap'; wtWrap.id='wt-'+r.id;
+      renderWeatherTags(r.id, wtWrap);
+      body.appendChild(wtWrap);
       // Map view
       var mapDiv=document.createElement('div'); mapDiv.id='saved-map-'+r.id; body.appendChild(mapDiv);
       (function(rid,rstops){ setTimeout(function(){ showRouteMap(rstops,'saved-map-'+rid); },50); })(r.id, r.stops||[]);
@@ -1434,6 +1523,10 @@ function saveEditModal(){
       favs[i].address=document.getElementById('edit-address').value.trim()||favs[i].address;
       var r=parseFloat(document.getElementById('edit-rating').value);
       if(r>=1&&r<=5) favs[i].rating=r;
+      // Save tags + personal rating
+      var pkey=getPlaceKey(favs[i]);
+      saveTags(pkey, editModalTags);
+      if(editModalPersonalRating>0) savePersonalRating(pkey, editModalPersonalRating);
       break;
     }
   }
@@ -2313,6 +2406,147 @@ function shareTrip(trip){
   if(navigator.clipboard){
     navigator.clipboard.writeText(url).then(function(){toast('&#128279; Trip link copied!');}).catch(function(){prompt('Copy this link:',url);});
   } else { prompt('Copy this trip link:',url); }
+}
+
+
+// -- TAGS -------------------------------------------------
+var allTags = [];
+var activeTagFilter = null;
+
+function loadTags(placeKey){ try{return JSON.parse(localStorage.getItem('ctp_tags_'+placeKey)||'[]');}catch(x){return[];} }
+function saveTags(placeKey, tags){ try{localStorage.setItem('ctp_tags_'+placeKey,JSON.stringify(tags));}catch(x){} }
+function getPlaceKey(p){ return (p.name+'|'+p.address).replace(/[^a-zA-Z0-9]/g,'_'); }
+
+function getAllUsedTags(){
+  var all = [];
+  var favs = loadFavs();
+  favs.forEach(function(p){
+    var key = getPlaceKey(p);
+    var tags = loadTags(key);
+    tags.forEach(function(t){ if(all.indexOf(t)<0) all.push(t); });
+  });
+  return all.sort();
+}
+
+// Edit modal tag state
+var editModalTags = [];
+var editModalPersonalRating = 0;
+
+function setPersonalRating(n){
+  editModalPersonalRating = n;
+  document.querySelectorAll('#edit-personal-rating-wrap .personal-star').forEach(function(s,i){
+    s.classList.toggle('on', i < n);
+  });
+  var val = document.getElementById('edit-personal-rating-val');
+  if(val) val.textContent = n > 0 ? n+'/5' : '';
+}
+
+function renderEditTagList(){
+  var list = document.getElementById('edit-tag-list'); if(!list) return;
+  list.innerHTML = '';
+  editModalTags.forEach(function(tag, i){
+    var span = document.createElement('span'); span.className='place-tag';
+    span.innerHTML = tag;
+    var rm = document.createElement('button'); rm.className='place-tag-remove'; rm.innerHTML='&#10005;';
+    rm.onclick = function(){ editModalTags.splice(i,1); renderEditTagList(); };
+    span.appendChild(rm); list.appendChild(span);
+  });
+}
+
+function renderEditTagSuggestions(){
+  var wrap = document.getElementById('edit-tag-suggestions'); if(!wrap) return;
+  wrap.innerHTML = '';
+  var used = getAllUsedTags();
+  used.forEach(function(tag){
+    if(editModalTags.indexOf(tag)<0){
+      var b = document.createElement('button'); b.className='tag-suggestion';
+      b.textContent = tag;
+      b.onclick = function(){
+        if(editModalTags.indexOf(tag)<0) editModalTags.push(tag);
+        renderEditTagList(); renderEditTagSuggestions();
+      };
+      wrap.appendChild(b);
+    }
+  });
+}
+
+function addEditTag(){
+  var input = document.getElementById('edit-tag-input');
+  var val = input ? input.value.trim() : '';
+  if(!val) return;
+  if(editModalTags.indexOf(val)<0) editModalTags.push(val);
+  if(input) input.value='';
+  renderEditTagList(); renderEditTagSuggestions();
+}
+
+// -- PERSONAL RATING STORAGE ------------------------------
+function loadPersonalRating(key){ try{return parseInt(localStorage.getItem('ctp_prating_'+key)||'0');}catch(x){return 0;} }
+function savePersonalRating(key, r){ try{localStorage.setItem('ctp_prating_'+key,r);}catch(x){} }
+
+// -- WEATHER TAGS ON ROUTES -------------------------------
+function loadWeatherTags(routeId){ try{return JSON.parse(localStorage.getItem('ctp_wtags_'+routeId)||'[]');}catch(x){return[];} }
+function saveWeatherTags(routeId, tags){ try{localStorage.setItem('ctp_wtags_'+routeId,JSON.stringify(tags));}catch(x){} }
+
+var weatherPresets = ['&#9728; Sunny','&#127783; Rainy','&#10052; Snowy','&#127787; Cloudy','&#127784; Windy','&#127785; Stormy','&#127782; Foggy','&#127777; Hot','&#9924; Cold'];
+
+function renderWeatherTags(routeId, container){
+  container.innerHTML = '';
+  var tags = loadWeatherTags(routeId);
+  // Label
+  var lbl = document.createElement('span'); lbl.className='weather-tag-label'; lbl.innerHTML='&#127781; Weather:';
+  container.appendChild(lbl);
+  // Existing tags
+  tags.forEach(function(tag, i){
+    var t = document.createElement('span'); t.className='weather-tag';
+    t.innerHTML = tag;
+    var rm = document.createElement('button'); rm.className='weather-tag-remove'; rm.innerHTML='&#10005;';
+    (function(rid, idx){ rm.onclick = function(){
+      var ts = loadWeatherTags(rid); ts.splice(idx,1); saveWeatherTags(rid,ts);
+      var wrap = document.getElementById('wt-'+rid); if(wrap) renderWeatherTags(rid,wrap);
+    };})(routeId, i);
+    t.appendChild(rm); container.appendChild(t);
+  });
+  // Add button that expands
+  var addId = 'wadd-'+routeId;
+  var addBtn = document.createElement('button'); addBtn.className='weather-tag-add-btn'; addBtn.innerHTML='+ Add';
+  var expandDiv = document.createElement('div'); expandDiv.id=addId; expandDiv.style.cssText='display:none;width:100%;margin-top:8px;';
+  // Presets
+  var presetsRow = document.createElement('div'); presetsRow.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;';
+  weatherPresets.forEach(function(preset){
+    var pb = document.createElement('button'); pb.className='weather-preset'; pb.innerHTML=preset;
+    (function(rid, p){ pb.onclick = function(){
+      var ts = loadWeatherTags(rid); if(ts.indexOf(p)<0) ts.push(p); saveWeatherTags(rid,ts);
+      expandDiv.style.display='none'; addBtn.innerHTML='+ Add';
+      var wrap = document.getElementById('wt-'+rid); if(wrap) renderWeatherTags(rid,wrap);
+    };})(routeId, preset);
+    presetsRow.appendChild(pb);
+  });
+  // Custom input
+  var inputRow = document.createElement('div'); inputRow.className='weather-tag-input-row';
+  var inp = document.createElement('input'); inp.className='weather-tag-input'; inp.placeholder='Custom tag...'; inp.type='text';
+  var addCustomBtn = document.createElement('button'); addCustomBtn.className='weather-tag-add-btn'; addCustomBtn.innerHTML='Add';
+  (function(rid, input){ addCustomBtn.onclick = function(){
+    var v = input.value.trim(); if(!v) return;
+    var ts = loadWeatherTags(rid); if(ts.indexOf(v)<0) ts.push(v); saveWeatherTags(rid,ts);
+    input.value=''; expandDiv.style.display='none'; addBtn.innerHTML='+ Add';
+    var wrap = document.getElementById('wt-'+rid); if(wrap) renderWeatherTags(rid,wrap);
+  };})(routeId, inp);
+  inputRow.appendChild(inp); inputRow.appendChild(addCustomBtn);
+  expandDiv.appendChild(presetsRow); expandDiv.appendChild(inputRow);
+  addBtn.onclick = function(){
+    var open = expandDiv.style.display==='none';
+    expandDiv.style.display = open?'block':'none';
+    addBtn.innerHTML = open?'&#10005; Cancel':'+ Add';
+  };
+  container.appendChild(addBtn);
+  container.style.flexWrap = 'wrap';
+  container.after ? container.parentElement.insertBefore(expandDiv, container.nextSibling) : container.parentElement.appendChild(expandDiv);
+}
+
+// Show weather tags in saved route header meta
+function getWeatherTagsHtml(routeId){
+  var tags = loadWeatherTags(routeId);
+  return tags.map(function(t){ return '<span class="saved-route-tag srt-weather">'+t+'</span>'; }).join('');
 }
 
 // -- CITY NORMALISATION ----------------------------------
