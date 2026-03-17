@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet"/>
+<meta name="apple-mobile-web-app-title" content="Claudia's Travels"/>
+<meta name="application-name" content="Claudia's Travels"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234e8060'/><text y='75' x='50' text-anchor='middle' font-size='65'>&#9992;</text></svg>"/>
 <style>
 :root{--peach:#ffb997;--peach-light:#ffd4bc;--peach-pale:#fff1ea;--peach-mid:#ffc9a8;--sage:#7aaa8a;--sage-light:#a8c9b0;--sage-pale:#eaf4ec;--sage-dark:#4e8060;--cream:#fffaf7;--white:#ffffff;--ink:#2d3a2e;--muted:#7d9080;--border:#e2ede5;--shadow:rgba(80,120,90,0.10);--gold:#e8a838;--card:#ffffff;}
 [data-theme="dark"]{--cream:#1a1f1b;--white:#222927;--ink:#e8f0e9;--muted:#8aab94;--border:#2e3d32;--shadow:rgba(0,0,0,0.3);--sage-pale:#1e2e23;--peach-pale:#2e2018;--card:#222927;}
@@ -267,6 +270,43 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .sort-btn{padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);color:var(--muted);font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
 .sort-btn.active{background:var(--sage);border-color:var(--sage);color:#fff;}
 
+
+/* RATING FILTER */
+.rating-filter-group{display:flex;gap:8px;flex-wrap:wrap;}
+.rating-filter-btn{padding:8px 14px;border-radius:20px;border:2px solid var(--border);background:var(--sage-pale);color:var(--muted);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;min-height:44px;transition:all .2s;}
+.rating-filter-btn.active{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
+
+/* SURPRISE OPTIONS */
+.surprise-options{display:flex;gap:12px;margin-bottom:16px;}
+.surprise-opt-btn{flex:1;background:var(--card);border:2px solid var(--border);border-radius:18px;padding:18px 12px;cursor:pointer;text-align:center;transition:all .2s;font-family:'Nunito',sans-serif;}
+.surprise-opt-btn:hover,.surprise-opt-btn:active{border-color:var(--sage);background:var(--sage-pale);transform:translateY(-2px);}
+.surprise-opt-icon{font-size:32px;margin-bottom:8px;}
+.surprise-opt-title{font-size:14px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.surprise-opt-sub{font-size:11px;color:var(--muted);font-weight:600;line-height:1.4;}
+
+/* MAP VIEW */
+.route-map-wrap{border-radius:18px;overflow:hidden;margin-bottom:16px;border:2px solid var(--border);box-shadow:0 4px 16px var(--shadow);}
+.route-map-iframe{width:100%;height:320px;border:none;display:block;}
+.map-toggle-btn{width:100%;padding:10px;background:var(--sage-pale);border:2px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--sage-dark);cursor:pointer;margin-bottom:12px;min-height:44px;}
+.map-toggle-btn:hover{background:var(--sage);color:#fff;}
+
+/* CUSTOM CATEGORIES */
+.custom-cats-wrap{margin-top:10px;}
+.custom-cat-input-row{display:flex;gap:8px;margin-bottom:10px;}
+.custom-cat-input{flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;background:var(--sage-pale);color:var(--ink);outline:none;}
+.custom-cat-input:focus{border-color:var(--sage);background:#fff;}
+.custom-cat-add-btn{padding:10px 16px;background:var(--sage);color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;min-height:44px;white-space:nowrap;}
+.custom-cat-list{display:flex;gap:8px;flex-wrap:wrap;}
+.custom-cat-tag{display:flex;align-items:center;gap:6px;background:var(--sage-pale);border:2px solid var(--sage-light);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:800;color:var(--sage-dark);}
+.custom-cat-tag button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:0;line-height:1;}
+
+/* PWA PROMPT */
+.pwa-banner{background:linear-gradient(135deg,var(--sage-dark),#3a6050);border-radius:18px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.pwa-banner-text{color:#fff;font-size:13px;font-weight:700;line-height:1.4;}
+.pwa-banner-title{font-family:'Pacifico',cursive;font-size:16px;margin-bottom:3px;}
+.pwa-install-btn{background:var(--peach);color:var(--ink);border:none;border-radius:10px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;min-height:44px;}
+.pwa-dismiss-btn{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:18px;padding:4px;min-width:32px;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -321,9 +361,11 @@ try{
 
 <div class="page-tabs">
   <button class="page-tab active" id="tab-discover" onclick="switchPage('discover')">&#127757; Discover</button>
-  <button class="page-tab" id="tab-planner" onclick="switchPage('planner')">&#128345; Route Planner</button>
+  <button class="page-tab" id="tab-nearby" onclick="switchPage('nearby')">&#128269; Nearby</button>
+  <button class="page-tab" id="tab-surprise" onclick="switchPage('surprise')">&#127881; Surprise</button>
+  <button class="page-tab" id="tab-planner" onclick="switchPage('planner')">&#128345; Planner</button>
   <button class="page-tab" id="tab-places" onclick="switchPage('places')">&#10084;&#65039; Places</button>
-  <button class="page-tab" id="tab-routes" onclick="switchPage('routes')">&#128204; Saved Routes</button>
+  <button class="page-tab" id="tab-routes" onclick="switchPage('routes')">&#128204; Routes</button>
 </div>
 
 <div class="main">
@@ -347,6 +389,7 @@ try{
         </div>
       </div>
       <div class="field"><label class="field-label">&#9201; Max travel time</label><div class="slider-row"><input type="range" id="time-slider" min="5" max="60" step="5" value="30" oninput="updateSlider()"/><div class="slider-val" id="slider-label">30 min</div></div></div>
+      <div class="field"><label class="field-label">&#11088; Minimum rating</label><div class="rating-filter-group" id="discover-rating-filter"><button class="rating-filter-btn active" data-rating="0" onclick="setDiscoverRating(this)">Any</button><button class="rating-filter-btn" data-rating="3" onclick="setDiscoverRating(this)">3+ &#11088;</button><button class="rating-filter-btn" data-rating="4" onclick="setDiscoverRating(this)">4+ &#11088;</button><button class="rating-filter-btn" data-rating="4.5" onclick="setDiscoverRating(this)">4.5+ &#11088;</button></div></div>
       <div class="error-msg" id="error-msg"></div>
       <button class="action-btn" id="search-btn" onclick="doSearch()">&#10024; Let&#39;s Explore! &#9992;</button>
     </div>
@@ -354,6 +397,77 @@ try{
     <div class="results" id="results">
       <div class="results-header"><div class="results-title">Your travel route</div><div class="results-tag" id="results-tag"></div></div>
       <div class="places-list" id="places-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ NEARBY ══ -->
+  <div class="page" id="page-nearby">
+    <div class="doodle-row"><span class="doodle">&#128269;</span><span class="doodle">&#128205;</span><span class="doodle">&#127758;</span></div>
+    <div class="section-title">What's Nearby?</div>
+    <div class="section-sub">Find great spots around your current location &#128205;</div>
+    <div id="nearby-content">
+      <div class="form-card">
+        <div class="field">
+          <label class="field-label">&#128269; What are you looking for?</label>
+          <input class="field-input" id="nearby-interest" type="text" placeholder="e.g. restaurants, museums, cafes..." autocomplete="off" autocorrect="off" spellcheck="false"/>
+        </div>
+        <div class="field">
+          <label class="field-label">&#11088; Minimum rating</label>
+          <div class="rating-filter-group" id="nearby-rating-filter">
+            <button class="rating-filter-btn active" data-rating="0" onclick="setNearbyRating(this)">Any</button>
+            <button class="rating-filter-btn" data-rating="3" onclick="setNearbyRating(this)">3+ &#11088;</button>
+            <button class="rating-filter-btn" data-rating="4" onclick="setNearbyRating(this)">4+ &#11088;</button>
+            <button class="rating-filter-btn" data-rating="4.5" onclick="setNearbyRating(this)">4.5+ &#11088;</button>
+          </div>
+        </div>
+        <div class="error-msg" id="nearby-error"></div>
+        <button class="action-btn" id="nearby-btn" onclick="doNearbySearch()">&#128205; Find Nearby Places</button>
+      </div>
+      <div class="loading" id="nearby-loading"><div class="loading-ring"></div><p>Finding places near you...</p></div>
+      <div class="results" id="nearby-results">
+        <div class="results-header"><div class="results-title">Near You</div><div class="results-tag" id="nearby-tag"></div></div>
+        <div class="places-list" id="nearby-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SURPRISE ══ -->
+  <div class="page" id="page-surprise">
+    <div class="doodle-row"><span class="doodle">&#127881;</span><span class="doodle">&#10024;</span><span class="doodle">&#127800;</span></div>
+    <div class="section-title">Surprise Me!</div>
+    <div class="section-sub">Let us plan something magical &#10024;</div>
+    <div class="form-card">
+      <div class="field">
+        <label class="field-label">&#127757; City</label>
+        <input class="field-input" id="surprise-city" type="text" placeholder="e.g. Paris, Tokyo, New York..." autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"/>
+      </div>
+      <div class="field">
+        <label class="field-label">&#11088; Minimum rating</label>
+        <div class="rating-filter-group" id="surprise-rating-filter">
+          <button class="rating-filter-btn active" data-rating="0" onclick="setSurpriseRating(this)">Any</button>
+          <button class="rating-filter-btn" data-rating="3" onclick="setSurpriseRating(this)">3+ &#11088;</button>
+          <button class="rating-filter-btn" data-rating="4" onclick="setSurpriseRating(this)">4+ &#11088;</button>
+          <button class="rating-filter-btn" data-rating="4.5" onclick="setSurpriseRating(this)">4.5+ &#11088;</button>
+        </div>
+      </div>
+      <div class="surprise-options">
+        <button class="surprise-opt-btn" id="surprise-places-btn" onclick="doSurprisePlaces()">
+          <div class="surprise-opt-icon">&#127800;</div>
+          <div class="surprise-opt-title">Random Places</div>
+          <div class="surprise-opt-sub">Discover hidden gems to explore</div>
+        </button>
+        <button class="surprise-opt-btn" id="surprise-route-btn" onclick="doSurpriseRoute()">
+          <div class="surprise-opt-icon">&#128345;</div>
+          <div class="surprise-opt-title">Surprise Day Route</div>
+          <div class="surprise-opt-sub">A full day planned for you</div>
+        </button>
+      </div>
+      <div class="error-msg" id="surprise-error"></div>
+    </div>
+    <div class="loading" id="surprise-loading"><div class="loading-ring"></div><p id="surprise-loading-text">Planning your surprise...</p></div>
+    <div class="results" id="surprise-results">
+      <div class="results-header"><div class="results-title" id="surprise-results-title">Your Surprise</div><div class="results-tag" id="surprise-tag"></div></div>
+      <div class="places-list" id="surprise-list"></div>
     </div>
   </div>
 
@@ -432,6 +546,8 @@ function switchPage(n){
   if(n==='places') renderFavs();
   if(n==='planner') renderRoutePlanner();
   if(n==='routes') renderSavedRoutes();
+  if(n==='nearby'){ document.getElementById('nearby-results').classList.remove('show'); }
+  if(n==='surprise'){ document.getElementById('surprise-results').classList.remove('show'); }
 }
 
 // -- TRANSPORT ---------------------------------------------
@@ -643,6 +759,12 @@ function renderRoutePlanner(){
   html+='</div>';
   // Categories from favorites
   html+='<div class="field"><label class="field-label">&#127829; What do you want to do? <span id="rp-city-hint" style="text-transform:none;font-weight:600;color:var(--peach);font-size:11px">Select a city first</span></label><div class="cat-grid" id="rp-cat-grid"><div style="color:var(--muted);font-size:13px;font-weight:600;padding:10px 0;">Select a city above to see available categories from your saved places.</div></div></div>';
+  // Custom categories section
+  html+='<div class="field"><label class="field-label">&#10133; Custom categories</label>';
+  html+='<div class="custom-cats-wrap"><div class="custom-cat-input-row">';
+  html+='<input class="custom-cat-input" id="custom-cat-input" type="text" placeholder="e.g. Street food, Bookshop..." autocomplete="off"/>';
+  html+='<button class="custom-cat-add-btn" onclick="addCustomCategory(&quot;custom-cat-input&quot;,&quot;custom-cat-list&quot;)">+ Add</button>';
+  html+='</div><div class="custom-cat-list" id="custom-cat-list"></div></div></div>';
   html+='<div class="error-msg" id="rp-error"></div>';
   html+='<button class="action-btn peach" id="rp-btn" onclick="generateRoute()">&#128345; Plan My Day!</button>';
   html+='</div>';
@@ -654,6 +776,8 @@ function renderRoutePlanner(){
   cont.innerHTML=html;
   rpCategoryCount={};
   rpTransport='walking';
+  // Render any existing custom categories
+  setTimeout(function(){ renderCustomCats('custom-cat-list'); }, 50);
 }
 
 var rpTransport='walking';
@@ -727,6 +851,8 @@ function generateRoute(){
   // Build stop requests
   var stopRequests=[];
   rpCategories.forEach(function(cat){ var n=rpCategoryCount[cat.id]||0; if(n>0) for(var i=0;i<n;i++) stopRequests.push(cat.name); });
+  // Include custom categories
+  customCategories.forEach(function(cat){ stopRequests.push(cat); });
   if(stopRequests.length===0){err.textContent='Please add at least one stop using the + buttons.';err.classList.add('show');return;}
 
   // Get saved places for this city
@@ -779,7 +905,8 @@ function renderRouteResult(route, city, hotel, leaveTime, backTime){
   var s=route.summary||{};
   var stops=route.stops||[];
 
-  var html='<div class="results-header"><div class="results-title">Your Day in '+city+'</div><div class="results-tag">'+leaveTime+' - '+backTime+'</div></div>';
+  var html='<div class="results-header"><div class="results-title">Your Day in '+city+'</div><div class="results-tag">'+leaveTime+' - '+backTime+'</div></div>'+
+    '<div id="route-map-container"></div>';
 
   // Summary bar
   html+='<div class="route-summary">';
@@ -807,6 +934,9 @@ function renderRouteResult(route, city, hotel, leaveTime, backTime){
   rpRouteCity=city;
   cont.innerHTML=html;
   cont.classList.add('show');
+  // Show map view button
+  var mapWrap=document.getElementById('route-map-container');
+  if(mapWrap) showRouteMap(stops,'route-map-container');
 }
 
 function renderRouteStop(stop, i, total){
@@ -980,6 +1110,9 @@ function renderSavedRoutes(){
       var body=document.createElement('div'); body.className='saved-route-body'; body.id='rb-'+r.id;
       // Time summary
       if(r.leaveTime||r.backTime){ var ts=document.createElement('div'); ts.style.cssText='font-size:12px;color:var(--muted);font-weight:700;margin-bottom:12px;'; ts.innerHTML='&#128336; '+r.leaveTime+' &mdash; '+r.backTime; body.appendChild(ts); }
+      // Map view
+      var mapDiv=document.createElement('div'); mapDiv.id='saved-map-'+r.id; body.appendChild(mapDiv);
+      (function(rid,rstops){ setTimeout(function(){ showRouteMap(rstops,'saved-map-'+rid); },50); })(r.id, r.stops||[]);
       (r.stops||[]).forEach(function(stop,si){
         var item=document.createElement('div'); item.className='saved-stop-item';
         var num=document.createElement('div'); num.className='saved-stop-num'; num.textContent=si+1; item.appendChild(num);
@@ -1275,6 +1408,361 @@ function getHoursWarning(stop){
     return '&#9888; Breakfast spots may stop serving after 11am';
   return null;
 }
+
+// -- NEARBY SEARCH ----------------------------------------
+var nearbyRating = 0;
+var nearbyResults = [];
+
+function setNearbyRating(btn){
+  document.querySelectorAll('#nearby-rating-filter .rating-filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  nearbyRating = parseFloat(btn.getAttribute('data-rating'));
+}
+
+function doNearbySearch(){
+  var interest = document.getElementById('nearby-interest').value.trim();
+  var err = document.getElementById('nearby-error');
+  err.classList.remove('show');
+  if(!interest){ err.textContent='Please enter what you are looking for.'; err.classList.add('show'); return; }
+
+  if(!navigator.geolocation){ err.textContent='Geolocation is not supported by your browser.'; err.classList.add('show'); return; }
+
+  var btn = document.getElementById('nearby-btn');
+  btn.disabled = true; btn.textContent = 'Getting location...';
+  document.getElementById('nearby-loading').classList.add('show');
+  document.getElementById('nearby-results').classList.remove('show');
+
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat = pos.coords.latitude.toFixed(4);
+    var lon = pos.coords.longitude.toFixed(4);
+    btn.textContent = 'Searching...';
+    document.getElementById('nearby-tag').textContent = interest + ' near you';
+
+    var minRating = nearbyRating > 0 ? 'Only include places with a rating of '+nearbyRating+' or higher. ' : '';
+    var prompt = 'You are a local travel expert. Find places near coordinates '+lat+','+lon+' (latitude, longitude). '+
+      'The user is looking for: '+interest+'. '+minRating+
+      'Return a JSON array of exactly 6 nearby places ordered by proximity. Each object must have: '+
+      'name (string), address (full street address), rating (number 1.0-5.0), '+
+      'travelTime (string e.g. "5 min walk"), fromPrevious (string: direction from previous stop), '+
+      'priceLevel (number 1-4 or null), openNow (boolean), description (2-3 sentences). '+
+      'Respond ONLY with a valid JSON array. No markdown.';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST','https://api.groq.com/openai/v1/chat/completions',true);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.setRequestHeader('Authorization','Bearer '+APIKEY);
+    xhr.onload = function(){
+      document.getElementById('nearby-loading').classList.remove('show');
+      btn.disabled = false; btn.innerHTML = '&#128205; Find Nearby Places';
+      try{
+        var data = JSON.parse(xhr.responseText);
+        if(data.error){ err.textContent='API Error: '+data.error.message; err.classList.add('show'); return; }
+        var text = data.choices[0].message.content||'';
+        nearbyResults = JSON.parse(text.replace(/```json/g,'').replace(/```/g,'').trim());
+        // Apply rating filter
+        if(nearbyRating > 0) nearbyResults = nearbyResults.filter(function(p){ return (p.rating||0) >= nearbyRating; });
+        lastCity = 'Nearby';
+        var html = '';
+        for(var j=0;j<nearbyResults.length;j++){ if(j>0) html+=renderConn(nearbyResults[j]); html+=renderNearbyCard(nearbyResults[j],j); }
+        document.getElementById('nearby-list').innerHTML = html;
+        lastResults = nearbyResults;
+        document.getElementById('nearby-results').classList.add('show');
+      }catch(e){ err.textContent='Something went wrong. Please try again.'; err.classList.add('show'); }
+    };
+    xhr.onerror = function(){ document.getElementById('nearby-loading').classList.remove('show'); btn.disabled=false; btn.innerHTML='&#128205; Find Nearby Places'; err.textContent='Network error.'; err.classList.add('show'); };
+    xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1500,messages:[{role:'user',content:prompt}]}));
+  }, function(e){
+    document.getElementById('nearby-loading').classList.remove('show');
+    btn.disabled=false; btn.innerHTML='&#128205; Find Nearby Places';
+    err.textContent='Could not get your location. Please allow location access.'; err.classList.add('show');
+  }, {timeout:10000});
+}
+
+function renderNearbyCard(p,i){
+  var cs = getCategoryStyle(p);
+  var fav = isFav(p);
+  var ob = p.openNow===true?'<span class="badge badge-open">&#10003; Open</span>':p.openNow===false?'<span class="badge badge-closed">&#10007; Closed</span>':'';
+  var pb = p.priceLevel?'<span class="badge badge-price">'+'$'.repeat(p.priceLevel)+'</span>':'';
+  var tb = p.travelTime?'<span class="badge badge-travel">'+p.travelTime+'</span>':'';
+  var photo = '<div class="card-photo-wrap"><div class="card-photo-placeholder" style="background:'+cs.bg+'"><div class="card-photo-icon">'+cs.icon+'</div><div class="card-photo-name">'+p.name+'</div></div><div class="card-photo-label">'+(i+1)+'</div></div>';
+  return '<div class="place-card" id="ncard-'+i+'">'+photo+
+    '<div class="card-top" onclick="toggleNearbyCard('+i+')">'+
+      '<div class="card-left">'+
+        '<div class="card-num-name"><div class="card-num">'+(i+1)+'</div><div class="card-name">'+p.name+'</div></div>'+
+        '<div class="card-addr">&#128205; '+p.address+'</div>'+
+        '<div class="card-stars">'+stars(p.rating)+'</div>'+
+        '<div class="card-badges">'+tb+pb+ob+'</div>'+
+      '</div>'+
+      '<div class="card-right">'+
+        '<button class="fav-btn'+(fav?' saved':'') +'" onclick="event.stopPropagation();toggleNearbyFav('+i+')">'+(fav?'&#10084;&#65039;':'&#129293;')+'</button>'+
+        '<span class="card-arrow" id="narrow-'+i+'">&#9662;</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="card-maps" id="nmaps-'+i+'">'+mapLinks(p.name,p.address,'map-link')+'</div>'+
+    '<div class="card-details" id="ndet-'+i+'"><p class="card-desc">'+(p.description||'')+'</p></div>'+
+  '</div>';
+}
+
+function toggleNearbyCard(i){
+  var m=document.getElementById('nmaps-'+i), d=document.getElementById('ndet-'+i), a=document.getElementById('narrow-'+i);
+  var o=!m.classList.contains('show');
+  m.classList.toggle('show',o); d.classList.toggle('show',o);
+  a.innerHTML=o?'&#9652;':'&#9662;';
+}
+
+function toggleNearbyFav(i){
+  var p = nearbyResults[i]; if(!p) return;
+  p.city = 'Nearby';
+  var f=loadFavs(), found=-1;
+  for(var j=0;j<f.length;j++) if(f[j].name===p.name&&f[j].address===p.address){found=j;break;}
+  var btn=document.querySelector('#ncard-'+i+' .fav-btn');
+  if(found>=0){ f.splice(found,1); saveFavs(f); if(btn){btn.innerHTML='&#129293;';btn.classList.remove('saved');} toast('Removed from places'); }
+  else { f.push(p); saveFavs(f); if(btn){btn.innerHTML='&#10084;&#65039;';btn.classList.add('saved');} toast('Saved &#10084;&#65039;'); }
+}
+
+// -- SURPRISE ----------------------------------------------
+var surpriseRating = 0;
+
+function setSurpriseRating(btn){
+  document.querySelectorAll('#surprise-rating-filter .rating-filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  surpriseRating = parseFloat(btn.getAttribute('data-rating'));
+}
+
+function doSurprisePlaces(){
+  var city = document.getElementById('surprise-city').value.trim();
+  var err = document.getElementById('surprise-error');
+  err.classList.remove('show');
+  if(!city){ err.textContent='Please enter a city.'; err.classList.add('show'); return; }
+
+  document.getElementById('surprise-loading').classList.add('show');
+  document.getElementById('surprise-results').classList.remove('show');
+  document.getElementById('surprise-loading-text').textContent = 'Discovering hidden gems in '+city+'...';
+  document.getElementById('surprise-places-btn').disabled = true;
+
+  var minR = surpriseRating>0?'Only include places rated '+surpriseRating+' or above. ':'';
+  var vibes = ['charming','off-the-beaten-path','romantic','cosy','vibrant','hidden gem','popular','classic'];
+  var vibe = vibes[Math.floor(Math.random()*vibes.length)];
+
+  var prompt = 'You are a local expert. Suggest 6 '+vibe+' places to discover in '+city+'. '+minR+
+    'Make the selection diverse - mix of cafes, restaurants, attractions, parks, shops etc. '+
+    'Return a JSON array. Each object: name, address, rating (1.0-5.0), travelTime (from previous stop), '+
+    'fromPrevious (direction hint), priceLevel (1-4 or null), openNow (boolean), description (2-3 sentences). '+
+    'Respond ONLY with valid JSON array. No markdown.';
+
+  callGroq(prompt, 1500, function(results){
+    document.getElementById('surprise-loading').classList.remove('show');
+    document.getElementById('surprise-places-btn').disabled = false;
+    if(surpriseRating>0) results = results.filter(function(p){return (p.rating||0)>=surpriseRating;});
+    lastCity = city; lastResults = results;
+    document.getElementById('surprise-results-title').textContent = 'Your '+vibe+' picks in '+city;
+    document.getElementById('surprise-tag').textContent = city;
+    var html='';
+    for(var j=0;j<results.length;j++){ if(j>0) html+=renderConn(results[j]); html+=renderCard(results[j],j); }
+    document.getElementById('surprise-list').innerHTML = html;
+    document.getElementById('surprise-results').classList.add('show');
+  }, function(e){
+    document.getElementById('surprise-loading').classList.remove('show');
+    document.getElementById('surprise-places-btn').disabled = false;
+    err.textContent = 'Something went wrong. Please try again.'; err.classList.add('show');
+  });
+}
+
+function doSurpriseRoute(){
+  var city = document.getElementById('surprise-city').value.trim();
+  var err = document.getElementById('surprise-error');
+  err.classList.remove('show');
+  if(!city){ err.textContent='Please enter a city.'; err.classList.add('show'); return; }
+
+  document.getElementById('surprise-loading').classList.add('show');
+  document.getElementById('surprise-results').classList.remove('show');
+  document.getElementById('surprise-loading-text').textContent = 'Planning your surprise day in '+city+'...';
+  document.getElementById('surprise-route-btn').disabled = true;
+
+  var minR = surpriseRating>0?'Only include places rated '+surpriseRating+' or above. ':'';
+  var themes = ['foodie adventure','culture & history','nature & parks','shopping & lifestyle','romantic day out','art & creativity'];
+  var theme = themes[Math.floor(Math.random()*themes.length)];
+
+  var prompt = 'You are an expert travel route planner. Plan a surprise '+theme+' day trip in '+city+'. '+minR+
+    'Create a logical route from morning to evening following smart day ordering (breakfast->sightseeing->lunch->afternoon->dinner). '+
+    'Return a JSON object: summary (totalStops, estimatedDistance, totalTransitTime), '+
+    'stops (array: name, category, address, arrivalTime, departureTime, timeToSpend, transitToNext, parkingOrTransit, rating, notes). '+
+    'Respond ONLY with valid JSON. No markdown.';
+
+  callGroq(prompt, 2000, function(route){
+    document.getElementById('surprise-loading').classList.remove('show');
+    document.getElementById('surprise-route-btn').disabled = false;
+    rpStops = route.stops||[]; rpRouteCity = city;
+    // Switch to planner and show result
+    switchPage('planner');
+    setTimeout(function(){
+      renderRouteResult(route, city, '09:00', '21:00');
+      toast('&#127881; Surprise '+theme+' route ready!');
+    }, 300);
+  }, function(e){
+    document.getElementById('surprise-loading').classList.remove('show');
+    document.getElementById('surprise-route-btn').disabled = false;
+    err.textContent = 'Something went wrong. Please try again.'; err.classList.add('show');
+  });
+}
+
+// -- SHARED XHR HELPER ------------------------------------
+function callGroq(prompt, maxTokens, onSuccess, onError){
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST','https://api.groq.com/openai/v1/chat/completions',true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.setRequestHeader('Authorization','Bearer '+APIKEY);
+  xhr.onload = function(){
+    try{
+      var data = JSON.parse(xhr.responseText);
+      if(data.error){ onError(data.error.message); return; }
+      var text = data.choices[0].message.content||'';
+      var clean = text.replace(/```json/g,'').replace(/```/g,'').trim();
+      onSuccess(JSON.parse(clean));
+    }catch(e){ onError(e.message); }
+  };
+  xhr.onerror = function(){ onError('Network error'); };
+  xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]}));
+}
+
+// -- RATING FILTER FOR DISCOVER ----------------------------
+var discoverRating = 0;
+function setDiscoverRating(btn){
+  document.querySelectorAll('#discover-rating-filter .rating-filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  discoverRating = parseFloat(btn.getAttribute('data-rating'));
+}
+
+// -- ROUTE MAP VIEW ----------------------------------------
+function buildMapUrl(stops, city){
+  if(!stops||stops.length===0) return null;
+  // Use OpenStreetMap embed with markers via leaflet - build a simple iframe url
+  // Actually use Google Maps directions embed (free, no key needed for embed)
+  var waypoints = stops.map(function(s){ return encodeURIComponent(s.address); });
+  if(waypoints.length < 2) return 'https://www.google.com/maps/search/'+waypoints[0];
+  var origin = waypoints[0];
+  var dest = waypoints[waypoints.length-1];
+  var middle = waypoints.slice(1,-1).join('|');
+  var url = 'https://www.google.com/maps/dir/'+waypoints.join('/');
+  return url;
+}
+
+function showRouteMap(stops, containerId){
+  var el = document.getElementById(containerId); if(!el) return;
+  if(!stops||stops.length===0){ el.innerHTML=''; return; }
+  el.innerHTML = '';
+  // Toggle button
+  var toggleBtn = document.createElement('button');
+  toggleBtn.className = 'map-toggle-btn';
+  toggleBtn.innerHTML = '&#128506; Show on Map';
+  var frameDiv = document.createElement('div');
+  frameDiv.id = 'map-frame-'+containerId;
+  frameDiv.style.display = 'none';
+  toggleBtn.onclick = function(){
+    frameDiv.style.display = frameDiv.style.display==='none'?'block':'none';
+    toggleBtn.innerHTML = frameDiv.style.display==='none'?'&#128506; Show on Map':'&#128506; Hide Map';
+  };
+  // Map content
+  var mapInner = document.createElement('div');
+  mapInner.className = 'route-map-wrap';
+  var mapInfo = document.createElement('div');
+  mapInfo.style.cssText = 'padding:16px;background:var(--sage-pale);border-radius:16px;font-size:13px;color:var(--muted);font-weight:700;';
+  mapInfo.innerHTML = '&#128506; Open in maps app to see full route:<br/>';
+  var linkDiv = document.createElement('div');
+  linkDiv.style.cssText = 'margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;';
+  linkDiv.innerHTML = mapLinks(stops[0].name, stops[0].address, 'map-link');
+  var note = document.createElement('div');
+  note.style.cssText = 'margin-top:8px;font-size:11px;opacity:.7;';
+  note.textContent = 'Showing stop 1 of '+stops.length+' - tap map links for full route';
+  mapInfo.appendChild(linkDiv);
+  mapInfo.appendChild(note);
+  mapInner.appendChild(mapInfo);
+  frameDiv.appendChild(mapInner);
+  el.appendChild(toggleBtn);
+  el.appendChild(frameDiv);
+}
+
+function toggleMapView(containerId){
+  var frame = document.getElementById('map-frame-'+containerId);
+  if(frame) frame.style.display = frame.style.display==='none'?'block':'none';
+}
+
+// -- CUSTOM CATEGORIES -------------------------------------
+var customCategories = [];
+try{ customCategories = JSON.parse(localStorage.getItem('ctp_custom_cats')||'[]'); }catch(x){}
+
+function saveCustomCats(){ try{localStorage.setItem('ctp_custom_cats',JSON.stringify(customCategories));}catch(x){} }
+
+function renderCustomCats(containerId){
+  var el = document.getElementById(containerId); if(!el) return;
+  el.innerHTML = '';
+  customCategories.forEach(function(cat, i){
+    var tag = document.createElement('div'); tag.className='custom-cat-tag';
+    tag.innerHTML = cat;
+    var del = document.createElement('button'); del.innerHTML='&#10005;';
+    del.onclick = function(){ customCategories.splice(i,1); saveCustomCats(); renderCustomCats(containerId); };
+    tag.appendChild(del); el.appendChild(tag);
+  });
+}
+
+function addCustomCategory(inputId, listId){
+  var input = document.getElementById(inputId);
+  var val = input ? input.value.trim() : '';
+  if(!val) return;
+  if(customCategories.indexOf(val)<0){ customCategories.push(val); saveCustomCats(); }
+  if(input) input.value = '';
+  renderCustomCats(listId);
+}
+
+// -- PWA / ADD TO HOME SCREEN ------------------------------
+var deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  showPWABanner();
+});
+
+function showPWABanner(){
+  var existing = document.getElementById('pwa-banner');
+  if(existing || localStorage.getItem('ctp_pwa_dismissed')) return;
+  var banner = document.createElement('div');
+  banner.className='pwa-banner'; banner.id='pwa-banner';
+  banner.innerHTML='<div class="pwa-banner-text"><div class="pwa-banner-title">&#9992; Add to Home Screen</div>Install Claudia&#39;s Travel Planner as an app!</div>'+
+    '<button class="pwa-install-btn" onclick="installPWA()">Install</button>'+
+    '<button class="pwa-dismiss-btn" onclick="dismissPWA()">&#10005;</button>';
+  var main = document.querySelector('.main');
+  if(main) main.insertBefore(banner, main.firstChild);
+}
+
+function installPWA(){
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(){ deferredPrompt=null; dismissPWA(); }); }
+  else {
+    // iOS instructions
+    toast('On iPhone: tap &#128470; Share then "Add to Home Screen"');
+  }
+}
+
+function dismissPWA(){
+  localStorage.setItem('ctp_pwa_dismissed','1');
+  var b=document.getElementById('pwa-banner'); if(b) b.remove();
+}
+
+// Show iOS hint if on Safari and not installed
+(function(){
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  var isStandalone = window.navigator.standalone;
+  var dismissed = localStorage.getItem('ctp_pwa_dismissed');
+  if(isIOS && !isStandalone && !dismissed){
+    setTimeout(function(){
+      var banner = document.createElement('div');
+      banner.className='pwa-banner'; banner.id='pwa-banner';
+      banner.innerHTML='<div class="pwa-banner-text"><div class="pwa-banner-title">&#9992; Add to Home Screen</div>Tap &#128470; Share then Add to Home Screen</div>'+
+        '<button class="pwa-dismiss-btn" onclick="dismissPWA()">&#10005;</button>';
+      var main = document.querySelector('.main');
+      if(main) main.insertBefore(banner, main.firstChild);
+    }, 3000);
+  }
+})();
 
 // -- TOAST -------------------------------------------------
 function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
