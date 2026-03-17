@@ -276,11 +276,34 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="pw-title">Claudia&#39;s Travel Planner</div>
     <div class="pw-sub">Made with love, just for you &#9829;<br/>Enter the password to get started!</div>
     <input class="pw-input" id="pw-input" type="password" placeholder="Enter password" autocomplete="off"/>
-    <button class="pw-btn" id="pw-btn">&#10024; Let the travels begin!</button>
+    <button class="pw-btn" id="pw-btn" onclick="checkPW()">&#10024; Let the travels begin!</button>
     <div class="pw-error" id="pw-error"></div>
     <div class="pw-hint">Made with love &#128151;</div>
   </div>
 </div>
+
+<script>
+var PW = 'KeepClaudiaTravelling0209';
+function checkPW(){
+  var v = document.getElementById('pw-input').value.trim();
+  var e = document.getElementById('pw-error');
+  if(v.toLowerCase() === PW.toLowerCase()){
+    document.getElementById('pw-screen').style.display = 'none';
+    try{ localStorage.setItem('ctp_ok','1'); }catch(x){}
+    e.textContent = '';
+  } else {
+    e.textContent = 'Wrong password - please try again!';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+// Also check if already unlocked
+try{
+  if(localStorage.getItem('ctp_ok') === '1'){
+    document.getElementById('pw-screen').style.display = 'none';
+  }
+}catch(x){}
+</script>
 
 <nav class="topnav">
   <div class="topnav-brand">
@@ -386,7 +409,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <script>
 var APIKEY = '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';
-var PW = 'KeepClaudiaTravelling0209';
 var modes = ['walking'];
 var lastCity = '';
 var lastResults = [];
@@ -395,16 +417,7 @@ var rpStops = [];
 var rpRouteCity = '';
 
 // ── PASSWORD ──────────────────────────────────────────────
-function checkPW(){
-  var v=document.getElementById('pw-input').value.trim();
-  var e=document.getElementById('pw-error');
-  if(v.toLowerCase()===PW.toLowerCase()){
-    document.getElementById('pw-screen').style.display='none';
-    try{localStorage.setItem('ctp_ok','1');}catch(x){}
-    e.textContent='';
-  } else { e.textContent='Wrong password - please try again!'; document.getElementById('pw-input').value=''; document.getElementById('pw-input').focus(); }
-}
-try{ if(localStorage.getItem('ctp_ok')==='1') document.getElementById('pw-screen').style.display='none'; }catch(x){}
+// Password handled in separate script block above
 
 // ── PAGES ─────────────────────────────────────────────────
 function switchPage(n){
@@ -1185,9 +1198,7 @@ function getHoursWarning(stop){
 function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
 
 // ── INIT ──────────────────────────────────────────────────
-// Wire up password button after all functions defined
-document.getElementById('pw-btn').onclick = checkPW;
-document.getElementById('pw-input').onkeydown = function(e){ if(e.keyCode===13) checkPW(); };
+// Password button wired via inline onclick and separate script block
 initTheme();
 updateSlider();
 loadSharedRoute();
