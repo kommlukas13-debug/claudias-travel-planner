@@ -766,7 +766,7 @@ function generateRoute(){
       rpStops=route.stops||[];
       renderRouteResult(route, city, hotel, leaveTime, backTime);
     }catch(e){
-      err.textContent='Error: '+e.message+' | '+xhr.responseText.substring(0,150);
+      err.textContent='Something went wrong planning your route. Please try again.';
       err.classList.add('show');
     }
   };
@@ -807,7 +807,6 @@ function renderRouteResult(route, city, hotel, leaveTime, backTime){
   rpRouteCity=city;
   cont.innerHTML=html;
   cont.classList.add('show');
-  initDragDrop();
 }
 
 function renderRouteStop(stop, i, total){
@@ -858,7 +857,6 @@ function refreshStopsList(){
   var html='';
   rpStops.forEach(function(stop,i){ html+=renderRouteStop(stop,i,rpStops.length); });
   list.innerHTML=html;
-  initDragDrop();
 }
 
 // -- MOVE STOPS --------------------------------------------
@@ -1033,7 +1031,7 @@ function doSearch(){
       for(var j=0;j<lastResults.length;j++){ if(j>0) html+=renderConn(lastResults[j]); html+=renderCard(lastResults[j],j); }
       document.getElementById('places-list').innerHTML=html;
       document.getElementById('results').classList.add('show');
-    }catch(e){ err.textContent='Error ('+xhr.status+'): '+e.message+' | '+xhr.responseText.substring(0,150); err.classList.add('show'); }
+    }catch(e){ err.textContent='Something went wrong. Please try again.'; err.classList.add('show'); }
   };
   xhr.onerror=function(){ document.getElementById('loading').classList.remove('show'); btn.disabled=false; btn.innerHTML='&#10024; Let&#39;s Explore! &#9992;'; err.textContent='Network error. Please check your connection.'; err.classList.add('show'); };
   xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1500,messages:[{role:'user',content:prompt}]}));
