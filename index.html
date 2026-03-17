@@ -395,8 +395,6 @@ var rpStops = [];
 var rpRouteCity = '';
 
 // ── PASSWORD ──────────────────────────────────────────────
-document.getElementById('pw-btn').onclick = checkPW;
-document.getElementById('pw-input').onkeydown = function(e){ if(e.keyCode===13) checkPW(); };
 function checkPW(){
   var v=document.getElementById('pw-input').value.trim();
   var e=document.getElementById('pw-error');
@@ -1187,6 +1185,9 @@ function getHoursWarning(stop){
 function toast(msg){ var t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
 
 // ── INIT ──────────────────────────────────────────────────
+// Wire up password button after all functions defined
+document.getElementById('pw-btn').onclick = checkPW;
+document.getElementById('pw-input').onkeydown = function(e){ if(e.keyCode===13) checkPW(); };
 initTheme();
 updateSlider();
 loadSharedRoute();
