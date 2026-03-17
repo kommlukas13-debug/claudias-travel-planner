@@ -974,7 +974,7 @@ function renderSavedRoutes(){
       var del=document.createElement('button'); del.className='route-delete-btn'; del.innerHTML='&#10005; Delete';
       (function(rid){ del.onclick=function(e){ e.stopPropagation(); var rs=loadRoutes().filter(function(x){return x.id!==rid;}); saveRoutes(rs); renderSavedRoutes(); toast('Route deleted'); }; })(r.id);
       var arr=document.createElement('span'); arr.id='ra-'+r.id; arr.innerHTML='&#9662;'; arr.style.cssText='font-size:16px;color:var(--sage-light);';
-      right.appendChild(del); right.appendChild(arr);
+      right.appendChild(editBtn); right.appendChild(del); right.appendChild(arr);
       hdr.appendChild(left); hdr.appendChild(right); card.appendChild(hdr);
       // Body
       var body=document.createElement('div'); body.className='saved-route-body'; body.id='rb-'+r.id;
@@ -1287,4 +1287,3 @@ loadSharedRoute();
 </script>
 </body>
 </html>
- 
