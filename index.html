@@ -514,7 +514,8 @@ try{
     <div class="section-sub">Search for places, pick how you travel, and save your faves &#128151;</div>
     <div class="form-card">
       <div class="field"><label class="field-label">&#127757; City</label><input class="field-input" id="input-city" type="text" placeholder="e.g. Paris, Tokyo, New York..." autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"/></div>
-      <div class="field"><label class="field-label">&#128269; What are you looking for?</label><input class="field-input" id="input-interest" type="text" placeholder="e.g. coffee shops, museums, rooftop bars..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+      <div class="field"><label class="field-label">&#128269; What are you looking for? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional — leave empty for a surprise!)</span></label><input class="field-input" id="input-interest" type="text" placeholder="e.g. coffee shops, museums, rooftop bars..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+      <div class="field"><label class="field-label">&#127981; Looking for a specific place? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional)</span></label><input class="field-input" id="input-place-name" type="text" placeholder="e.g. Eiffel Tower, Le Comptoir du Relais..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
       <div class="field"><label class="field-label">&#127976; Where are you staying? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional)</span></label><input class="field-input" id="input-hotel" type="text" placeholder="e.g. Hotel Le Marais, Park Hyatt..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
       <div class="field">
         <label class="field-label">&#128640; Getting around <span style="text-transform:none;font-weight:400;color:#a8bfaa">(pick all that apply)</span></label>
@@ -1471,16 +1472,45 @@ function doSearch(){
   var maxTime=document.getElementById('time-slider').value;
   var err=document.getElementById('error-msg');
   err.classList.remove('show');
-  if(!city||!interest){err.textContent='Please enter a city and what you are looking for.';err.classList.add('show');return;}
+  var placeName=document.getElementById('input-place-name')?document.getElementById('input-place-name').value.trim():'';
+  if(!city){err.textContent='Please enter a city.';err.classList.add('show');return;}
   var labels={walking:'Walking',car:'Car',transit:'Public Transit',cycling:'Cycling'};
   var modeList=modes.map(function(m){return labels[m];}).join(', ');
   var btn=document.getElementById('search-btn'); btn.disabled=true; btn.textContent='Searching...';
   document.getElementById('loading').classList.add('show');
   document.getElementById('results').classList.remove('show');
-  document.getElementById('loading-text').textContent='Discovering the best spots in '+city+'...';
+  var searchLabel = placeName ? placeName+' in '+city : interest ? interest+' in '+city : 'hidden gems in '+city;
+  document.getElementById('loading-text').textContent='Discovering '+searchLabel+'...';
   lastCity=normaliseCity(city);
   var hotelLine=hotel?'They are staying at: '+hotel+'. This is the starting point.':'No specific base location. Start from the most central point.';
-  var prompt='You are a travel assistant and expert route planner. Find places in '+city+'. Looking for: '+interest+'. '+hotelLine+' Transport modes: '+modeList+'. Max travel time between stops: '+maxTime+' minutes. Return a JSON array of exactly 6 places ordered as a logical efficient travel route minimising backtracking. Each object must have: name (string), address (full street address), rating (number 1.0-5.0), travelTime (string: travel time FROM THE PREVIOUS STOP e.g. 8 min walk), fromPrevious (string: short direction hint), priceLevel (number 1-4 or null), openNow (boolean), description (2-3 sentences). Respond ONLY with a valid JSON array. No markdown, no explanation.';
+  var minRating=discoverRating>0?'Only include places with a rating of '+discoverRating+' or above. ':'';
+  var prompt;
+  if(placeName){
+    // Specific place search
+    prompt='You are a travel assistant. The user is looking for a specific place called "'+placeName+'" in '+city+'. '+
+      'Find this place and 5 similar or nearby places the user would also love. '+hotelLine+' '+minRating+
+      'Return a JSON array of exactly 6 places with the searched place FIRST, ordered as a logical route. '+
+      'Each object: name, address (full street address), rating (1.0-5.0), travelTime (from previous stop), fromPrevious (direction hint), priceLevel (1-4 or null), openNow (boolean), description (2-3 sentences). '+
+      'Respond ONLY with valid JSON array. No markdown.';
+  } else if(interest){
+    // Normal interest search
+    prompt='You are a travel assistant and expert route planner. Find places in '+city+'. Looking for: '+interest+'. '+hotelLine+' '+minRating+
+      'Transport modes: '+modeList+'. Max travel time between stops: '+maxTime+' minutes. '+
+      'Return a JSON array of exactly 6 places ordered as a logical efficient travel route minimising backtracking. '+
+      'Each object: name, address (full street address), rating (1.0-5.0), travelTime (from previous stop), fromPrevious (direction hint), priceLevel (1-4 or null), openNow (boolean), description (2-3 sentences). '+
+      'Respond ONLY with a valid JSON array. No markdown, no explanation.';
+  } else {
+    // Surprise search - random vibe
+    var vibes=['charming','romantic','off-the-beaten-path','cosy','vibrant','foodie','cultural','adventurous'];
+    var vibe=vibes[Math.floor(Math.random()*vibes.length)];
+    document.getElementById('loading-text').textContent='Finding '+vibe+' gems in '+city+'...';
+    prompt='You are a travel assistant. Surprise the user with 6 '+vibe+' places to discover in '+city+'. '+
+      hotelLine+' '+minRating+
+      'Make the selection diverse - mix cafes, restaurants, attractions, parks, shops etc. '+
+      'Return a JSON array of exactly 6 places ordered as a logical route. '+
+      'Each object: name, address (full street address), rating (1.0-5.0), travelTime (from previous stop), fromPrevious (direction hint), priceLevel (1-4 or null), openNow (boolean), description (2-3 sentences). '+
+      'Respond ONLY with a valid JSON array. No markdown.';
+  }
   var xhr=new XMLHttpRequest();
   xhr.open('POST','https://api.groq.com/openai/v1/chat/completions',true);
   xhr.setRequestHeader('Content-Type','application/json');
@@ -1495,7 +1525,7 @@ function doSearch(){
       var text=data.choices[0].message.content||'';
       var clean=text.replace(/```json/g,'').replace(/```/g,'').trim();
       lastResults=JSON.parse(clean);
-      document.getElementById('results-tag').textContent=city;
+      document.getElementById('results-tag').textContent=placeName?placeName+' in '+city:interest?city:city+' Surprise!';
       var html='';
       for(var j=0;j<lastResults.length;j++){ if(j>0) html+=renderConn(lastResults[j]); html+=renderCard(lastResults[j],j); }
       document.getElementById('places-list').innerHTML=html;
