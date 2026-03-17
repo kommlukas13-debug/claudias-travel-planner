@@ -1101,10 +1101,12 @@ function renderSavedRoutes(){
       var right=document.createElement('div'); right.className='saved-route-right';
       var editBtn=document.createElement('button'); editBtn.className='route-edit-btn'; editBtn.innerHTML='&#9998; Edit';
       (function(route){ editBtn.onclick=function(e){ e.stopPropagation(); loadRouteForEditing(route); }; })(r);
+      var shareBtn=document.createElement('button'); shareBtn.className='route-edit-btn'; shareBtn.innerHTML='&#128279; Share';
+      (function(route){ shareBtn.onclick=function(e){ e.stopPropagation(); shareSavedRoute(route); }; })(r);
       var del=document.createElement('button'); del.className='route-delete-btn'; del.innerHTML='&#10005; Delete';
       (function(rid){ del.onclick=function(e){ e.stopPropagation(); var rs=loadRoutes().filter(function(x){return x.id!==rid;}); saveRoutes(rs); renderSavedRoutes(); toast('Route deleted'); }; })(r.id);
       var arr=document.createElement('span'); arr.id='ra-'+r.id; arr.innerHTML='&#9662;'; arr.style.cssText='font-size:16px;color:var(--sage-light);';
-      right.appendChild(editBtn); right.appendChild(del); right.appendChild(arr);
+      right.appendChild(editBtn); right.appendChild(shareBtn); right.appendChild(del); right.appendChild(arr);
       hdr.appendChild(left); hdr.appendChild(right); card.appendChild(hdr);
       // Body
       var body=document.createElement('div'); body.className='saved-route-body'; body.id='rb-'+r.id;
@@ -1316,6 +1318,18 @@ function saveEditModal(){
   closeEditModal();
   renderFavs();
   toast('Place updated &#10024;');
+}
+
+// -- SHARE SAVED ROUTE ------------------------------------
+function shareSavedRoute(route){
+  var data = {city: route.city, stops: route.stops, name: route.name};
+  var encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+  var url = window.location.href.split('#')[0] + '#route=' + encoded;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){ toast('&#128279; Link copied!'); }).catch(function(){ prompt('Copy this link:', url); });
+  } else {
+    prompt('Copy this link:', url);
+  }
 }
 
 // -- SHARE ROUTE -------------------------------------------
@@ -1648,38 +1662,64 @@ function buildMapUrl(stops, city){
 }
 
 function showRouteMap(stops, containerId){
-  var el = document.getElementById(containerId); if(!el) return;
-  if(!stops||stops.length===0){ el.innerHTML=''; return; }
+  var el = document.getElementById(containerId);
+  if(!el || !stops || stops.length === 0) return;
   el.innerHTML = '';
-  // Toggle button
-  var toggleBtn = document.createElement('button');
-  toggleBtn.className = 'map-toggle-btn';
-  toggleBtn.innerHTML = '&#128506; Show on Map';
-  var frameDiv = document.createElement('div');
-  frameDiv.id = 'map-frame-'+containerId;
-  frameDiv.style.display = 'none';
-  toggleBtn.onclick = function(){
-    frameDiv.style.display = frameDiv.style.display==='none'?'block':'none';
-    toggleBtn.innerHTML = frameDiv.style.display==='none'?'&#128506; Show on Map':'&#128506; Hide Map';
+
+  // Build a card showing all stops with map links
+  var card = document.createElement('div');
+  card.style.cssText = 'background:var(--card);border:2px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 4px 16px var(--shadow);';
+
+  // Header toggle button
+  var header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:linear-gradient(135deg,var(--sage-dark),#3a6050);';
+  header.innerHTML = '<div style="color:#fff;font-family:Pacifico,cursive;font-size:16px;">&#128506; View on Map</div><span id="map-arrow-'+containerId+'" style="color:rgba(255,255,255,.7);font-size:18px;">&#9662;</span>';
+
+  var body = document.createElement('div');
+  body.id = 'mapbody-'+containerId;
+  body.style.display = 'none';
+
+  // Build all stops list
+  var stopsList = document.createElement('div');
+  stopsList.style.cssText = 'padding:12px 16px;display:flex;flex-direction:column;gap:10px;';
+
+  stops.forEach(function(stop, i){
+    var stopDiv = document.createElement('div');
+    stopDiv.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:10px;background:var(--sage-pale);border-radius:12px;';
+    var num = document.createElement('div');
+    num.style.cssText = 'background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;min-width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;';
+    num.textContent = i+1;
+    var info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    var name = document.createElement('div');
+    name.style.cssText = 'font-size:13px;font-weight:800;color:var(--ink);margin-bottom:2px;';
+    name.textContent = stop.name;
+    var addr = document.createElement('div');
+    addr.style.cssText = 'font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    addr.textContent = stop.address;
+    var links = document.createElement('div');
+    links.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;';
+    links.innerHTML = mapLinks(stop.name, stop.address, 'stop-map-link');
+    info.appendChild(name);
+    info.appendChild(addr);
+    info.appendChild(links);
+    stopDiv.appendChild(num);
+    stopDiv.appendChild(info);
+    stopsList.appendChild(stopDiv);
+  });
+
+  body.appendChild(stopsList);
+
+  header.onclick = function(){
+    var open = body.style.display === 'none';
+    body.style.display = open ? 'block' : 'none';
+    var arrow = document.getElementById('map-arrow-'+containerId);
+    if(arrow) arrow.innerHTML = open ? '&#9652;' : '&#9662;';
   };
-  // Map content
-  var mapInner = document.createElement('div');
-  mapInner.className = 'route-map-wrap';
-  var mapInfo = document.createElement('div');
-  mapInfo.style.cssText = 'padding:16px;background:var(--sage-pale);border-radius:16px;font-size:13px;color:var(--muted);font-weight:700;';
-  mapInfo.innerHTML = '&#128506; Open in maps app to see full route:<br/>';
-  var linkDiv = document.createElement('div');
-  linkDiv.style.cssText = 'margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;';
-  linkDiv.innerHTML = mapLinks(stops[0].name, stops[0].address, 'map-link');
-  var note = document.createElement('div');
-  note.style.cssText = 'margin-top:8px;font-size:11px;opacity:.7;';
-  note.textContent = 'Showing stop 1 of '+stops.length+' - tap map links for full route';
-  mapInfo.appendChild(linkDiv);
-  mapInfo.appendChild(note);
-  mapInner.appendChild(mapInfo);
-  frameDiv.appendChild(mapInner);
-  el.appendChild(toggleBtn);
-  el.appendChild(frameDiv);
+
+  card.appendChild(header);
+  card.appendChild(body);
+  el.appendChild(card);
 }
 
 function toggleMapView(containerId){
