@@ -165,7 +165,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .stop-transit{font-size:12px;color:var(--muted);font-style:italic;font-weight:600;}
 .stop-maps{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
 .stop-map-link{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;border:2px solid var(--border);color:var(--ink);background:var(--sage-pale);}
-.route-save-bar{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:16px 20px;margin-top:16px;display:flex;gap:12px;align-items:center;}
+.route-save-bar{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:16px 20px;margin-top:16px;display:flex;flex-direction:column;gap:10px;}
+.route-save-bar-buttons{display:flex;gap:10px;}
 .route-name-input{flex:1;padding:11px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:600;background:var(--sage-pale);color:var(--ink);outline:none;}
 .route-name-input:focus{border-color:var(--sage);background:#fff;}
 .save-route-btn{padding:11px 20px;background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
@@ -934,8 +935,10 @@ function renderRouteResult(route, city, hotel, leaveTime, backTime){
   // Save bar
   html+='<div class="route-save-bar">';
   html+='<input class="route-name-input" id="route-name-input" type="text" placeholder="Name this route... (e.g. Sunday in NYC)"/>';
-  html+='<button class="save-route-btn" onclick="saveRoute()">&#128204; Save</button>';
-  html+='<button class="share-btn" onclick="shareRoute()">&#128279; Share</button>';
+  html+='<div class="route-save-bar-buttons">';
+  html+='<button class="save-route-btn" onclick="saveRoute()">&#128204; Save Route</button>';
+  html+='<button class="share-btn" onclick="shareRoute()">&#128279; Share Route</button>';
+  html+='</div>';
   html+='</div>';
 
   rpRouteCity=city;
