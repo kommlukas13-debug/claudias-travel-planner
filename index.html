@@ -1469,7 +1469,26 @@ function shareRoute(){
 }
 function loadSharedRoute(){
   var hash=window.location.hash;
-  if(!hash||hash.indexOf('#route=')<0) return;
+  if(!hash) return;
+  // Shared trip
+  if(hash.indexOf('#trip=')>=0){
+    try{
+      var encoded=hash.replace('#trip=','');
+      var data=JSON.parse(decodeURIComponent(atob(encoded)));
+      if(data.type==='trip'&&data.name){
+        var trip={id:Date.now(),name:data.name+' (Shared)',city:data.city||'',dateFrom:data.dateFrom||'',dateTo:data.dateTo||'',notes:data.notes||'',routes:data.routes||[],createdAt:new Date().toLocaleDateString()};
+        var trips=loadTrips();
+        var exists=trips.some(function(t){return t.name===trip.name;});
+        if(!exists){trips.push(trip);saveTrips(trips);}
+        switchPage('trips');
+        toast('&#9992; Shared trip loaded!');
+        window.location.hash='';
+      }
+    }catch(x){}
+    return;
+  }
+  // Shared route
+  if(hash.indexOf('#route=')<0) return;
   try{
     var encoded=hash.replace('#route=','');
     var data=JSON.parse(decodeURIComponent(atob(encoded)));
@@ -1480,6 +1499,7 @@ function loadSharedRoute(){
         renderRouteResult({summary:{totalStops:rpStops.length},stops:rpStops},rpRouteCity,'','');
       },300);
       toast('&#128279; Shared route loaded!');
+      window.location.hash='';
     }
   }catch(x){}
 }
@@ -2180,10 +2200,12 @@ function renderTrips(){
     var acts = document.createElement('div'); acts.className='trip-actions';
     var editBtn=document.createElement('button');editBtn.className='trip-action-btn';editBtn.innerHTML='&#9998;';
     (function(tid){editBtn.onclick=function(e){e.stopPropagation();openEditTripModal(tid);};})(trip.id);
+    var shrBtn=document.createElement('button');shrBtn.className='trip-action-btn';shrBtn.innerHTML='&#128279;';
+    (function(t){shrBtn.onclick=function(e){e.stopPropagation();shareTrip(t);};})(trip);
     var delBtn=document.createElement('button');delBtn.className='trip-action-btn danger';delBtn.innerHTML='&#10005;';
     (function(tid){delBtn.onclick=function(e){e.stopPropagation();if(confirm('Delete this trip?')){saveTrips(loadTrips().filter(function(t){return t.id!==tid;}));renderTrips();toast('Trip deleted');}};})(trip.id);
     var arr=document.createElement('span');arr.className='trip-arrow';arr.id='tarr-'+trip.id;arr.innerHTML='&#9662;';
-    acts.appendChild(editBtn); acts.appendChild(delBtn);
+    acts.appendChild(editBtn); acts.appendChild(shrBtn); acts.appendChild(delBtn);
     hdrTop.appendChild(info); hdrTop.appendChild(acts);
     hdr.appendChild(hdrTop); hdr.appendChild(arr);
     // Body
@@ -2266,6 +2288,16 @@ function openAddRouteToTrip(tripId){
   };
   document.getElementById('add-to-trip-modal').style.display='flex';
   document.body.style.overflow='hidden';
+}
+
+// -- SHARE TRIP ------------------------------------------
+function shareTrip(trip){
+  var data={type:'trip',name:trip.name,city:trip.city,dateFrom:trip.dateFrom,dateTo:trip.dateTo,notes:trip.notes,routes:trip.routes};
+  var encoded=btoa(encodeURIComponent(JSON.stringify(data)));
+  var url=window.location.href.split('#')[0]+'#trip='+encoded;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){toast('&#128279; Trip link copied!');}).catch(function(){prompt('Copy this link:',url);});
+  } else { prompt('Copy this trip link:',url); }
 }
 
 // -- TOAST -------------------------------------------------
