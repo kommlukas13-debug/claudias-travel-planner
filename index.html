@@ -419,7 +419,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .visited-place-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:2px solid var(--border);border-radius:14px;margin-bottom:8px;box-shadow:0 2px 8px var(--shadow);}
 .visited-place-item.visited{border-color:var(--sage-light);background:linear-gradient(135deg,var(--sage-pale),#e8f5ec);}
 .visited-checkbox-wrap{flex-shrink:0;}
-.visited-checkbox{width:26px;height:26px;border-radius:8px;border:2.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;flex-shrink:0;}
+.visited-checkbox{width:36px;height:36px;border-radius:8px;border:2.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;flex-shrink:0;}
 .visited-checkbox.checked{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
 .visited-place-info{flex:1;min-width:0;}
 .visited-place-name{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -429,12 +429,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .visited-stat-num{font-family:'Pacifico',cursive;font-size:24px;margin-bottom:2px;}
 .visited-stat-label{font-size:11px;opacity:.8;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
 /* Visited checkbox on fav cards */
-.fav-visited-btn{background:none;border:2px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.fav-visited-btn{background:none;border:2px solid var(--border);border-radius:8px;width:40px;height:40px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
 .fav-visited-btn.visited{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
 
 
 /* ADD TO ROUTE */
-.fav-add-route-btn{background:linear-gradient(135deg,var(--sage-pale),#d4edda);border:1.5px solid var(--sage-light);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--sage-dark);transition:all .2s;}
+.fav-add-route-btn{background:linear-gradient(135deg,var(--sage-pale),#d4edda);border:1.5px solid var(--sage-light);border-radius:8px;width:40px;height:40px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--sage-dark);transition:all .2s;}
 .fav-add-route-btn:hover{background:var(--sage);color:#fff;}
 .add-to-route-modal .modal-box{max-height:80vh;overflow-y:auto;}
 .atr-route-option{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--sage-pale);border:2px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
@@ -742,7 +742,9 @@ function switchPage(n){
   updatePagePill(n);
   closeBurger();
   if(n==='places') renderFavs();
-  if(n==='planner') renderRoutePlanner();
+  if(n==='planner'){
+    if(!rpStops||rpStops.length===0){ renderRoutePlanner(); }
+  }
   if(n==='routes') renderSavedRoutes();
   if(n==='trips') renderTrips();
   if(n==='visited') renderVisited();
@@ -1464,75 +1466,104 @@ function renderSavedRoutes(){
 }
 
 // -- DISCOVER SEARCH ---------------------------------------
+function updateSearchBtn(){
+  var interest = document.getElementById('input-interest');
+  var btn = document.getElementById('search-btn');
+  if(!btn || !interest) return;
+  btn.innerHTML = interest.value.trim() ? '&#10024; Let&#39;s Explore! &#9992;' : '&#127881; Surprise Me!';
+}
+
 function doSearch(){
-  var city=document.getElementById('input-city').value.trim();
-  var interest=document.getElementById('input-interest').value.trim();
-  var hotel=document.getElementById('input-hotel').value.trim();
-  var maxTime=document.getElementById('time-slider').value;
-  var err=document.getElementById('error-msg');
+  var city = document.getElementById('input-city').value.trim();
+  var interest = document.getElementById('input-interest').value.trim();
+  var placeName = document.getElementById('input-place-name') ? document.getElementById('input-place-name').value.trim() : '';
+  var hotel = document.getElementById('input-hotel').value.trim();
+  var maxTime = document.getElementById('time-slider').value;
+  var err = document.getElementById('error-msg');
   err.classList.remove('show');
-  var placeName=document.getElementById('input-place-name')?document.getElementById('input-place-name').value.trim():'';
-  if(!city){err.textContent='Please enter a city.';err.classList.add('show');return;}
-  var labels={walking:'Walking',car:'Car',transit:'Public Transit',cycling:'Cycling'};
-  var modeList=modes.map(function(m){return labels[m];}).join(', ');
-  var btn=document.getElementById('search-btn'); btn.disabled=true; btn.textContent='Searching...';
+
+  var isNearby = !city;
+  var labels = {walking:'Walking',car:'Car',transit:'Public Transit',cycling:'Cycling'};
+  var modeList = modes.map(function(m){return labels[m];}).join(', ');
+  var btn = document.getElementById('search-btn');
+  btn.disabled = true; btn.textContent = 'Searching...';
   document.getElementById('loading').classList.add('show');
   document.getElementById('results').classList.remove('show');
-  var searchLabel = placeName ? placeName+' in '+city : interest ? interest+' in '+city : 'hidden gems in '+city;
-  document.getElementById('loading-text').textContent='Discovering '+searchLabel+'...';
-  lastCity=normaliseCity(city);
-  var hotelLine=hotel?'They are staying at: '+hotel+'. This is the starting point.':'No specific base location. Start from the most central point.';
-  var minRating=discoverRating>0?'Only include places with a rating of '+discoverRating+' or above. ':'';
-  var prompt;
-  if(placeName){
-    // Specific place search
-    prompt='You are a travel assistant. The user is looking for a specific place called "'+placeName+'" in '+city+'. '+
-      'Find this place and 5 similar or nearby places the user would also love. '+hotelLine+' '+minRating+
-      'Return a JSON array of exactly 6 places with the searched place FIRST, ordered as a logical route. '+
-      'Each object: name, address (full street address), rating (1.0-5.0), travelTime (from previous stop), fromPrevious (direction hint), priceLevel (1-4 or null), openNow (boolean), description (2-3 sentences). '+
-      'Respond ONLY with valid JSON array. No markdown.';
-  } else if(interest){
-    // Normal interest search
-    prompt='You are a travel assistant and expert route planner. Find places in '+city+'. Looking for: '+interest+'. '+hotelLine+' '+minRating+
-      'Transport modes: '+modeList+'. Max travel time between stops: '+maxTime+' minutes. '+
-      'Return a JSON array of exactly 6 places ordered as a logical efficient travel route minimising backtracking. '+
-      'Each object: name, address (full street address), rating (1.0-5.0), travelTime (from previous stop), fromPrevious (direction hint), priceLevel (1-4 or null), openNow (boolean), description (2-3 sentences). '+
-      'Respond ONLY with a valid JSON array. No markdown, no explanation.';
-  } else {
-    // Surprise search - random vibe
-    var vibes=['charming','romantic','off-the-beaten-path','cosy','vibrant','foodie','cultural','adventurous'];
-    var vibe=vibes[Math.floor(Math.random()*vibes.length)];
-    document.getElementById('loading-text').textContent='Finding '+vibe+' gems in '+city+'...';
-    prompt='You are a travel assistant. Surprise the user with 6 '+vibe+' places to discover in '+city+'. '+
-      hotelLine+' '+minRating+
-      'Make the selection diverse - mix cafes, restaurants, attractions, parks, shops etc. '+
-      'Return a JSON array of exactly 6 places ordered as a logical route. '+
-      'Each object: name, address (full street address), rating (1.0-5.0), travelTime (from previous stop), fromPrevious (direction hint), priceLevel (1-4 or null), openNow (boolean), description (2-3 sentences). '+
-      'Respond ONLY with a valid JSON array. No markdown.';
-  }
-  var xhr=new XMLHttpRequest();
-  xhr.open('POST','https://api.groq.com/openai/v1/chat/completions',true);
-  xhr.setRequestHeader('Content-Type','application/json');
-  xhr.setRequestHeader('Authorization','Bearer '+APIKEY);
-  xhr.onload=function(){
-    document.getElementById('loading').classList.remove('show');
-    btn.disabled=false; btn.innerHTML='&#10024; Let&#39;s Explore! &#9992;';
-    try{
-      var data=JSON.parse(xhr.responseText);
-      if(data.error){err.textContent='API Error: '+data.error.message;err.classList.add('show');return;}
-      if(!data.choices||data.choices.length===0){err.textContent='No response. Status: '+xhr.status;err.classList.add('show');return;}
-      var text=data.choices[0].message.content||'';
-      var clean=text.replace(/```json/g,'').replace(/```/g,'').trim();
-      lastResults=JSON.parse(clean);
-      document.getElementById('results-tag').textContent=placeName?placeName+' in '+city:interest?city:city+' Surprise!';
-      var html='';
-      for(var j=0;j<lastResults.length;j++){ if(j>0) html+=renderConn(lastResults[j]); html+=renderCard(lastResults[j],j); }
-      document.getElementById('places-list').innerHTML=html;
+
+  var vibes = ['charming','romantic','off-the-beaten-path','cosy','vibrant','foodie','cultural','adventurous'];
+  var vibe = vibes[Math.floor(Math.random()*vibes.length)];
+  var minRating = discoverRating>0 ? 'Only include places rated '+discoverRating+' or above. ' : '';
+
+  function runSearch(searchCity, hotelLine){
+    lastCity = normaliseCity(searchCity);
+    var loadLabel = placeName ? placeName+' in '+searchCity : interest ? interest+' in '+searchCity : vibe+' gems in '+searchCity;
+    document.getElementById('loading-text').textContent = 'Discovering '+loadLabel+'...';
+
+    var prompt;
+    if(placeName){
+      prompt = 'Find "'+placeName+'" in '+searchCity+' and 5 similar nearby places. '+hotelLine+' '+minRating+
+        'Return JSON array of 6, searched place FIRST. Each: name, address, rating (1.0-5.0), travelTime, fromPrevious, priceLevel, openNow, description (2-3 sentences). Only valid JSON array. No markdown.';
+    } else if(interest){
+      prompt = 'Find places in '+searchCity+' for: '+interest+'. '+hotelLine+' '+minRating+
+        'Transport: '+modeList+'. Max travel: '+maxTime+' min. '+
+        'Return JSON array of 6 in logical route order. Each: name, address, rating, travelTime, fromPrevious, priceLevel, openNow, description. Only valid JSON array.';
+    } else {
+      prompt = 'Surprise with 6 '+vibe+' places in '+searchCity+'. '+hotelLine+' '+minRating+
+        'Diverse mix of cafes, restaurants, attractions, parks, shops. '+
+        'Return JSON array of 6 in logical order. Each: name, address, rating, travelTime, fromPrevious, priceLevel, openNow, description. Only valid JSON array.';
+    }
+
+    callGroq(prompt, 1500, function(results){
+      document.getElementById('loading').classList.remove('show');
+      btn.disabled = false; updateSearchBtn();
+      if(discoverRating>0) results = results.filter(function(p){return (p.rating||0)>=discoverRating;});
+      lastResults = results;
+      document.getElementById('results-tag').textContent = placeName ? placeName+' in '+searchCity : interest ? searchCity : '&#127881; '+searchCity;
+      var html = '';
+      for(var j=0;j<results.length;j++){ if(j>0) html+=renderConn(results[j]); html+=renderCard(results[j],j); }
+      document.getElementById('places-list').innerHTML = html;
       document.getElementById('results').classList.add('show');
-    }catch(e){ err.textContent='Something went wrong. Please try again.'; err.classList.add('show'); }
-  };
-  xhr.onerror=function(){ document.getElementById('loading').classList.remove('show'); btn.disabled=false; btn.innerHTML='&#10024; Let&#39;s Explore! &#9992;'; err.textContent='Network error. Please check your connection.'; err.classList.add('show'); };
-  xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:1500,messages:[{role:'user',content:prompt}]}));
+    }, function(){
+      document.getElementById('loading').classList.remove('show');
+      btn.disabled = false; updateSearchBtn();
+      err.textContent = 'Something went wrong. Please try again.';
+      err.classList.add('show');
+    });
+  }
+
+  if(isNearby){
+    if(!navigator.geolocation){
+      err.textContent = 'Please enter a city, or allow location access for nearby search.';
+      err.classList.add('show'); btn.disabled=false; updateSearchBtn();
+      document.getElementById('loading').classList.remove('show'); return;
+    }
+    document.getElementById('loading-text').textContent = 'Getting your location...';
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var lat = pos.coords.latitude.toFixed(4), lon = pos.coords.longitude.toFixed(4);
+      var rgXhr = new XMLHttpRequest();
+      rgXhr.open('GET','https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json',true);
+      rgXhr.setRequestHeader('Accept-Language','en');
+      rgXhr.onload = function(){
+        try{
+          var rg = JSON.parse(rgXhr.responseText);
+          var addr = rg.address||{};
+          var nearCity = normaliseCity(addr.city||addr.town||addr.village||addr.county||'your area');
+          lastNearbyCity = nearCity;
+          runSearch(nearCity, 'Near coordinates '+lat+','+lon+'. Prioritise places within easy reach.');
+        }catch(x){ runSearch('your area','Near coordinates '+lat+','+lon+'.'); }
+      };
+      rgXhr.onerror = function(){ runSearch('your area','Near coordinates '+lat+','+lon+'.'); };
+      rgXhr.send();
+    }, function(){
+      document.getElementById('loading').classList.remove('show');
+      btn.disabled=false; updateSearchBtn();
+      err.textContent='Could not get your location. Please allow location access or enter a city.';
+      err.classList.add('show');
+    }, {timeout:10000});
+  } else {
+    var hotelLine = hotel ? 'Starting at: '+hotel+'.' : 'Start from the most central point.';
+    runSearch(city, hotelLine);
+  }
 }
 
 // -- DARK MODE ---------------------------------------------
@@ -1848,8 +1879,6 @@ function getHoursWarning(stop){
 }
 
 // -- NEARBY SEARCH ----------------------------------------
-var nearbyRating = 0;
-var nearbyResults = [];
 var lastNearbyCity = 'Nearby';
 
 function setNearbyRating(btn){
@@ -1974,7 +2003,6 @@ function toggleNearbyFav(i){
 }
 
 // -- SURPRISE ----------------------------------------------
-var surpriseRating = 0;
 
 function setSurpriseRating(btn){
   document.querySelectorAll('#surprise-rating-filter .rating-filter-btn').forEach(function(b){b.classList.remove('active');});
