@@ -419,7 +419,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .visited-place-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:2px solid var(--border);border-radius:14px;margin-bottom:8px;box-shadow:0 2px 8px var(--shadow);}
 .visited-place-item.visited{border-color:var(--sage-light);background:linear-gradient(135deg,var(--sage-pale),#e8f5ec);}
 .visited-checkbox-wrap{flex-shrink:0;}
-.visited-checkbox{width:36px;height:36px;border-radius:8px;border:2.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;flex-shrink:0;}
+.visited-checkbox{width:44px;height:44px;border-radius:8px;border:2.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;flex-shrink:0;}
 .visited-checkbox.checked{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
 .visited-place-info{flex:1;min-width:0;}
 .visited-place-name{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -443,6 +443,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .atr-route-meta{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;}
 .atr-adding{background:#fff;border:2px solid var(--sage);border-radius:12px;padding:16px;text-align:center;margin-bottom:12px;}
 .atr-adding-text{font-size:13px;font-weight:700;color:var(--sage-dark);}
+
+
+/* MY PLANS */
+.plans-chip-row{display:flex;gap:8px;margin-bottom:18px;}
+.plans-chip{flex:1;padding:12px;border:2px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;background:var(--card);color:var(--muted);min-height:44px;transition:all .2s;}
+.plans-chip.active{background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;border-color:var(--sage-dark);}
 
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
@@ -508,8 +514,7 @@ try{
       <button class="burger-item active" id="tab-discover" onclick="switchPage('discover')"><span class="burger-icon">&#127757;</span>Discover</button>
       <button class="burger-item" id="tab-planner" onclick="switchPage('planner')"><span class="burger-icon">&#128345;</span>Route Planner</button>
       <button class="burger-item" id="tab-places" onclick="switchPage('places')"><span class="burger-icon">&#10084;&#65039;</span>My Places</button>
-      <button class="burger-item" id="tab-routes" onclick="switchPage('routes')"><span class="burger-icon">&#128204;</span>Saved Routes</button>
-      <button class="burger-item" id="tab-trips" onclick="switchPage('trips')"><span class="burger-icon">&#9992;</span>My Trips</button>
+      <button class="burger-item" id="tab-plans" onclick="switchPage('plans')"><span class="burger-icon">&#128204;</span>My Plans</button>
       <button class="burger-item" id="tab-visited" onclick="switchPage('visited')"><span class="burger-icon">&#127758;</span>We Were Here</button>
     </nav>
   </div>
@@ -586,13 +591,24 @@ try{
     <div id="fav-content"></div>
   </div>
 
-  <!-- ══ TRIPS ══ -->
-  <div class="page" id="page-trips">
-    <div class="doodle-row"><span class="doodle">&#9992;</span><span class="doodle">&#127758;</span><span class="doodle">&#128151;</span></div>
-    <div class="section-title">My Trips</div>
-    <div class="section-sub">Your multi-day adventures, all in one place &#128205;</div>
-    <button class="action-btn" style="margin-bottom:20px;" onclick="openNewTripModal()">&#43; New Trip</button>
-    <div id="trips-content"></div>
+  <!-- ══ MY PLANS ══ -->
+  <div class="page" id="page-plans">
+    <div class="doodle-row"><span class="doodle">&#128204;</span><span class="doodle">&#9992;</span><span class="doodle">&#128345;</span></div>
+    <div class="section-title">My Plans</div>
+    <div class="section-sub">Your routes and trips, all in one place &#10024;</div>
+    <div class="plans-chip-row">
+      <button class="plans-chip active" id="pchip-routes" onclick="setPlansView('routes')">&#128204; Routes</button>
+      <button class="plans-chip" id="pchip-trips" onclick="setPlansView('trips')">&#9992; Trips</button>
+    </div>
+    <!-- Routes view -->
+    <div id="plans-routes-view">
+      <div id="routes-content"></div>
+    </div>
+    <!-- Trips view -->
+    <div id="plans-trips-view" style="display:none">
+      <button class="action-btn" style="margin-bottom:20px;" onclick="openNewTripModal()">&#43; New Trip</button>
+      <div id="trips-content"></div>
+    </div>
   </div>
 
   <!-- ══ WE WERE HERE ══ -->
@@ -610,13 +626,6 @@ try{
     </div>
   </div>
 
-  <!-- ══ SAVED ROUTES ══ -->
-  <div class="page" id="page-routes">
-    <div class="doodle-row"><span class="doodle">&#128204;</span><span class="doodle">&#9889;</span><span class="doodle">&#127758;</span></div>
-    <div class="section-title">Saved Routes</div>
-    <div class="section-sub">Your planned days out, organized by city &#128345;</div>
-    <div id="routes-content"></div>
-  </div>
 
 </div>
 <div id="page-pill" class="current-page-pill" onclick="openBurger()">
@@ -745,8 +754,7 @@ function switchPage(n){
   if(n==='planner'){
     if(!rpStops||rpStops.length===0){ renderRoutePlanner(); }
   }
-  if(n==='routes') renderSavedRoutes();
-  if(n==='trips') renderTrips();
+  if(n==='plans') renderPlans();
   if(n==='visited') renderVisited();
   window.scrollTo(0,0);
 }
@@ -1792,7 +1800,8 @@ function loadSharedRoute(){
         var trips=loadTrips();
         var exists=trips.some(function(t){return t.name===trip.name;});
         if(!exists){trips.push(trip);saveTrips(trips);}
-        switchPage('trips');
+        switchPage('plans');
+        setTimeout(function(){setPlansView('trips');},100);
         toast('&#9992; Shared trip loaded!');
         window.location.hash='';
       }
@@ -2371,7 +2380,8 @@ function saveNewTrip(){
   saveTrips(trips);
   closeNewTripModal();
   toast('&#9992; Trip created!');
-  switchPage('trips');
+  switchPage('plans');
+  setTimeout(function(){setPlansView('trips');},100);
 }
 
 // ADD TO TRIP MODAL
@@ -2846,8 +2856,7 @@ var pageLabels = {
   discover: {icon:'&#127757;', name:'Discover'},
   planner: {icon:'&#128345;', name:'Route Planner'},
   places: {icon:'&#10084;&#65039;', name:'My Places'},
-  routes: {icon:'&#128204;', name:'Saved Routes'},
-  trips: {icon:'&#9992;', name:'My Trips'},
+  plans: {icon:'&#128204;', name:'My Plans'},
   visited: {icon:'&#127758;', name:'We Were Here'}
 };
 var currentPage = 'discover';
@@ -3020,6 +3029,24 @@ function guessTimeToSpend(place){
   var cat=guessCategory(place);
   var times={Breakfast:'45 min',Cafe:'30 min',Restaurant:'60 min',Bar:'60 min',Museum:'90 min',Park:'45 min',Shopping:'60 min',Attraction:'45 min'};
   return times[cat]||'45 min';
+}
+
+
+// -- MY PLANS (merged routes + trips) --------------------
+var plansView = 'routes';
+
+function setPlansView(view){
+  plansView = view;
+  document.getElementById('pchip-routes').classList.toggle('active', view==='routes');
+  document.getElementById('pchip-trips').classList.toggle('active', view==='trips');
+  document.getElementById('plans-routes-view').style.display = view==='routes'?'block':'none';
+  document.getElementById('plans-trips-view').style.display = view==='trips'?'block':'none';
+  if(view==='routes') renderSavedRoutes();
+  if(view==='trips') renderTrips();
+}
+
+function renderPlans(){
+  setPlansView(plansView);
 }
 
 // -- CITY NORMALISATION ----------------------------------
