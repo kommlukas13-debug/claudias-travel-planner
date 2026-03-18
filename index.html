@@ -432,6 +432,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .fav-visited-btn{background:none;border:2px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
 .fav-visited-btn.visited{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
 
+
+/* ADD TO ROUTE */
+.fav-add-route-btn{background:linear-gradient(135deg,var(--sage-pale),#d4edda);border:1.5px solid var(--sage-light);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--sage-dark);transition:all .2s;}
+.fav-add-route-btn:hover{background:var(--sage);color:#fff;}
+.add-to-route-modal .modal-box{max-height:80vh;overflow-y:auto;}
+.atr-route-option{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--sage-pale);border:2px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
+.atr-route-option:hover{border-color:var(--sage);background:#d4edda;}
+.atr-route-name{font-size:14px;font-weight:800;color:var(--ink);}
+.atr-route-meta{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;}
+.atr-adding{background:#fff;border:2px solid var(--sage);border-radius:12px;padding:16px;text-align:center;margin-bottom:12px;}
+.atr-adding-text{font-size:13px;font-weight:700;color:var(--sage-dark);}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -735,6 +747,17 @@ try{
   </div>
 </div>
 
+<!-- ADD TO ROUTE MODAL -->
+<div class="modal-overlay add-to-route-modal" id="add-to-route-modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-title">&#128345; Add to Route</div>
+    <div id="atr-content"></div>
+    <div class="modal-actions" style="margin-top:12px;">
+      <button class="modal-btn modal-btn-cancel" onclick="closeAddToRouteModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT PLACE MODAL -->
 <div class="modal-overlay" id="edit-modal" style="display:none">
   <div class="modal-box">
@@ -987,6 +1010,9 @@ function renderFavs(){
       var ml=document.createElement('div'); ml.className='fav-map-links'; ml.innerHTML=mapLinks(p.name,p.address,'fav-map-link'); left.appendChild(ml);
       card.appendChild(left);
       var actions=document.createElement('div'); actions.style.cssText='display:flex;flex-direction:column;gap:5px;flex-shrink:0;margin-left:8px;';
+      // Add to route button
+      var arb=document.createElement('button'); arb.className='fav-add-route-btn'; arb.title='Add to route'; arb.innerHTML='&#128345;';
+      (function(place){arb.onclick=function(){openAddToRouteModal(place);};})(p);
       // Visited checkbox
       var vis=isVisited(p);
       var vcb=document.createElement('button'); vcb.className='fav-visited-btn'+(vis?' visited':''); vcb.title='Mark as visited'; vcb.innerHTML=vis?'&#10003;':'&#128205;';
@@ -1000,7 +1026,7 @@ function renderFavs(){
       (function(place){eb.onclick=function(){openEditModal(place.name,place.address);};})(p);
       var rb=document.createElement('button'); rb.className='fav-remove'; rb.innerHTML='&#10005;';
       (function(place){rb.onclick=function(){saveFavs(loadFavs().filter(function(x){return!(x.name===place.name&&x.address===place.address);}));renderFavs();toast('Removed from places');};})(p);
-      actions.appendChild(vcb); actions.appendChild(eb); actions.appendChild(rb);
+      actions.appendChild(arb); actions.appendChild(vcb); actions.appendChild(eb); actions.appendChild(rb);
       card.appendChild(actions); g.appendChild(card);
     });
     cont.appendChild(g);
@@ -1721,12 +1747,30 @@ function openEditModal(name,address){
   for(var i=0;i<favs.length;i++) if(favs[i].name===name&&favs[i].address===address){p=favs[i];break;}
   if(!p) return;
   editingPlaceKey={name:name,address:address};
+  // Basic fields
   document.getElementById('edit-name').value=p.name||'';
   document.getElementById('edit-address').value=p.address||'';
   document.getElementById('edit-rating').value=p.rating||'';
   var notes=loadNotes();
   document.getElementById('edit-note').value=notes[getNoteKey(p)]||'';
-  document.getElementById('edit-modal').style.display='flex'; document.body.style.overflow='hidden';
+  // Always reset then load THIS place's tags
+  editModalTags=[];
+  var pkey=getPlaceKey(p);
+  editModalTags=loadTags(pkey).slice();
+  renderEditTagList();
+  renderEditTagSuggestions();
+  // Clear tag input field
+  var tagInp=document.getElementById('edit-tag-input');
+  if(tagInp) tagInp.value='';
+  // Always reset then load THIS place's personal rating
+  editModalPersonalRating=loadPersonalRating(pkey)||0;
+  document.querySelectorAll('#edit-personal-rating-wrap .personal-star').forEach(function(s,i){
+    s.classList.toggle('on',i<editModalPersonalRating);
+  });
+  var rval=document.getElementById('edit-personal-rating-val');
+  if(rval) rval.textContent=editModalPersonalRating>0?editModalPersonalRating+'/5':'';
+  document.getElementById('edit-modal').style.display='flex';
+  document.body.style.overflow='hidden';
 }
 function closeEditModal(){ document.getElementById('edit-modal').style.display='none'; editingPlaceKey=null; document.body.style.overflow=''; }
 function saveEditModal(){
@@ -2870,6 +2914,159 @@ function updatePagePill(n){
   if(!pill) return;
   var info = pageLabels[n]||{icon:'&#128205;',name:n};
   pill.innerHTML = '<span class="current-page-pill-icon">'+info.icon+'</span>'+info.name+' <span style="opacity:.6;font-size:11px;">&#9776;</span>';
+}
+
+
+// -- ADD PLACE TO ROUTE ----------------------------------
+var addingToRoutePlace = null;
+
+function openAddToRouteModal(place){
+  addingToRoutePlace = place;
+  var routes = loadRoutes();
+  var cont = document.getElementById('atr-content');
+  cont.innerHTML = '';
+
+  // Check if there's an active route in the planner
+  var hasActiveRoute = rpStops && rpStops.length > 0;
+
+  if(hasActiveRoute){
+    var activeDiv = document.createElement('div'); activeDiv.className='atr-adding';
+    activeDiv.innerHTML='<div class="atr-adding-text">&#128345; Active route in planner<br/><span style="font-size:11px;color:var(--muted);">'+rpStops.length+' stops | '+rpRouteCity+'</span></div>';
+    var addActiveBtn = document.createElement('button'); addActiveBtn.className='modal-btn modal-btn-save'; addActiveBtn.style.cssText='width:100%;margin-top:10px;';
+    addActiveBtn.innerHTML='&#10024; Add to active route';
+    addActiveBtn.onclick = function(){ addPlaceToRoute(null); };
+    activeDiv.appendChild(addActiveBtn);
+    cont.appendChild(activeDiv);
+    var orDiv = document.createElement('div'); orDiv.style.cssText='text-align:center;font-size:12px;color:var(--muted);font-weight:700;margin:10px 0;';
+    orDiv.textContent='— or add to a saved route —';
+    cont.appendChild(orDiv);
+  } else if(routes.length===0){
+    cont.innerHTML='<div class="empty-state" style="padding:20px 0;"><div class="big" style="font-size:32px;">&#128345;</div><p>No saved routes yet.<br/>Plan a route first!</p></div>';
+    document.getElementById('add-to-route-modal').style.display='flex';
+    document.body.style.overflow='hidden';
+    return;
+  }
+
+  // List saved routes
+  if(routes.length > 0){
+    var label = document.createElement('div'); label.style.cssText='font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;';
+    label.textContent = hasActiveRoute ? 'Saved routes:' : 'Choose a route:';
+    cont.appendChild(label);
+    routes.forEach(function(r){
+      var opt = document.createElement('div'); opt.className='atr-route-option';
+      opt.innerHTML='<div><div class="atr-route-name">'+r.name+'</div><div class="atr-route-meta">'+r.city+' &middot; '+(r.stops||[]).length+' stops</div></div><span style="color:var(--sage-dark);font-size:18px;">&#43;</span>';
+      (function(route){ opt.onclick = function(){ addPlaceToRoute(route); }; })(r);
+      cont.appendChild(opt);
+    });
+  }
+
+  document.getElementById('add-to-route-modal').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+
+function closeAddToRouteModal(){
+  document.getElementById('add-to-route-modal').style.display='none';
+  document.body.style.overflow='';
+  addingToRoutePlace = null;
+}
+
+function addPlaceToRoute(savedRoute){
+  if(!addingToRoutePlace) return;
+  var place = addingToRoutePlace;
+  closeAddToRouteModal();
+
+  // Build the place as a stop-like object
+  var newStop = {
+    name: place.name,
+    category: place.category || guessCategory(place),
+    address: place.address,
+    arrivalTime: '',
+    departureTime: '',
+    timeToSpend: guessTimeToSpend(place),
+    transitToNext: '',
+    parkingOrTransit: '',
+    rating: place.rating || null,
+    notes: ''
+  };
+
+  var stops = savedRoute ? (savedRoute.stops||[]).slice() : rpStops.slice();
+  var city = savedRoute ? savedRoute.city : rpRouteCity;
+  var leaveTime = savedRoute ? (savedRoute.leaveTime||'09:00') : (document.getElementById('rp-leave')?document.getElementById('rp-leave').value:'09:00');
+  var backTime = savedRoute ? (savedRoute.backTime||'21:00') : (document.getElementById('rp-back')?document.getElementById('rp-back').value:'21:00');
+
+  // Show loading toast
+  toast('&#10024; Finding the best spot for '+place.name+'...');
+
+  // Ask AI to insert the place at the best position
+  var stopsDesc = stops.map(function(s,i){
+    return (i+1)+'. '+s.name+' ('+s.category+') at '+s.arrivalTime+' - '+s.departureTime;
+  }).join('; ');
+
+  var prompt = 'I have a day route in '+city+' with these stops: '+stopsDesc+'. '+
+    'I want to add "'+place.name+'" ('+place.address+') to this route. '+
+    'Determine the best position to insert it considering: time of day logic (breakfast early, lunch midday, dinner evening), '+
+    'geographic proximity to surrounding stops, and logical flow of the day. '+
+    'Return ONLY a JSON object with: insertAt (number: the index position to insert, 0=beginning), '+
+    'reason (string: one short sentence why this position), '+
+    'updatedStops (array: the complete updated stop list with recalculated arrivalTime and departureTime for ALL stops, '+
+    'keeping timeToSpend as "'+newStop.timeToSpend+'", same fields as input stops plus transitToNext). '+
+    'Respond ONLY with valid JSON. No markdown.';
+
+  callGroq(prompt, 1500, function(result){
+    var updatedStops = result.updatedStops || stops;
+    // Insert if no updatedStops provided
+    if(!result.updatedStops){
+      var pos = Math.max(0, Math.min(result.insertAt||stops.length, stops.length));
+      updatedStops = stops.slice();
+      updatedStops.splice(pos, 0, newStop);
+    }
+
+    if(savedRoute){
+      // Update saved route
+      var routes = loadRoutes();
+      for(var i=0;i<routes.length;i++){
+        if(routes[i].id===savedRoute.id){ routes[i].stops=updatedStops; break; }
+      }
+      saveRoutes(routes);
+      toast('&#128204; '+place.name+' added to "'+savedRoute.name+'"! '+result.reason);
+    } else {
+      // Update active planner route
+      rpStops = updatedStops;
+      refreshStopsList();
+      switchPage('planner');
+      toast('&#128345; '+place.name+' added to your route! '+result.reason);
+    }
+  }, function(err){
+    // Fallback: just append to end
+    stops.push(newStop);
+    if(savedRoute){
+      var routes=loadRoutes();
+      for(var i=0;i<routes.length;i++) if(routes[i].id===savedRoute.id){routes[i].stops=stops;break;}
+      saveRoutes(routes);
+      toast('Added '+place.name+' to "'+savedRoute.name+'"');
+    } else {
+      rpStops=stops; refreshStopsList(); switchPage('planner');
+      toast('Added '+place.name+' to your route');
+    }
+  });
+}
+
+function guessCategory(place){
+  var text=((place.name||'')+(place.description||'')).toLowerCase();
+  if(text.indexOf('breakfast')>=0||text.indexOf('brunch')>=0) return 'Breakfast';
+  if(text.indexOf('cafe')>=0||text.indexOf('coffee')>=0) return 'Cafe';
+  if(text.indexOf('restaurant')>=0||text.indexOf('dining')>=0) return 'Restaurant';
+  if(text.indexOf('bar')>=0||text.indexOf('pub')>=0||text.indexOf('cocktail')>=0) return 'Bar';
+  if(text.indexOf('museum')>=0||text.indexOf('gallery')>=0) return 'Museum';
+  if(text.indexOf('park')>=0||text.indexOf('garden')>=0) return 'Park';
+  if(text.indexOf('shop')>=0||text.indexOf('market')>=0) return 'Shopping';
+  return 'Attraction';
+}
+
+function guessTimeToSpend(place){
+  var cat=guessCategory(place);
+  var times={Breakfast:'45 min',Cafe:'30 min',Restaurant:'60 min',Bar:'60 min',Museum:'90 min',Park:'45 min',Shopping:'60 min',Attraction:'45 min'};
+  return times[cat]||'45 min';
 }
 
 // -- CITY NORMALISATION ----------------------------------
