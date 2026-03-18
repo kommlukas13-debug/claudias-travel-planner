@@ -771,7 +771,7 @@ try{
 </div>
 
 <script>
-var APIKEY = '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';
+var APIKEY = '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';
 var modes = ['walking'];
 var lastCity = '';
 var lastResults = [];
@@ -1121,6 +1121,15 @@ function rpCityChanged(){
     });
     if(found.length>0||cat.id==='other') detectedCats.push({cat:cat, places:found, count:found.length});
   });
+  // Also find categories from place TAGS for this city
+  var tagCats = {};
+  favs.forEach(function(p){
+    var tags = loadTags(getPlaceKey(p));
+    tags.forEach(function(tag){
+      if(!tagCats[tag]) tagCats[tag] = [];
+      tagCats[tag].push(p);
+    });
+  });
   hint.textContent=favs.length+' places saved in '+city;
   // Show weather button
   showWeatherBtn(city,'weather-rp');
@@ -1144,6 +1153,33 @@ function rpCityChanged(){
     ctr.appendChild(minus); ctr.appendChild(val); ctr.appendChild(plus);
     row.appendChild(ctr); grid.appendChild(row);
   });
+
+  // Add tag-based category rows
+  Object.keys(tagCats).sort().forEach(function(tag){
+    var tagId = 'tag_'+tag.replace(/[^a-zA-Z0-9]/g,'_');
+    var places = tagCats[tag];
+    var row=document.createElement('div'); row.className='cat-row';
+    // Small tag badge styling
+    row.style.cssText='background:linear-gradient(135deg,var(--peach-pale),#ffe8d8);border-color:var(--peach-light);';
+    var info=document.createElement('div'); info.className='cat-info';
+    var nm=document.createElement('div'); nm.className='cat-name';
+    nm.innerHTML='&#127991; '+tag; info.appendChild(nm);
+    if(places.length>0){
+      var sp=document.createElement('div'); sp.className='cat-sample';
+      var names=places.slice(0,2).map(function(p){return p.name;});
+      sp.textContent=names.join(', ')+(places.length>2?' +'+(places.length-2)+' more':'');
+      info.appendChild(sp);
+    }
+    row.appendChild(info);
+    var ctr=document.createElement('div'); ctr.className='cat-counter';
+    var minus=document.createElement('button'); minus.className='counter-btn'; minus.textContent='-'; minus.setAttribute('data-catid',tagId);
+    var val=document.createElement('div'); val.className='counter-val'; val.id='cat-val-'+tagId; val.textContent='0';
+    var plus=document.createElement('button'); plus.className='counter-btn'; plus.textContent='+'; plus.setAttribute('data-catid',tagId);
+    minus.onclick=function(){ var id=this.getAttribute('data-catid'); rpCategoryCount[id]=rpCategoryCount[id]||0; if(rpCategoryCount[id]>0){rpCategoryCount[id]--;document.getElementById('cat-val-'+id).textContent=rpCategoryCount[id];} };
+    plus.onclick=function(){ var id=this.getAttribute('data-catid'); rpCategoryCount[id]=(rpCategoryCount[id]||0)+1; document.getElementById('cat-val-'+id).textContent=rpCategoryCount[id]; };
+    ctr.appendChild(minus); ctr.appendChild(val); ctr.appendChild(plus);
+    row.appendChild(ctr); grid.appendChild(row);
+  });
 }
 
 function generateRoute(){
@@ -1160,6 +1196,16 @@ function generateRoute(){
   // Build stop requests
   var stopRequests=[];
   rpCategories.forEach(function(cat){ var n=rpCategoryCount[cat.id]||0; if(n>0) for(var i=0;i<n;i++) stopRequests.push(cat.name); });
+  // Include tag-based categories
+  Object.keys(rpCategoryCount).forEach(function(id){
+    if(id.indexOf('tag_')===0){
+      var n=rpCategoryCount[id]||0;
+      if(n>0){
+        var tagName=id.replace('tag_','').replace(/_/g,' ');
+        for(var i=0;i<n;i++) stopRequests.push(tagName);
+      }
+    }
+  });
   // Include custom categories
   customCategories.forEach(function(cat){ stopRequests.push(cat); });
   if(stopRequests.length===0){err.textContent='Please add at least one stop using the + buttons.';err.classList.add('show');return;}
