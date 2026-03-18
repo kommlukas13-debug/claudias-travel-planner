@@ -429,12 +429,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .visited-stat-num{font-family:'Pacifico',cursive;font-size:24px;margin-bottom:2px;}
 .visited-stat-label{font-size:11px;opacity:.8;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
 /* Visited checkbox on fav cards */
-.fav-visited-btn{background:none;border:2px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.fav-visited-btn{background:none;border:2px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
 .fav-visited-btn.visited{background:linear-gradient(135deg,var(--sage),var(--sage-dark));border-color:var(--sage-dark);color:#fff;}
 
 
 /* ADD TO ROUTE */
-.fav-add-route-btn{background:linear-gradient(135deg,var(--sage-pale),#d4edda);border:1.5px solid var(--sage-light);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--sage-dark);transition:all .2s;}
+.fav-add-route-btn{background:linear-gradient(135deg,var(--sage-pale),#d4edda);border:1.5px solid var(--sage-light);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--sage-dark);transition:all .2s;}
 .fav-add-route-btn:hover{background:var(--sage);color:#fff;}
 .add-to-route-modal .modal-box{max-height:80vh;overflow-y:auto;}
 .atr-route-option{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--sage-pale);border:2px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
@@ -506,8 +506,6 @@ try{
     </div>
     <nav id="burger-nav">
       <button class="burger-item active" id="tab-discover" onclick="switchPage('discover')"><span class="burger-icon">&#127757;</span>Discover</button>
-      <button class="burger-item" id="tab-nearby" onclick="switchPage('nearby')"><span class="burger-icon">&#128269;</span>Nearby</button>
-      <button class="burger-item" id="tab-surprise" onclick="switchPage('surprise')"><span class="burger-icon">&#127881;</span>Surprise Me</button>
       <button class="burger-item" id="tab-planner" onclick="switchPage('planner')"><span class="burger-icon">&#128345;</span>Route Planner</button>
       <button class="burger-item" id="tab-places" onclick="switchPage('places')"><span class="burger-icon">&#10084;&#65039;</span>My Places</button>
       <button class="burger-item" id="tab-routes" onclick="switchPage('routes')"><span class="burger-icon">&#128204;</span>Saved Routes</button>
@@ -525,8 +523,8 @@ try{
     <div class="section-title">Find your next adventure!</div>
     <div class="section-sub">Search for places, pick how you travel, and save your faves &#128151;</div>
     <div class="form-card">
-      <div class="field"><label class="field-label">&#127757; City</label><input class="field-input" id="input-city" type="text" placeholder="e.g. Paris, Tokyo, New York..." autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"/></div>
-      <div class="field"><label class="field-label">&#128269; What are you looking for? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional — leave empty for a surprise!)</span></label><input class="field-input" id="input-interest" type="text" placeholder="e.g. coffee shops, museums, rooftop bars..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+      <div class="field"><label class="field-label">&#127757; City <span style="text-transform:none;font-weight:400;color:#a8bfaa">(leave empty to search nearby)</span></label><input class="field-input" id="input-city" type="text" placeholder="e.g. Paris, Tokyo, New York... or leave empty for nearby" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" oninput="updateSearchBtn()"/></div>
+      <div class="field"><label class="field-label">&#128269; What are you looking for? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional — leave empty for a surprise!)</span></label><input class="field-input" id="input-interest" type="text" placeholder="e.g. coffee shops, museums, rooftop bars..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="updateSearchBtn()"/></div>
       <div class="field"><label class="field-label">&#127981; Looking for a specific place? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional)</span></label><input class="field-input" id="input-place-name" type="text" placeholder="e.g. Eiffel Tower, Le Comptoir du Relais..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
       <div class="field"><label class="field-label">&#127976; Where are you staying? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional)</span></label><input class="field-input" id="input-hotel" type="text" placeholder="e.g. Hotel Le Marais, Park Hyatt..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
       <div class="field">
@@ -541,83 +539,12 @@ try{
       <div class="field"><label class="field-label">&#9201; Max travel time</label><div class="slider-row"><input type="range" id="time-slider" min="5" max="60" step="5" value="30" oninput="updateSlider()"/><div class="slider-val" id="slider-label">30 min</div></div></div>
       <div class="field"><label class="field-label">&#11088; Minimum rating</label><div class="rating-filter-group" id="discover-rating-filter"><button class="rating-filter-btn active" data-rating="0" onclick="setDiscoverRating(this)">Any</button><button class="rating-filter-btn" data-rating="3" onclick="setDiscoverRating(this)">3+ &#11088;</button><button class="rating-filter-btn" data-rating="4" onclick="setDiscoverRating(this)">4+ &#11088;</button><button class="rating-filter-btn" data-rating="4.5" onclick="setDiscoverRating(this)">4.5+ &#11088;</button></div></div>
       <div class="error-msg" id="error-msg"></div>
-      <button class="action-btn" id="search-btn" onclick="doSearch()">&#10024; Let&#39;s Explore! &#9992;</button>
+      <button class="action-btn" id="search-btn" onclick="doSearch()">&#127881; Surprise Me!</button>
     </div>
     <div class="loading" id="loading"><div class="loading-ring"></div><p id="loading-text">Discovering the best spots...</p></div>
     <div class="results" id="results">
       <div class="results-header"><div class="results-title">Your travel route</div><div class="results-tag" id="results-tag"></div></div>
       <div class="places-list" id="places-list"></div>
-    </div>
-  </div>
-
-  <!-- ══ NEARBY ══ -->
-  <div class="page" id="page-nearby">
-    <div class="doodle-row"><span class="doodle">&#128269;</span><span class="doodle">&#128205;</span><span class="doodle">&#127758;</span></div>
-    <div class="section-title">What's Nearby?</div>
-    <div class="section-sub">Find great spots around your current location &#128205;</div>
-    <div id="nearby-content">
-      <div class="form-card">
-        <div class="field">
-          <label class="field-label">&#128269; What are you looking for?</label>
-          <input class="field-input" id="nearby-interest" type="text" placeholder="e.g. restaurants, museums, cafes..." autocomplete="off" autocorrect="off" spellcheck="false"/>
-        </div>
-        <div class="field">
-          <label class="field-label">&#11088; Minimum rating</label>
-          <div class="rating-filter-group" id="nearby-rating-filter">
-            <button class="rating-filter-btn active" data-rating="0" onclick="setNearbyRating(this)">Any</button>
-            <button class="rating-filter-btn" data-rating="3" onclick="setNearbyRating(this)">3+ &#11088;</button>
-            <button class="rating-filter-btn" data-rating="4" onclick="setNearbyRating(this)">4+ &#11088;</button>
-            <button class="rating-filter-btn" data-rating="4.5" onclick="setNearbyRating(this)">4.5+ &#11088;</button>
-          </div>
-        </div>
-        <div class="error-msg" id="nearby-error"></div>
-        <button class="action-btn" id="nearby-btn" onclick="doNearbySearch()">&#128205; Find Nearby Places</button>
-      </div>
-      <div class="loading" id="nearby-loading"><div class="loading-ring"></div><p>Finding places near you...</p></div>
-      <div class="results" id="nearby-results">
-        <div class="results-header"><div class="results-title">Near You</div><div class="results-tag" id="nearby-tag"></div></div>
-        <div class="places-list" id="nearby-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ SURPRISE ══ -->
-  <div class="page" id="page-surprise">
-    <div class="doodle-row"><span class="doodle">&#127881;</span><span class="doodle">&#10024;</span><span class="doodle">&#127800;</span></div>
-    <div class="section-title">Surprise Me!</div>
-    <div class="section-sub">Let us plan something magical &#10024;</div>
-    <div class="form-card">
-      <div class="field">
-        <label class="field-label">&#127757; City</label>
-        <input class="field-input" id="surprise-city" type="text" placeholder="e.g. Paris, Tokyo, New York..." autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"/>
-      </div>
-      <div class="field">
-        <label class="field-label">&#11088; Minimum rating</label>
-        <div class="rating-filter-group" id="surprise-rating-filter">
-          <button class="rating-filter-btn active" data-rating="0" onclick="setSurpriseRating(this)">Any</button>
-          <button class="rating-filter-btn" data-rating="3" onclick="setSurpriseRating(this)">3+ &#11088;</button>
-          <button class="rating-filter-btn" data-rating="4" onclick="setSurpriseRating(this)">4+ &#11088;</button>
-          <button class="rating-filter-btn" data-rating="4.5" onclick="setSurpriseRating(this)">4.5+ &#11088;</button>
-        </div>
-      </div>
-      <div class="surprise-options">
-        <button class="surprise-opt-btn" id="surprise-places-btn" onclick="doSurprisePlaces()">
-          <div class="surprise-opt-icon">&#127800;</div>
-          <div class="surprise-opt-title">Random Places</div>
-          <div class="surprise-opt-sub">Discover hidden gems to explore</div>
-        </button>
-        <button class="surprise-opt-btn" id="surprise-route-btn" onclick="doSurpriseRoute()">
-          <div class="surprise-opt-icon">&#128345;</div>
-          <div class="surprise-opt-title">Surprise Day Route</div>
-          <div class="surprise-opt-sub">A full day planned for you</div>
-        </button>
-      </div>
-      <div class="error-msg" id="surprise-error"></div>
-    </div>
-    <div class="loading" id="surprise-loading"><div class="loading-ring"></div><p id="surprise-loading-text">Planning your surprise...</p></div>
-    <div class="results" id="surprise-results">
-      <div class="results-header"><div class="results-title" id="surprise-results-title">Your Surprise</div><div class="results-tag" id="surprise-tag"></div></div>
-      <div class="places-list" id="surprise-list"></div>
     </div>
   </div>
 
@@ -2826,7 +2753,7 @@ function renderWeatherTags(routeId, container){
   topRow.appendChild(addBtn);
   container.appendChild(topRow);
 
-  // Expand panel — inside container, hidden by default
+  // Expand panel - inside container, hidden by default
   var expandDiv = document.createElement('div');
   expandDiv.style.cssText = 'display:none;width:100%;margin-top:10px;padding:12px;background:var(--sage-pale);border-radius:12px;border:1.5px solid var(--border);';
 
@@ -2889,8 +2816,6 @@ function getWeatherTagsHtml(routeId){
 // -- BURGER MENU ------------------------------------------
 var pageLabels = {
   discover: {icon:'&#127757;', name:'Discover'},
-  nearby: {icon:'&#128269;', name:'Nearby'},
-  surprise: {icon:'&#127881;', name:'Surprise'},
   planner: {icon:'&#128345;', name:'Route Planner'},
   places: {icon:'&#10084;&#65039;', name:'My Places'},
   routes: {icon:'&#128204;', name:'Saved Routes'},
@@ -2938,7 +2863,7 @@ function openAddToRouteModal(place){
     activeDiv.appendChild(addActiveBtn);
     cont.appendChild(activeDiv);
     var orDiv = document.createElement('div'); orDiv.style.cssText='text-align:center;font-size:12px;color:var(--muted);font-weight:700;margin:10px 0;';
-    orDiv.textContent='— or add to a saved route —';
+    orDiv.textContent='- or add to a saved route -';
     cont.appendChild(orDiv);
   } else if(routes.length===0){
     cont.innerHTML='<div class="empty-state" style="padding:20px 0;"><div class="big" style="font-size:32px;">&#128345;</div><p>No saved routes yet.<br/>Plan a route first!</p></div>';
