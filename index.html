@@ -737,6 +737,11 @@ try{
       <div id="edit-tag-list" class="place-tags"></div>
     </div>
     <div class="field"><label class="field-label">&#128203; Your Note</label><textarea class="field-input" id="edit-note" rows="3" style="font-size:16px;min-height:80px;" placeholder="e.g. Try the croissants! Book in advance..."></textarea></div>
+    <div class="field" id="edit-routes-section">
+      <label class="field-label">&#128204; Part of these routes</label>
+      <div id="edit-place-routes"></div>
+      <button class="trip-add-route-btn" style="margin-top:6px;font-size:13px;" onclick="addEditPlaceToRoute()">&#43; Add to a Route</button>
+    </div>
     <div class="modal-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" onclick="saveEditModal()">Save Changes</button>
