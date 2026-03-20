@@ -244,9 +244,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .note-save-btn{margin-top:6px;padding:6px 14px;background:var(--sage);color:#fff;border:none;border-radius:8px;font-family:"Nunito",sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
 
 /* EDIT PLACE MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
-.modal-box{background:var(--card);border-radius:22px;padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
-.modal-title{font-family:"Pacifico",cursive;font-size:20px;color:var(--sage-dark);margin-bottom:18px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:0;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+.modal-box{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-radius:28px 28px 0 0;padding:28px 24px calc(28px + env(safe-area-inset-bottom));width:100%;max-width:520px;box-shadow:0 -8px 40px rgba(0,0,0,.18);border-top:1px solid rgba(255,255,255,.6);max-height:92vh;overflow-y:auto;}
+[data-theme="dark"] .modal-box{background:rgba(30,45,35,.92);border-top:1px solid rgba(255,255,255,.1);}
+.modal-drag-handle{width:40px;height:4px;background:rgba(0,0,0,.15);border-radius:2px;margin:0 auto 20px;cursor:pointer;}
+[data-theme="dark"] .modal-drag-handle{background:rgba(255,255,255,.2);}
+.modal-title{font-family:"Pacifico",cursive;font-size:22px;color:var(--sage-dark);margin-bottom:20px;}
 .modal-actions{display:flex;gap:10px;margin-top:16px;}
 .modal-btn{flex:1;padding:14px;min-height:50px;border:none;border-radius:12px;font-family:"Nunito",sans-serif;font-size:16px;font-weight:800;cursor:pointer;}
 .modal-btn-save{background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;}
@@ -450,6 +453,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .plans-chip{flex:1;padding:12px;border:2px solid var(--border);border-radius:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;background:var(--card);color:var(--muted);min-height:44px;transition:all .2s;}
 .plans-chip.active{background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:#fff;border-color:var(--sage-dark);}
 
+
+/* EDIT MODAL ROUTE BADGES */
+.edit-route-badge{display:flex;align-items:center;justify-content:space-between;background:var(--sage-pale);border:1.5px solid var(--sage-light);border-radius:10px;padding:8px 12px;margin-bottom:6px;}
+.edit-route-badge-name{font-size:13px;font-weight:800;color:var(--sage-dark);}
+.edit-route-badge-meta{font-size:11px;color:var(--muted);font-weight:600;}
+.edit-route-open-btn{background:var(--sage);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;min-height:32px;white-space:nowrap;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -636,6 +646,7 @@ try{
 <!-- NEW TRIP MODAL -->
 <div class="modal-overlay" id="new-trip-modal" style="display:none">
   <div class="modal-box">
+    <div class="modal-drag-handle"></div>
     <div class="modal-title">&#9992; New Trip</div>
     <div class="field"><label class="field-label">Trip Name</label><input class="field-input" id="trip-name-input" type="text" placeholder="e.g. Paris Weekend, Tokyo Adventure..."/></div>
     <div class="field"><label class="field-label">Destination City</label><input class="field-input" id="trip-city-input" type="text" placeholder="e.g. Paris, Tokyo..."/></div>
@@ -654,6 +665,7 @@ try{
 <!-- ADD TO TRIP MODAL -->
 <div class="modal-overlay" id="add-to-trip-modal" style="display:none">
   <div class="modal-box">
+    <div class="modal-drag-handle"></div>
     <div class="modal-title">&#9992; Add to Trip</div>
     <div class="field"><label class="field-label">Choose a trip</label><select class="field-input" id="trip-select"><option value="">Select existing trip...</option></select></div>
     <div style="text-align:center;margin:8px 0;font-size:12px;color:var(--muted);font-weight:700;">— or —</div>
@@ -668,6 +680,7 @@ try{
 <!-- EDIT TRIP MODAL -->
 <div class="modal-overlay" id="edit-trip-modal" style="display:none">
   <div class="modal-box">
+    <div class="modal-drag-handle"></div>
     <div class="modal-title">&#9998; Edit Trip</div>
     <div class="field"><label class="field-label">Trip Name</label><input class="field-input" id="edit-trip-name" type="text"/></div>
     <div class="field"><label class="field-label">Destination City</label><input class="field-input" id="edit-trip-city" type="text"/></div>
@@ -686,6 +699,7 @@ try{
 <!-- ADD TO ROUTE MODAL -->
 <div class="modal-overlay add-to-route-modal" id="add-to-route-modal" style="display:none">
   <div class="modal-box">
+    <div class="modal-drag-handle"></div>
     <div class="modal-title">&#128345; Add to Route</div>
     <div id="atr-content"></div>
     <div class="modal-actions" style="margin-top:12px;">
@@ -697,6 +711,7 @@ try{
 <!-- EDIT PLACE MODAL -->
 <div class="modal-overlay" id="edit-modal" style="display:none">
   <div class="modal-box">
+    <div class="modal-drag-handle"></div>
     <div class="modal-title">&#9998; Edit Place</div>
     <div class="field"><label class="field-label">Name</label><input class="field-input" id="edit-name" type="text"/></div>
     <div class="field"><label class="field-label">Address</label><input class="field-input" id="edit-address" type="text"/></div>
@@ -1780,8 +1795,40 @@ function openEditModal(name,address){
   });
   var rval=document.getElementById('edit-personal-rating-val');
   if(rval) rval.textContent=editModalPersonalRating>0?editModalPersonalRating+'/5':'';
+  // Load routes this place appears in
+  var routesSection = document.getElementById('edit-place-routes');
+  if(routesSection){
+    routesSection.innerHTML='';
+    var allRoutes = loadRoutes();
+    var placeRoutes = allRoutes.filter(function(r){
+      return (r.stops||[]).some(function(s){ return s.name===p.name||(s.address&&s.address===p.address); });
+    });
+    if(placeRoutes.length===0){
+      routesSection.innerHTML='<div style="font-size:13px;color:var(--muted);font-weight:600;padding:4px 0;">Not in any saved routes yet.</div>';
+    } else {
+      placeRoutes.forEach(function(r){
+        var badge=document.createElement('div'); badge.className='edit-route-badge';
+        var info=document.createElement('div');
+        info.innerHTML='<div class="edit-route-badge-name">'+r.name+'</div><div class="edit-route-badge-meta">'+r.city+' - '+(r.stops||[]).length+' stops</div>';
+        var openBtn=document.createElement('button'); openBtn.className='edit-route-open-btn'; openBtn.textContent='Open';
+        (function(route){ openBtn.onclick=function(){ closeEditModal(); loadRouteForEditing(route); }; })(r);
+        badge.appendChild(info); badge.appendChild(openBtn);
+        routesSection.appendChild(badge);
+      });
+    }
+  }
   document.getElementById('edit-modal').style.display='flex';
   document.body.style.overflow='hidden';
+}
+
+function addEditPlaceToRoute(){
+  if(!editingPlaceKey) return;
+  var favs=loadFavs();
+  var p=null;
+  for(var i=0;i<favs.length;i++) if(favs[i].name===editingPlaceKey.name&&favs[i].address===editingPlaceKey.address){p=favs[i];break;}
+  if(!p) return;
+  closeEditModal();
+  openAddToRouteModal(p);
 }
 function closeEditModal(){ document.getElementById('edit-modal').style.display='none'; editingPlaceKey=null; document.body.style.overflow=''; }
 function saveEditModal(){
