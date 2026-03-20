@@ -460,6 +460,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .edit-route-badge-meta{font-size:11px;color:var(--muted);font-weight:600;}
 .edit-route-open-btn{background:var(--sage);color:#fff;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;min-height:32px;white-space:nowrap;}
 
+
+.tab-header-svg{width:100%;margin-bottom:12px;border-radius:14px;overflow:hidden;}
+.tab-header-svg svg{display:block;width:100%;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -534,7 +538,7 @@ try{
 
   <!-- ══ DISCOVER ══ -->
   <div class="page active" id="page-discover">
-    <div class="doodle-row"><span class="doodle">&#127759;</span><span class="doodle">&#9992;</span><span class="doodle">&#127800;</span><span class="doodle">&#129523;</span></div>
+    <div class="tab-header-svg"><svg width="100%" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg"><g transform="translate(140,8) scale(0.285)" fill="#4e8060" stroke="none"><circle cx="137.7" cy="344.79" r="13.876"/><circle cx="379.659" cy="283.948" r="13.876"/><path d="M511.114,237.094l-5.331-20.942c-3.206-12.596-14.519-21.393-27.509-21.393c-1.332,0-2.662,0.105-3.982,0.292l-1.907-7.49l6.938-1.766c5.734-1.46,9.2-7.292,7.739-13.027l-4.08-16.027c-1.46-5.734-7.292-9.2-13.027-7.739l-8.151,2.075c-9.597-18.186-30.424-27.539-50.534-22.42l-31.592,8.043l-25.468-43.682c-15.518-26.617-47.344-40.865-78.55-32.919l-75.633,19.255c-19.836,5.049-31.803,25.188-26.752,45.026l15.508,60.916l-44.078,11.222l-20.661-81.154c-2.201-8.645-10.992-13.868-19.635-11.667c-8.643,2.201-13.867,10.992-11.667,19.635l0.268,1.055l-46.504,97.13l-28.103,7.155c-13.08,3.329-20.973,16.609-17.641,29.69l14.174,55.678C6.26,320.541,1.47,332.056,4.455,343.781l5.331,20.942c3.871,15.204,19.312,24.386,34.524,20.511l22.089-5.624c4.651,9.548,11.117,17.928,18.899,24.775l-63.622,18.022c-7.756,2.196-12.704,9.776-11.595,17.76s7.936,13.929,15.996,13.929h453.162c8.92,0,16.15-7.231,16.15-16.15v-109.06c0-4.791-2.127-9.334-5.806-12.403c-3.679-3.069-8.529-4.345-13.244-3.485l-24.785,4.525c5.582-11.897,8.076-24.834,7.349-37.835l31.7-8.07C505.81,267.745,514.987,252.304,511.114,237.094z M283.63,91.401c17.029-4.335,34.281,3.482,42.679,17.886l20.814,35.699l-72.607,18.485L257.84,97.967L283.63,91.401z M207.996,110.656l18.542-4.721l16.676,65.505l-23.131,5.889l-15.508-60.916C203.931,113.872,205.454,111.303,207.996,110.656z M105.443,173.218l7.961,31.269l-26.115,6.649L105.443,173.218z M58.431,348.31l-18.305,4.66l-3.405-13.374l22.407-5.704C58.464,338.62,58.213,343.441,58.431,348.31z M74.755,296.582l-14.243,3.625l-14.807,3.77L34.008,258.03l385.232-98.072c6.726-1.712,13.392,2.377,15.067,8.952l8.64,33.939l-32.033,8.155c-15.911-6.82-33.71-8.296-50.831-3.938c-17.128,4.361-31.969,14.081-42.709,27.752l-147.318,37.504c-15.813-7.063-34.058-8.962-51.935-4.411C100.165,272.48,85.219,282.892,74.755,296.582z M391.263,329.536c-25.321,6.445-50.797-8.864-57.191-33.981c-6.414-25.195,8.783-50.776,33.981-57.191c25.321-6.445,50.796,8.864,57.191,33.981C431.658,297.54,416.461,323.121,391.263,329.536z M300.361,286.718l-91.369,23.262c-2.128-4.369-4.639-8.49-7.478-12.337c11.049-2.813,89.075-22.676,99.633-25.365C300.437,277.043,300.182,281.874,300.361,286.718z M216.962,341.281l91.084-23.188c2.204,4.635,4.829,9,7.828,13.056l-15.36,33.328l-65.296-16.472c-4.269-1.076-8.792-0.364-12.523,1.973l-6.194,3.879C216.981,349.719,217.151,345.519,216.962,341.281z M92.111,356.401c-6.399-25.136,8.845-50.791,33.981-57.191c25.321-6.445,50.797,8.864,57.191,33.981c6.398,25.136-8.845,50.791-33.981,57.191C123.98,396.826,98.504,381.516,92.111,356.401z M463.089,348.25v73.545H156.793c0.159-0.039,0.318-0.074,0.477-0.114c9.116-2.321,17.454-6.151,24.83-11.144c12.305-3.485,3.172,0.99,51.899-29.53l71.617,18.067c7.536,1.9,15.362-1.838,18.618-8.899l16.962-36.802c17.374,9.635,38.05,12.553,58.037,7.466c2.545-0.648,5.038-1.415,7.477-2.294L463.089,348.25z M450.628,248.464c-2.176-4.361-4.74-8.468-7.628-12.299c11.113-2.83,19.628-4.997,32.445-8.26l3.405,13.375L450.628,248.464z"/></g></svg></div>
     <div class="section-title">Find your next adventure!</div>
     <div class="section-sub">Search for places, pick how you travel, and save your faves &#128151;</div>
     <div class="form-card">
@@ -565,7 +569,26 @@ try{
 
   <!-- ══ ROUTE PLANNER ══ -->
   <div class="page" id="page-planner">
-    <div class="doodle-row"><span class="doodle">&#128345;</span><span class="doodle">&#128205;</span><span class="doodle">&#9728;</span><span class="doodle">&#127829;</span></div>
+    <div class="tab-header-svg"><svg width="100%" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg">
+<g stroke="#4e8060" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M35 110 C100 98 180 86 270 78 C350 72 430 68 560 60" stroke-width="10" opacity="0.12"/>
+<path d="M35 110 C100 98 180 86 270 78 C350 72 430 68 560 60" stroke-width="2" stroke-dasharray="14,9"/>
+<path d="M35 110 C35 110 24 98 24 91 C24 85 29 80 35 80 C41 80 46 85 46 91 C46 98 35 110 35 110Z" stroke-width="2.2"/>
+<circle cx="35" cy="91" r="4" fill="#4e8060" stroke="none"/>
+<circle cx="200" cy="83" r="7" fill="white" stroke-width="2"/>
+<circle cx="200" cy="83" r="3" fill="#4e8060" stroke="none"/>
+<circle cx="370" cy="74" r="7" fill="white" stroke-width="2"/>
+<circle cx="370" cy="74" r="3" fill="#4e8060" stroke="none"/>
+<path d="M560 60 C560 60 549 48 549 41 C549 35 554 30 560 30 C566 30 571 35 571 41 C571 48 560 60 560 60Z" stroke-width="2.2"/>
+<circle cx="560" cy="41" r="4" fill="#4e8060" stroke="none"/>
+<path d="M148 112 L154 92 L160 112Z" stroke-width="1.2" opacity="0.5"/>
+<line x1="154" y1="112" x2="154" y2="100" stroke-width="1.5" opacity="0.5"/>
+<path d="M300 104 L306 84 L312 104Z" stroke-width="1.2" opacity="0.5"/>
+<line x1="306" y1="104" x2="306" y2="92" stroke-width="1.5" opacity="0.5"/>
+<path d="M460 96 L466 76 L472 96Z" stroke-width="1.2" opacity="0.5"/>
+<line x1="466" y1="96" x2="466" y2="84" stroke-width="1.5" opacity="0.5"/>
+<line x1="20" y1="120" x2="620" y2="120" stroke-width="0.8" opacity="0.2"/>
+</g></svg></div>
     <div class="section-title">Route Planner</div>
     <div class="section-sub">Plan your perfect day using your saved places &#10024;</div>
     <div id="weather-rp"></div>
@@ -574,7 +597,7 @@ try{
 
   <!-- ══ PLACES ══ -->
   <div class="page" id="page-places">
-    <div class="doodle-row"><span class="doodle">&#128151;</span><span class="doodle">&#128205;</span><span class="doodle">&#10024;</span></div>
+    <div class="tab-header-svg"><svg width="100%" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg"><g transform="translate(133,5) scale(0.142)"><path d="M786 279l-48-13 48-13 13-48 13 48 49 13-49 13-13 49-13-49zM834 332l-19-4 19-5 4-19 5 19 19 5-19 4-5 19-4-19z" fill="#4e8060"/><path d="M159 715l-21-5 21-5 5-21 5 21 21 5-21 5-5 21-5-21z" fill="#4e8060"/><path d="M244 247m-9 0a9 9 0 1 0 18 0 9 9 0 1 0-18 0Z" fill="#4e8060"/><path d="M288 821l-27-6 27-7 6-27 7 27 27 7-27 6-7 27-6-27z" fill="#4e8060"/><path d="M832 828a25 25 0 1 1 25-25 25 25 0 0 1-25 25z m0-36a10 10 0 1 0 10 10 10 10 0 0 0-10-10z" fill="#4e8060"/><path d="M627 502l-10-17 11-7V287l-22 14a95 95 0 0 1 3 24c0 28-19 64-58 108 21 7 34 19 34 34s-31 40-71 40-71-17-71-40 13-27 34-34l-25-30-40 26v180h2l11-7 11 17-17 10h-7v112l216-102V501z m-135 83l-16 10-8 5-8 5h-1l-5-9-5-8 9-5 24-15 10 17z m56-35l-33 20-10-17 33-20 10 17z m56-35l-33 20-10-17 17-10 16-10 10 17zM188 640l204 99V427L188 296z m162-74l32 22-11 16-32-22z m-57-31l4-5 8 6 23 16-11 16-15-11-8-6-8-6z m-42-45a29 29 0 1 1-29 29 29 29 0 0 1 30-29zM648 477l12 6-9 18-3-2v141l217 95V428L648 285z m176 68a29 29 0 1 1-29 29 29 29 0 0 1 29-29z m-72-15l36 19-9 18-36-18z m-69-23l5-10 9 4 9 4 18 9-9 18-27-14-9-4z" fill="#4e8060"/><path d="M640 256l-41 27a95 95 0 0 0-181 43c0 17 7 38 22 61l-37 24-235-151v392l236 115 233-110 248 108V417z m-202 69a75 75 0 0 1 151 0c0 33-40 81-75 118-62-63-76-99-76-118z m97 124c18 4 29 12 29 18s-20 20-51 20-51-12-51-20 11-14 29-18l15 15 7 7 7-7zM392 739l-204-99V296l204 131z m20 2V630h7l17-10-11-17-11 7h-2V429l40-26 25 30c-21 7-34 19-34 34s31 40 71 40 71-17 71-40-13-27-34-34c39-44 58-80 58-108a95 95 0 0 0-3-24l22-14v190l-11 7 10 17h1v138z m453-6l-217-95V499l3 2 9-18-12-6V285l217 143z" fill="#2e6040"/><path d="M286 546l8 5 8 6 15 11 12-17-24-16-8-6-4 5-7 12zM371 604l11-16-32-22-11 16 32 22zM481 568l-24 15-9 5 1 1h-1l5 8 5 9v-1l1 1 8-5 9-5h-1l17-11-11-17zM537 534l-33 20 11 17 33-20-10-17h-1zM594 499l-16 10-17 10 10 17 33-20-10-17zM679 515l9 4 27 14 9-17v-1l-18-9-9-4-9-5-5 10-4 8zM779 566l9-18-36-18-9 17v1l36 18z" fill="#4e8060"/><path d="M824 585a11 11 0 1 0-11-11 11 11 0 0 0 11 11z" fill="#7aaa8a"/><path d="M824 603a29 29 0 1 0-29-29 29 29 0 0 0 29 29z m0-40a11 11 0 1 1-11 11 11 11 0 0 1 11-11z" fill="#2e6040"/><path d="M252 530a11 11 0 1 0-11-11 11 11 0 0 0 11 11z" fill="#7aaa8a"/><path d="M252 548a29 29 0 1 0-29-29 29 29 0 0 0 29 29z m0-40a11 11 0 1 1-11 11 11 11 0 0 1 11-11z" fill="#2e6040"/><path d="M507 465l-15-15c-18 4-29 12-29 18s20 20 51 20 51-12 51-20-11-14-29-18l-15 15-7 7z" fill="#7aaa8a"/><path d="M514 444c36-37 75-85 75-118a75 75 0 0 0-151 0c0 18 14 54 76 118z m-35-117a35 35 0 1 1 35 35 35 35 0 0 1-35-35z" fill="#4e8060"/><path d="M514 327m-35 0a35 35 0 1 0 70 0 35 35 0 1 0-70 0Z" fill="#7aaa8a"/></g></svg></div>
     <div class="section-title">My Places</div>
     <div class="section-sub">Your saved spots, organized by city &#127807;</div>
     <div id="places-search-wrap" style="display:none">
@@ -603,7 +626,19 @@ try{
 
   <!-- ══ MY PLANS ══ -->
   <div class="page" id="page-plans">
-    <div class="doodle-row"><span class="doodle">&#128204;</span><span class="doodle">&#9992;</span><span class="doodle">&#128345;</span></div>
+    <div class="tab-header-svg"><svg width="100%" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg">
+<g stroke="#4e8060" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<rect x="120" y="34" width="22" height="22" rx="4" stroke-width="2"/>
+<path d="M124 45 L130 52 L140 38" stroke-width="2.5"/>
+<line x1="152" y1="45" x2="430" y2="45" stroke-width="2.5"/>
+<rect x="120" y="66" width="22" height="22" rx="4" stroke-width="2"/>
+<path d="M124 77 L130 84 L140 70" stroke-width="2.5"/>
+<line x1="152" y1="77" x2="380" y2="77" stroke-width="2.5"/>
+<rect x="120" y="98" width="22" height="22" rx="4" stroke-width="2" opacity="0.3"/>
+<line x1="152" y1="109" x2="460" y2="109" stroke-width="2.5" opacity="0.3"/>
+<rect x="120" y="130" width="22" height="22" rx="4" stroke-width="2" opacity="0.3"/>
+<line x1="152" y1="141" x2="350" y2="141" stroke-width="2.5" opacity="0.3"/>
+</g></svg></div>
     <div class="section-title">My Plans</div>
     <div class="section-sub">Your routes and trips, all in one place &#10024;</div>
     <div class="plans-chip-row">
@@ -623,7 +658,39 @@ try{
 
   <!-- ══ WE WERE HERE ══ -->
   <div class="page" id="page-visited">
-    <div class="doodle-row"><span class="doodle">&#127758;</span><span class="doodle">&#128205;</span><span class="doodle">&#10024;</span></div>
+    <div class="tab-header-svg"><svg width="100%" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg">
+<g fill="#4e8060" stroke="none" opacity="0.35">
+<circle cx="40" cy="40" r="2.5"/><circle cx="54" cy="34" r="2.5"/><circle cx="50" cy="50" r="2.5"/>
+<circle cx="74" cy="38" r="2.5"/><circle cx="88" cy="32" r="2.5"/><circle cx="84" cy="48" r="2.5"/>
+<circle cx="108" cy="40" r="2.5"/><circle cx="122" cy="34" r="2.5"/><circle cx="118" cy="52" r="2.5"/>
+<circle cx="148" cy="36" r="2.5"/><circle cx="162" cy="30" r="2.5"/><circle cx="158" cy="46" r="2.5"/>
+<circle cx="188" cy="40" r="2.5"/><circle cx="204" cy="34" r="2.5"/><circle cx="224" cy="42" r="2.5"/>
+<circle cx="248" cy="36" r="2.5"/><circle cx="268" cy="40" r="2.5"/><circle cx="290" cy="34" r="2.5"/>
+<circle cx="316" cy="40" r="2.5"/><circle cx="338" cy="34" r="2.5"/><circle cx="360" cy="42" r="2.5"/>
+<circle cx="384" cy="36" r="2.5"/><circle cx="408" cy="40" r="2.5"/><circle cx="432" cy="34" r="2.5"/>
+<circle cx="458" cy="40" r="2.5"/><circle cx="480" cy="36" r="2.5"/><circle cx="504" cy="42" r="2.5"/>
+<circle cx="528" cy="36" r="2.5"/><circle cx="552" cy="40" r="2.5"/><circle cx="576" cy="34" r="2.5"/>
+<circle cx="600" cy="40" r="2.5"/><circle cx="624" cy="36" r="2.5"/>
+</g>
+<g stroke="#4e8060" stroke-linecap="round" fill="none">
+<circle cx="248" cy="82" r="10" stroke-width="2"/>
+<line x1="248" y1="92" x2="248" y2="118" stroke-width="2.5"/>
+<path d="M248 102 L236 112" stroke-width="2"/>
+<path d="M248 102 L260 110" stroke-width="2"/>
+<path d="M248 118 L240 138" stroke-width="2"/>
+<path d="M248 118 L256 137" stroke-width="2"/>
+<path d="M248 98 C248 98 262 97 264 107 C266 116 256 119 248 116" stroke-width="1.8"/>
+<circle cx="336" cy="82" r="10" stroke-width="2"/>
+<line x1="336" y1="92" x2="336" y2="118" stroke-width="2.5"/>
+<path d="M336 102 L324 110" stroke-width="2"/>
+<path d="M336 102 L348 112" stroke-width="2"/>
+<path d="M336 118 L328 138" stroke-width="2"/>
+<path d="M336 118 L344 137" stroke-width="2"/>
+<path d="M336 98 C336 98 322 97 320 107 C318 116 328 119 336 116" stroke-width="1.8"/>
+</g>
+<path d="M292 88 C292 83 288 81 288 85 C288 90 292 94 292 94 C292 94 296 90 296 85 C296 81 292 83 292 88Z" fill="#4e8060" stroke="none"/>
+<line x1="20" y1="148" x2="620" y2="148" stroke="#4e8060" stroke-width="0.8" opacity="0.2"/>
+</svg></div>
     <div class="section-title">We Were Here</div>
     <div class="section-sub">Every place you&#39;ve visited, on one beautiful map &#128151;</div>
     <div class="visited-toggle-row">
