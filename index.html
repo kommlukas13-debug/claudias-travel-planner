@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234e8060'/><text y='75' x='50' text-anchor='middle' font-size='65'>&#9992;</text></svg>"/>
 <style>
 :root{--peach:#ffb997;--peach-light:#ffd4bc;--peach-pale:#fff1ea;--peach-mid:#ffc9a8;--sage:#7aaa8a;--sage-light:#a8c9b0;--sage-pale:#eaf4ec;--sage-dark:#4e8060;--cream:#fffaf7;--white:#ffffff;--ink:#2d3a2e;--muted:#7d9080;--border:#e2ede5;--shadow:rgba(80,120,90,0.10);--gold:#e8a838;--card:#ffffff;}
-[data-theme="dark"]{--cream:#1a1f1b;--white:#222927;--ink:#e8f0e9;--muted:#8aab94;--border:#2e3d32;--shadow:rgba(0,0,0,0.3);--sage-pale:#1e2e23;--peach-pale:#2e2018;--card:#222927;}
+[data-theme="dark"]{--cream:#1a1f1b;--white:#222927;--ink:#e8f0e9;--muted:#8aab94;--border:#2e3d32;--shadow:rgba(0,0,0,0.3);--sage-pale:#1e2e23;--peach-pale:#2e2018;--card:#222927;--badge-price-bg:#2e2a18;--badge-price-fg:#e0b84a;--badge-price-border:#5a4a20;--badge-open-bg:#182e20;--badge-open-fg:#4ecb7a;--badge-open-border:#1e5a30;--badge-closed-bg:#2e1818;--badge-closed-fg:#e06060;--badge-closed-border:#5a2020;--warning-text:#d4a840;}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#1a1f1b;--white:#222927;--ink:#e8f0e9;--muted:#8aab94;--border:#2e3d32;--shadow:rgba(0,0,0,0.3);--sage-pale:#1e2e23;--peach-pale:#2e2018;--card:#222927;}}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 *{-webkit-tap-highlight-color:transparent;}
@@ -98,9 +98,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .card-badges{display:flex;gap:5px;flex-wrap:wrap;margin-left:36px;}
 .badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:800;}
 .badge-travel{background:var(--sage-pale);color:var(--sage-dark);border:1.5px solid var(--sage-light);}
-.badge-price{background:#fff8e7;color:#9a6c10;border:1.5px solid #f5dfa0;}
-.badge-open{background:#f0fff5;color:#1a7a3c;border:1.5px solid #a8e6be;}
-.badge-closed{background:#fff0f0;color:#c0392b;border:1.5px solid #f5c0c0;}
+.badge-price{background:var(--badge-price-bg,#fff8e7);color:var(--badge-price-fg,#9a6c10);border:1.5px solid var(--badge-price-border,#f5dfa0);}
+.badge-open{background:var(--badge-open-bg,#f0fff5);color:var(--badge-open-fg,#1a7a3c);border:1.5px solid var(--badge-open-border,#a8e6be);}
+.badge-closed{background:var(--badge-closed-bg,#fff0f0);color:var(--badge-closed-fg,#c0392b);border:1.5px solid var(--badge-closed-border,#f5c0c0);}
 .badge-time{background:var(--peach-pale);color:#c07040;border:1.5px solid var(--peach-light);}
 .card-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0;}
 .fav-btn{background:var(--peach-pale);border:2px solid var(--peach-light);border-radius:10px;width:44px;height:44px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
@@ -296,10 +296,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .map-toggle-btn:hover{opacity:.9;}
 .leaflet-map-container{width:100%;height:320px;border-radius:16px;overflow:hidden;border:2px solid var(--border);margin-bottom:8px;}
 .map-stop-popup{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;min-width:160px;}
-.map-stop-popup .pop-name{font-weight:900;font-size:14px;color:#2d3a2e;margin-bottom:4px;}
+.map-stop-popup .pop-name{font-weight:900;font-size:14px;color:var(--ink);margin-bottom:4px;}
 .map-stop-popup .pop-addr{color:#7d9080;font-size:12px;margin-bottom:8px;}
 .map-stop-popup .pop-links{display:flex;gap:6px;flex-wrap:wrap;}
-.map-stop-popup a{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;border:1.5px solid #e2ede5;color:#2d3a2e;background:#eaf4ec;}
+.map-stop-popup a{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;border:1.5px solid #e2ede5;color:var(--ink);background:#eaf4ec;}
 
 /* CUSTOM CATEGORIES */
 .custom-cats-wrap{margin-top:10px;}
@@ -464,6 +464,49 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .tab-header-svg{width:100%;margin-bottom:12px;border-radius:14px;overflow:hidden;}
 .tab-header-svg svg{display:block;width:100%;}
 
+
+[data-theme="dark"] .badge-price{background:#2e2a18;color:#e0b84a;border-color:#5a4a20;}
+[data-theme="dark"] .badge-open{background:#182e20;color:#4ecb7a;border-color:#1e5a30;}
+[data-theme="dark"] .badge-closed{background:#2e1818;color:#e06060;border-color:#5a2020;}
+[data-theme="dark"] .error-msg{background:#2e1a1a;color:#e08080;border-color:#5a2020;}
+[data-theme="dark"] .srt-date{background:#1e2e23;color:var(--muted);border-color:var(--border);}
+[data-theme="dark"] .srt-weather{background:#182030;color:#6aa8d8;border-color:#2a4060;}
+[data-theme="dark"] .hours-warning{background:#2e2a10;color:#d4a840;border-color:#5a4820;}
+[data-theme="dark"] .pop-name{color:#e8f0e9;}
+[data-theme="dark"] .pop-addr{color:#8aab94;}
+[data-theme="dark"] .custom-cat-tag{background:#1e2e23;border-color:#2e5040;color:#7aaa8a;}
+[data-theme="dark"] .atr-route-option{background:#1e2e23;border-color:var(--border);}
+[data-theme="dark"] .atr-adding{background:#1e2e23;border-color:var(--sage-light);}
+[data-theme="dark"] .weather-widget{color:#e8f0e9;}
+[data-theme="dark"] .visited-stats{color:#e8f0e9;}
+[data-theme="dark"] .personal-star{color:#3a5040;}
+[data-theme="dark"] .personal-star.on{color:var(--gold);}
+[data-theme="dark"] .star{color:#3a5040;}
+[data-theme="dark"] .burger-item{color:var(--muted);}
+[data-theme="dark"] .burger-item.active{background:linear-gradient(135deg,var(--sage-pale),#1e3028);color:var(--sage-dark);}
+[data-theme="dark"] .edit-route-badge{background:#1e2e23;border-color:var(--border);}
+[data-theme="dark"] .visited-place-item{background:#1e2a22;border-color:var(--border);}
+[data-theme="dark"] .visited-place-item.visited{background:#1a2e22;border-color:var(--sage-dark);}
+[data-theme="dark"] .tag-suggestion{background:#1e2e23;color:var(--sage-dark);}
+[data-theme="dark"] .rating-filter-btn{background:#1e2a22;color:var(--muted);border-color:var(--border);}
+[data-theme="dark"] .plans-chip{background:#1e2a22;color:var(--muted);border-color:var(--border);}
+[data-theme="dark"] .weather-preset{background:#1e2e23;color:var(--ink);border-color:var(--border);}
+[data-theme="dark"] .weather-tag{background:#1e2e23;color:var(--ink);}
+[data-theme="dark"] .fav-card{border-color:var(--border);}
+[data-theme="dark"] .saved-route-header{border-color:var(--border);}
+[data-theme="dark"] .trip-route-item{background:none;}
+[data-theme="dark"] .visited-city-header{border-color:var(--border);}
+[data-theme="dark"] .section-sub{color:var(--muted);}
+[data-theme="dark"] .field-label{color:var(--muted);}
+[data-theme="dark"] .map-stop-popup{background:#222927;color:#e8f0e9;}
+[data-theme="dark"] .pop-links a{background:#2e3d32;color:#7aaa8a;}
+[data-theme="dark"] .card-photo-label{background:rgba(0,0,0,0.6);}
+[data-theme="dark"] .weather-tag-input{background:#1e2a22;color:var(--ink);}
+[data-theme="dark"] .modal-drag-handle{background:rgba(255,255,255,0.15);}
+[data-theme="dark"] .tag-filter-chip{background:linear-gradient(135deg,#2e1e10,#3a2010);border-color:#5a3820;color:#e0a070;}
+[data-theme="dark"] .tag-filter-chip.active{background:linear-gradient(135deg,var(--peach),#c07030);border-color:var(--peach);color:#fff;}
+[data-theme="dark"] .place-tag{background:linear-gradient(135deg,#2e1e10,#3a2010);border-color:#5a3820;color:#e0a070;}
+
 /* TOAST */
 #toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,var(--sage-dark),#3d7055);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap;box-shadow:0 6px 20px rgba(60,100,70,.35);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -542,12 +585,12 @@ try{
     <div class="section-title">Find your next adventure!</div>
     <div class="section-sub">Search for places, pick how you travel, and save your faves &#128151;</div>
     <div class="form-card">
-      <div class="field"><label class="field-label">&#127757; City <span style="text-transform:none;font-weight:400;color:#a8bfaa">(leave empty to search nearby)</span></label><input class="field-input" id="input-city" type="text" placeholder="e.g. Paris, Tokyo, New York... or leave empty for nearby" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" oninput="updateSearchBtn()"/></div>
-      <div class="field"><label class="field-label">&#128269; What are you looking for? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional — leave empty for a surprise!)</span></label><input class="field-input" id="input-interest" type="text" placeholder="e.g. coffee shops, museums, rooftop bars..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="updateSearchBtn()"/></div>
-      <div class="field"><label class="field-label">&#127981; Looking for a specific place? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional)</span></label><input class="field-input" id="input-place-name" type="text" placeholder="e.g. Eiffel Tower, Le Comptoir du Relais..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
-      <div class="field"><label class="field-label">&#127976; Where are you staying? <span style="text-transform:none;font-weight:400;color:#a8bfaa">(optional)</span></label><input class="field-input" id="input-hotel" type="text" placeholder="e.g. Hotel Le Marais, Park Hyatt..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+      <div class="field"><label class="field-label">&#127757; City <span style="text-transform:none;font-weight:400;color:var(--muted)">(leave empty to search nearby)</span></label><input class="field-input" id="input-city" type="text" placeholder="e.g. Paris, Tokyo, New York... or leave empty for nearby" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" oninput="updateSearchBtn()"/></div>
+      <div class="field"><label class="field-label">&#128269; What are you looking for? <span style="text-transform:none;font-weight:400;color:var(--muted)">(optional — leave empty for a surprise!)</span></label><input class="field-input" id="input-interest" type="text" placeholder="e.g. coffee shops, museums, rooftop bars..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="updateSearchBtn()"/></div>
+      <div class="field"><label class="field-label">&#127981; Looking for a specific place? <span style="text-transform:none;font-weight:400;color:var(--muted)">(optional)</span></label><input class="field-input" id="input-place-name" type="text" placeholder="e.g. Eiffel Tower, Le Comptoir du Relais..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
+      <div class="field"><label class="field-label">&#127976; Where are you staying? <span style="text-transform:none;font-weight:400;color:var(--muted)">(optional)</span></label><input class="field-input" id="input-hotel" type="text" placeholder="e.g. Hotel Le Marais, Park Hyatt..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>
       <div class="field">
-        <label class="field-label">&#128640; Getting around <span style="text-transform:none;font-weight:400;color:#a8bfaa">(pick all that apply)</span></label>
+        <label class="field-label">&#128640; Getting around <span style="text-transform:none;font-weight:400;color:var(--muted)">(pick all that apply)</span></label>
         <div class="transport-group">
           <button class="transport-btn active" data-mode="walking" id="btn-walking" onclick="toggleTransport(this)"><span class="t-icon">&#128694;</span>Walking</button>
           <button class="transport-btn" data-mode="car" id="btn-car" onclick="toggleTransport(this)"><span class="t-icon">&#128663;</span>Car</button>
@@ -862,7 +905,7 @@ function updateSlider(){
 
 // -- STARS -------------------------------------------------
 function stars(r){
-  if(!r) return '<span style="color:#a8bfaa;font-size:12px">No rating</span>';
+  if(!r) return '<span style="color:var(--muted);font-size:12px">No rating</span>';
   var h='';
   for(var i=1;i<=5;i++) h+='<span class="star'+(i<=Math.round(r)?' on':'')+'">&#9733;</span>';
   return h+'<span class="rating-num">('+r+')</span>';
@@ -1098,7 +1141,7 @@ function renderRoutePlanner(){
   // Home address
   html+='<div class="field"><label class="field-label">&#127968; Your address / hotel</label><input class="field-input" id="rp-hotel" type="text" placeholder="e.g. 123 Main St, New York" autocomplete="off" autocorrect="off" spellcheck="false"/></div>';
   // Transport
-  html+='<div class="field"><label class="field-label">&#128640; Getting around <span style="text-transform:none;font-weight:400;color:#a8bfaa">(pick all that apply)</span></label><div class="transport-group">';
+  html+='<div class="field"><label class="field-label">&#128640; Getting around <span style="text-transform:none;font-weight:400;color:var(--muted)">(pick all that apply)</span></label><div class="transport-group">';
   html+='<button class="transport-btn active" data-rp="walking" onclick="toggleRpTransport(this)"><span class="t-icon">&#128694;</span>Walking</button>';
   html+='<button class="transport-btn" data-rp="car" onclick="toggleRpTransport(this)"><span class="t-icon">&#128663;</span>Car</button>';
   html+='<button class="transport-btn" data-rp="transit" onclick="toggleRpTransport(this)"><span class="t-icon">&#128647;</span>Transit</button>';
@@ -3181,7 +3224,7 @@ function initVisitedMap(){
           var pop = '<div class="map-stop-popup">'+
             '<div class="pop-name">'+p.name+'</div>'+
             '<div class="pop-addr">'+(p.city||'')+'</div>'+
-            '<div style="font-size:11px;color:#7d9080;margin-bottom:8px;">Visited '+(p.visitedAt||'')+'</div>'+
+            '<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Visited '+(p.visitedAt||'')+'</div>'+
             '<div class="pop-links">'+
               '<a href="https://maps.apple.com/?q='+a+'" target="_blank">&#127822; Apple</a>'+
               '<a href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank">&#128506; Google</a>'+
