@@ -308,7 +308,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .custom-cat-input:focus{border-color:var(--sage);background:#fff;}
 .custom-cat-add-btn{padding:10px 16px;background:var(--sage);color:#fff;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;min-height:44px;white-space:nowrap;}
 .custom-cat-list{display:flex;gap:8px;flex-wrap:wrap;}
-.custom-cat-tag{display:flex;align-items:center;gap:6px;background:var(--sage-pale);border:2px solid var(--sage-light);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:800;color:var(--sage-dark);}
+.custom-cat-tag{display:flex;align-items:center;gap:6px;background:#eaf4ec;border:2px solid #a8c9b0;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:800;color:#4e8060;}
 .custom-cat-tag button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:0;line-height:1;}
 
 /* PWA PROMPT */
@@ -350,13 +350,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 /* TAGS */
 .place-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
-.place-tag{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--peach-pale),#ffe8d8);border:1.5px solid var(--peach-light);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;color:#c07040;cursor:default;}
+.place-tag{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#fff1ea,#ffe8d8);border:1.5px solid #ffd4bc;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;color:#c07040;cursor:default;}
 .place-tag-remove{background:none;border:none;cursor:pointer;color:#c07040;font-size:11px;padding:0;line-height:1;margin-left:2px;}
 .tag-input-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
 .tag-suggestion{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--sage-pale);color:var(--sage-dark);font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
 .tag-suggestion:hover{background:var(--sage);color:#fff;}
 .tag-filter-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
-.tag-filter-chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;border:2px solid var(--border);background:linear-gradient(135deg,var(--peach-pale),#ffe8d8);color:#c07040;}
+.tag-filter-chip{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;border:2px solid #ffd4bc;background:linear-gradient(135deg,#fff1ea,#ffe8d8);color:#c07040;}
 .tag-filter-chip.active{background:linear-gradient(135deg,var(--peach),#e8905a);border-color:var(--peach);color:#fff;}
 
 /* PERSONAL RATING */
@@ -1143,7 +1143,7 @@ function rpCityChanged(){
     var places = tagCats[tag];
     var row=document.createElement('div'); row.className='cat-row';
     // Small tag badge styling
-    row.style.cssText='background:linear-gradient(135deg,var(--peach-pale),#ffe8d8);border-color:var(--peach-light);';
+    row.style.cssText='background:linear-gradient(135deg,#fff1ea,#ffe8d8);border-color:#ffd4bc;';
     var info=document.createElement('div'); info.className='cat-info';
     var nm=document.createElement('div'); nm.className='cat-name';
     nm.innerHTML='&#127991; '+tag; info.appendChild(nm);
