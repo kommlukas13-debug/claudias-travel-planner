@@ -838,6 +838,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </div>
 
 <script>
+  function debugLog(msg){
+  var d = document.getElementById('debug');
+  d.innerHTML += msg + "<br>";
+}
 var PW = 'KeepClaudiaTravelling0209';
 function checkPW(){
   var v = document.getElementById('pw-input').value.trim();
@@ -905,7 +909,8 @@ try{
       </div>
       <div class="field"><label class="field-label">&#9201; Max travel time</label><div class="slider-row"><input type="range" id="time-slider" min="5" max="60" step="5" value="30" oninput="updateSlider()"/><div class="slider-val" id="slider-label">30 min</div></div></div>
       <div class="field"><label class="field-label">&#11088; Minimum rating</label><div class="rating-filter-group" id="discover-rating-filter"><button class="rating-filter-btn active" data-rating="0" onclick="setDiscoverRating(this)">Any</button><button class="rating-filter-btn" data-rating="3" onclick="setDiscoverRating(this)">3+ &#11088;</button><button class="rating-filter-btn" data-rating="4" onclick="setDiscoverRating(this)">4+ &#11088;</button><button class="rating-filter-btn" data-rating="4.5" onclick="setDiscoverRating(this)">4.5+ &#11088;</button></div></div>
-      <div class="error-msg" id="error-msg"></div>
+      <div class="error-msg" id="error-msg"> </div>
+      <div id="debug" style="background:#000;color:#0f0;padding:10px;margin-top:10px;font-size:12px;"></div>
       <button class="action-btn" id="search-btn" onclick="doSearch()">&#127881; Surprise Me!</button>
     </div>
     <div class="loading" id="loading"><div class="loading-ring"></div><p id="loading-text">Discovering the best spots...</p></div>
@@ -1888,7 +1893,7 @@ function doSearch(){
         'Return JSON array of 6 in logical order. Each: name, address, rating, travelTime, fromPrevious, priceLevel, openNow, description. Only valid JSON array.';
     }
 
-    callGroq(prompt, 1500, function(results){
+    callGroq(prompt, 1500, function(results){debugLog("Sending request to Groq...");
       document.getElementById('loading').classList.remove('show');
       btn.disabled = false; updateSearchBtn();
       if(discoverRating>0) results = results.filter(function(p){return (p.rating||0)>=discoverRating;});
@@ -1902,7 +1907,7 @@ function doSearch(){
       document.getElementById('loading').classList.remove('show');
       btn.disabled = false; updateSearchBtn();
       console.error(errMsg); err.textContent = errMsg || 'Something went wrong. Please try again.';
-      err.classList.add('show');
+      err.classList.add('show')debugLog("ERROR: " + errMsg);;
     });
   }
 
@@ -1918,7 +1923,8 @@ function doSearch(){
       var rgXhr = new XMLHttpRequest();
       rgXhr.open('GET','https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json',true);
       rgXhr.setRequestHeader('Accept-Language','en');
-      rgXhr.onload = function(){
+      rgXhr.onload = function(){debugLog("Response received");
+debugLog(xhr.responseText);
         try{
           var rg = JSON.parse(rgXhr.responseText);
           var addr = rg.address||{};
