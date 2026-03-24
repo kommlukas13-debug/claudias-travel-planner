@@ -1901,7 +1901,7 @@ function doSearch(){
     }, function(){
       document.getElementById('loading').classList.remove('show');
       btn.disabled = false; updateSearchBtn();
-      err.textContent = 'Something went wrong. Please try again.';
+      console.error(errMsg); err.textContent = errMsg || 'Something went wrong. Please try again.';
       err.classList.add('show');
     });
   }
@@ -2358,17 +2358,49 @@ function callGroq(prompt, maxTokens, onSuccess, onError){
   xhr.open('POST','https://api.groq.com/openai/v1/chat/completions',true);
   xhr.setRequestHeader('Content-Type','application/json');
   xhr.setRequestHeader('Authorization','Bearer '+APIKEY);
+
   xhr.onload = function(){
     try{
       var data = JSON.parse(xhr.responseText);
-      if(data.error){ onError(data.error.message); return; }
-      var text = data.choices[0].message.content||'';
+
+      if(data.error){
+        console.error('API error:', data.error);
+        onError(data.error.message);
+        return;
+      }
+
+      var text = data.choices?.[0]?.message?.content || '';
+
+      if(!text){
+        onError('Empty response');
+        return;
+      }
+
       var clean = text.replace(/```json/g,'').replace(/```/g,'').trim();
-      onSuccess(JSON.parse(clean));
-    }catch(e){ onError(e.message); }
+
+      try{
+        var parsed = JSON.parse(clean);
+        onSuccess(parsed);
+      }catch(e){
+        console.error('Invalid JSON:', clean);
+        onError('Invalid response format');
+      }
+
+    }catch(e){
+      console.error('Parse error:', e);
+      onError(e.message);
+    }
   };
-  xhr.onerror = function(){ onError('Network error'); };
-  xhr.send(JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]}));
+
+  xhr.onerror = function(){
+    onError('Network error');
+  };
+
+  xhr.send(JSON.stringify({
+    model:'llama-3.3-70b-versatile',
+    max_tokens:maxTokens,
+    messages:[{role:'user',content:prompt}]
+  }));
 }
 
 // -- RATING FILTER FOR DISCOVER ----------------------------
